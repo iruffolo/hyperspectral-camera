@@ -20,7 +20,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.ImageFormat
-import android.hardware.camera2.*
+import android.hardware.camera2.CameraCaptureSession
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraDevice
+import android.hardware.camera2.CameraManager
+import android.hardware.camera2.CaptureRequest
+import android.hardware.camera2.CaptureResult
+import android.hardware.camera2.DngCreator
+import android.hardware.camera2.TotalCaptureResult
 import android.media.Image
 import android.media.ImageReader
 import android.os.Build
@@ -33,7 +40,6 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
@@ -189,43 +195,8 @@ class CameraFragment : Fragment() {
      * - Starts the preview by dispatching a repeating capture request
      * - Sets up the still image capture listeners
      */
-    @RequiresApi(Build.VERSION_CODES.P)
     private fun initializeCamera() = lifecycleScope.launch(Dispatchers.Main) {
         // Open the selected camera
-
-        Log.d("Ian", "CAMERA BBY");
-        try {
-            val cameraIdList = cameraManager.cameraIdList // may be empty
-
-            // iterate over available camera devices
-            for (cameraId in cameraIdList) {
-                Log.d("Ian", "Camera ID $cameraId");
-
-                val characteristics = cameraManager.getCameraCharacteristics(cameraId)
-                val cameraLensFacing = characteristics.get(CameraCharacteristics.LENS_FACING)
-                val cameraCapabilities = characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)
-
-                var phys = characteristics.getPhysicalCameraIds();
-
-                Log.d("Ian", "Phys chars $phys");
-
-//                var phys = characteristics.getPhysicalCameraIds();
-
-                if (cameraCapabilities != null) {
-                    for (c in cameraCapabilities) {
-                        Log.d("Ian", "Capability $c");
-                    }
-                }
-
-
-//                Log.d("Ian", characteristics.toString());
-//                Log.d("Ian", cameraCapabilities.toString());
-//                Log.d("Ian", cameraLensFacing.toString());
-            }
-        } catch (e: CameraAccessException) {
-            e.message?.let { Log.e(TAG, it) }
-        }
-
         camera = openCamera(cameraManager, args.cameraId, cameraHandler)
 
         // Initialize an image reader which will be used to capture still photos

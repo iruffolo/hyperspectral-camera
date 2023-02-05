@@ -28,7 +28,7 @@
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
-        android:label="@string/app_name"
+        android:label="CamRecorder"
         android:icon="@drawable/ic_launcher"
         tools:ignore="GoogleAppIndexingWarning">
 
