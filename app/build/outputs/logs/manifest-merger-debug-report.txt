@@ -1,9 +1,20 @@
 -- Merging decision tree log ---
+provider#androidx.core.content.FileProvider
+INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:50:9-58:20
+	android:grantUriPermissions
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:54:13-47
+	android:authorities
+		INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:52:13-60
+	android:exported
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:53:13-37
+	android:name
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:51:13-62
 manifest
-ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-49:12
-INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-49:12
-INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-49:12
-INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-49:12
+ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-62:12
+INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-62:12
+INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-62:12
+INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-62:12
 MERGED from [androidx.databinding:viewbinding:4.2.2] /home/ian/.gradle/caches/transforms-2/files-2.1/19cd4f3c0aa51b0b14593c9a3ddcf21e/jetified-viewbinding-4.2.2/AndroidManifest.xml:17:1-22:12
 MERGED from [:utils] /home/ian/dev/hyperspectral-camera/utils/build/intermediates/merged_manifest/debug/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.navigation:navigation-fragment-ktx:2.2.2] /home/ian/.gradle/caches/transforms-2/files-2.1/5f21b2381dc2bde49638ee7590bee598/navigation-fragment-ktx-2.2.2/AndroidManifest.xml:17:1-24:12
@@ -11,17 +22,15 @@ MERGED from [androidx.fragment:fragment-ktx:1.2.4] /home/ian/.gradle/caches/tran
 MERGED from [androidx.navigation:navigation-ui-ktx:2.2.2] /home/ian/.gradle/caches/transforms-2/files-2.1/1d3c8eab2a2f171db4a28c2a58b2089f/navigation-ui-ktx-2.2.2/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.navigation:navigation-runtime-ktx:2.2.2] /home/ian/.gradle/caches/transforms-2/files-2.1/1fa576b00cfa5b0189ee2b27b0ae41d4/navigation-runtime-ktx-2.2.2/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.activity:activity-ktx:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/6b095b1a125504e40a09a86aab1a8178/jetified-activity-ktx-1.1.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.core:core-ktx:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/1e29d078ade39873008f0f38bcb254e6/jetified-core-ktx-1.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.core:core-ktx:1.3.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c6790fb11cbc02eba2157f0e1e88fe3a/jetified-core-ktx-1.3.0/AndroidManifest.xml:2:1-9:12
 MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/52b7e35483279843579e270d552582b5/jetified-lifecycle-runtime-ktx-2.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/b8c7a105512e7388874b13dab28e5e7d/jetified-lifecycle-viewmodel-ktx-2.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.navigation:navigation-ui:2.2.2] /home/ian/.gradle/caches/transforms-2/files-2.1/a6e89dd04bf51594913134902ae30b8f/navigation-ui-2.2.2/AndroidManifest.xml:17:1-24:12
 MERGED from [com.google.android.material:material:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/bab9d3dd74125cf7a6bd85d945001b59/material-1.0.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.appcompat:appcompat:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/0b50f5fb0af872312455833eba0b627c/appcompat-1.1.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/0c17a7f433a5c41fb78a719ec6d65769/jetified-viewpager2-1.0.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] /home/ian/.gradle/caches/transforms-2/files-2.1/ffbe9d01c086b3538a87d7cf8e01afea/constraintlayout-1.1.3/AndroidManifest.xml:2:1-11:12
-MERGED from [com.github.bumptech.glide:glide:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/3cdd9c340a0e350e64076f915368fc07/jetified-glide-4.11.0/AndroidManifest.xml:2:1-12:12
-MERGED from [androidx.exifinterface:exifinterface:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/ff36f53f3a6bd8763905d4c9bff2f7de/exifinterface-1.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.recyclerview:recyclerview:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/cc0238a81b342ac2b3739a9745e44177/recyclerview-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.exifinterface:exifinterface:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/ff36f53f3a6bd8763905d4c9bff2f7de/exifinterface-1.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/cb662966f44ad4049c21c416d36db870/jetified-appcompat-resources-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/f268b650456f846aee2b93bf50fca21a/legacy-support-core-ui-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/e3b44a7cf80be813e1056885278996a4/drawerlayout-1.0.0/AndroidManifest.xml:17:1-22:12
@@ -42,11 +51,10 @@ MERGED from [androidx.navigation:navigation-common-ktx:2.2.2] /home/ian/.gradle/
 MERGED from [androidx.navigation:navigation-common:2.2.2] /home/ian/.gradle/caches/transforms-2/files-2.1/69506957166ea7cdccb7eaa13cadf8ff/navigation-common-2.2.2/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/aa8fa8aeb0b4128523dc0ac6dd4580b1/swiperefreshlayout-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c3108e1cfd8664174643054cff013175/asynclayoutinflater-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.core:core:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/a4e7b0b8dbcfca37bb015381037a053c/core-1.2.0/AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.core:core:1.3.0] /home/ian/.gradle/caches/transforms-2/files-2.1/8a560189b03da312f1fa591ecc0a2724/core-1.3.0/AndroidManifest.xml:17:1-26:12
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/cb30f6938df5fde05fe3bfb1a3ab19dc/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/dabd4fa6b01363e2b61f47d3aeddfdd7/lifecycle-runtime-2.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c8b574d14129b9778149b6df8e3ac0fc/versionedparcelable-1.1.0/AndroidManifest.xml:17:1-27:12
-MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/b22dffe889f526a3dea978ebdc8725f2/jetified-gifdecoder-4.11.0/AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/7afb70e9910312dbd36721dfde62a25b/jetified-lifecycle-livedata-core-ktx-2.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/b2f5b1227ff38292cdbb4d54d1d7b51f/jetified-lifecycle-viewmodel-savedstate-2.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/3e67361ca41f777db8bc7d1be7c339d7/lifecycle-livedata-2.0.0/AndroidManifest.xml:17:1-22:12
@@ -59,22 +67,22 @@ MERGED from [androidx.cardview:cardview:1.0.0] /home/ian/.gradle/caches/transfor
 MERGED from [androidx.documentfile:documentfile:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/ae845de4fc37da1daf59a8b07e18c32d/documentfile-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/8fd7c9b4547193591e56f5193e18efbe/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.print:print:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/3e85f679bdf27550ebb49e5caba20238/print-1.0.0/AndroidManifest.xml:17:1-22:12
-INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-49:12
-INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-49:12
-INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-49:12
+INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-62:12
+INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-62:12
+INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-62:12
 	package
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:19:5-48
 		INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
 		INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-49:12
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-62:12
 		INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
 	xmlns:tools
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:18:5-51
 	android:versionCode
 		INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-49:12
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:1-62:12
 		INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:17:11-69
@@ -82,60 +90,56 @@ uses-permission#android.permission.CAMERA
 ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:22:5-65
 	android:name
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:22:22-62
-uses-feature#android.hardware.camera.any
-ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:25:5-64
+uses-permission#android.permission.RECORD_AUDIO
+ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:23:5-71
 	android:name
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:25:19-61
-uses-feature#android.hardware.camera.raw
-ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:26:5-89
-	android:required
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:26:62-86
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:23:22-68
+uses-feature#android.hardware.camera.any
+ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:26:5-64
 	android:name
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:26:19-61
 application
-ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:28:5-47:19
+ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:28:5-60:19
 MERGED from [com.google.android.material:material:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/bab9d3dd74125cf7a6bd85d945001b59/material-1.0.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/bab9d3dd74125cf7a6bd85d945001b59/material-1.0.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] /home/ian/.gradle/caches/transforms-2/files-2.1/ffbe9d01c086b3538a87d7cf8e01afea/constraintlayout-1.1.3/AndroidManifest.xml:9:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] /home/ian/.gradle/caches/transforms-2/files-2.1/ffbe9d01c086b3538a87d7cf8e01afea/constraintlayout-1.1.3/AndroidManifest.xml:9:5-20
-MERGED from [com.github.bumptech.glide:glide:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/3cdd9c340a0e350e64076f915368fc07/jetified-glide-4.11.0/AndroidManifest.xml:10:5-20
-MERGED from [com.github.bumptech.glide:glide:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/3cdd9c340a0e350e64076f915368fc07/jetified-glide-4.11.0/AndroidManifest.xml:10:5-20
-MERGED from [androidx.core:core:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/a4e7b0b8dbcfca37bb015381037a053c/core-1.2.0/AndroidManifest.xml:24:5-89
-MERGED from [androidx.core:core:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/a4e7b0b8dbcfca37bb015381037a053c/core-1.2.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.core:core:1.3.0] /home/ian/.gradle/caches/transforms-2/files-2.1/8a560189b03da312f1fa591ecc0a2724/core-1.3.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.core:core:1.3.0] /home/ian/.gradle/caches/transforms-2/files-2.1/8a560189b03da312f1fa591ecc0a2724/core-1.3.0/AndroidManifest.xml:24:5-89
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c8b574d14129b9778149b6df8e3ac0fc/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c8b574d14129b9778149b6df8e3ac0fc/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
-MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/b22dffe889f526a3dea978ebdc8725f2/jetified-gifdecoder-4.11.0/AndroidManifest.xml:9:5-20
-MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/b22dffe889f526a3dea978ebdc8725f2/jetified-gifdecoder-4.11.0/AndroidManifest.xml:9:5-20
 	android:appComponentFactory
-		ADDED from [androidx.core:core:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/a4e7b0b8dbcfca37bb015381037a053c/core-1.2.0/AndroidManifest.xml:24:18-86
+		ADDED from [androidx.core:core:1.3.0] /home/ian/.gradle/caches/transforms-2/files-2.1/8a560189b03da312f1fa591ecc0a2724/core-1.3.0/AndroidManifest.xml:24:18-86
 	android:label
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:31:9-36
-	android:fullBackupContent
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:30:9-41
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:30:9-38
+	android:exported
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:32:9-33
 	tools:ignore
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:33:9-48
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:33:9-60
 	android:icon
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:32:9-45
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:31:9-45
 	android:allowBackup
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:29:9-35
-activity#com.example.android.camera2.basic.CameraActivity
-ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:35:9-46:20
+activity#com.example.android.camera2.video.CameraActivity
+ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:35:9-47:20
 	android:clearTaskOnLaunch
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:37:13-45
+	android:exported
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:39:13-36
 	android:theme
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:38:13-44
 	android:name
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:36:13-76
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:41:13-44:29
+ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:42:13-45:29
 action#android.intent.action.MAIN
-ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:42:17-69
+ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:43:17-69
 	android:name
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:42:25-66
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:43:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:43:17-77
+ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:44:17-77
 	android:name
-		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:43:27-74
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:44:27-74
 uses-sdk
 INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
@@ -154,8 +158,8 @@ MERGED from [androidx.navigation:navigation-runtime-ktx:2.2.2] /home/ian/.gradle
 MERGED from [androidx.navigation:navigation-runtime-ktx:2.2.2] /home/ian/.gradle/caches/transforms-2/files-2.1/1fa576b00cfa5b0189ee2b27b0ae41d4/navigation-runtime-ktx-2.2.2/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.activity:activity-ktx:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/6b095b1a125504e40a09a86aab1a8178/jetified-activity-ktx-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.activity:activity-ktx:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/6b095b1a125504e40a09a86aab1a8178/jetified-activity-ktx-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.core:core-ktx:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/1e29d078ade39873008f0f38bcb254e6/jetified-core-ktx-1.2.0/AndroidManifest.xml:5:5-7:41
-MERGED from [androidx.core:core-ktx:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/1e29d078ade39873008f0f38bcb254e6/jetified-core-ktx-1.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.core:core-ktx:1.3.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c6790fb11cbc02eba2157f0e1e88fe3a/jetified-core-ktx-1.3.0/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.core:core-ktx:1.3.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c6790fb11cbc02eba2157f0e1e88fe3a/jetified-core-ktx-1.3.0/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/52b7e35483279843579e270d552582b5/jetified-lifecycle-runtime-ktx-2.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/52b7e35483279843579e270d552582b5/jetified-lifecycle-runtime-ktx-2.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/b8c7a105512e7388874b13dab28e5e7d/jetified-lifecycle-viewmodel-ktx-2.2.0/AndroidManifest.xml:20:5-22:41
@@ -166,16 +170,12 @@ MERGED from [com.google.android.material:material:1.0.0] /home/ian/.gradle/cache
 MERGED from [com.google.android.material:material:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/bab9d3dd74125cf7a6bd85d945001b59/material-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.appcompat:appcompat:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/0b50f5fb0af872312455833eba0b627c/appcompat-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.appcompat:appcompat:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/0b50f5fb0af872312455833eba0b627c/appcompat-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/0c17a7f433a5c41fb78a719ec6d65769/jetified-viewpager2-1.0.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/0c17a7f433a5c41fb78a719ec6d65769/jetified-viewpager2-1.0.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] /home/ian/.gradle/caches/transforms-2/files-2.1/ffbe9d01c086b3538a87d7cf8e01afea/constraintlayout-1.1.3/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] /home/ian/.gradle/caches/transforms-2/files-2.1/ffbe9d01c086b3538a87d7cf8e01afea/constraintlayout-1.1.3/AndroidManifest.xml:5:5-7:41
-MERGED from [com.github.bumptech.glide:glide:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/3cdd9c340a0e350e64076f915368fc07/jetified-glide-4.11.0/AndroidManifest.xml:6:5-8:41
-MERGED from [com.github.bumptech.glide:glide:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/3cdd9c340a0e350e64076f915368fc07/jetified-glide-4.11.0/AndroidManifest.xml:6:5-8:41
-MERGED from [androidx.exifinterface:exifinterface:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/ff36f53f3a6bd8763905d4c9bff2f7de/exifinterface-1.2.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.exifinterface:exifinterface:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/ff36f53f3a6bd8763905d4c9bff2f7de/exifinterface-1.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.recyclerview:recyclerview:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/cc0238a81b342ac2b3739a9745e44177/recyclerview-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.recyclerview:recyclerview:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/cc0238a81b342ac2b3739a9745e44177/recyclerview-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/ff36f53f3a6bd8763905d4c9bff2f7de/exifinterface-1.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/ff36f53f3a6bd8763905d4c9bff2f7de/exifinterface-1.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/cb662966f44ad4049c21c416d36db870/jetified-appcompat-resources-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/cb662966f44ad4049c21c416d36db870/jetified-appcompat-resources-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/f268b650456f846aee2b93bf50fca21a/legacy-support-core-ui-1.0.0/AndroidManifest.xml:20:5-44
@@ -216,16 +216,14 @@ MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /home/ian/.gr
 MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/aa8fa8aeb0b4128523dc0ac6dd4580b1/swiperefreshlayout-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c3108e1cfd8664174643054cff013175/asynclayoutinflater-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c3108e1cfd8664174643054cff013175/asynclayoutinflater-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.core:core:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/a4e7b0b8dbcfca37bb015381037a053c/core-1.2.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.core:core:1.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/a4e7b0b8dbcfca37bb015381037a053c/core-1.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.3.0] /home/ian/.gradle/caches/transforms-2/files-2.1/8a560189b03da312f1fa591ecc0a2724/core-1.3.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.3.0] /home/ian/.gradle/caches/transforms-2/files-2.1/8a560189b03da312f1fa591ecc0a2724/core-1.3.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/cb30f6938df5fde05fe3bfb1a3ab19dc/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/ian/.gradle/caches/transforms-2/files-2.1/cb30f6938df5fde05fe3bfb1a3ab19dc/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/dabd4fa6b01363e2b61f47d3aeddfdd7/lifecycle-runtime-2.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/dabd4fa6b01363e2b61f47d3aeddfdd7/lifecycle-runtime-2.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c8b574d14129b9778149b6df8e3ac0fc/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /home/ian/.gradle/caches/transforms-2/files-2.1/c8b574d14129b9778149b6df8e3ac0fc/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/b22dffe889f526a3dea978ebdc8725f2/jetified-gifdecoder-4.11.0/AndroidManifest.xml:5:5-7:41
-MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /home/ian/.gradle/caches/transforms-2/files-2.1/b22dffe889f526a3dea978ebdc8725f2/jetified-gifdecoder-4.11.0/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/7afb70e9910312dbd36721dfde62a25b/jetified-lifecycle-livedata-core-ktx-2.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/7afb70e9910312dbd36721dfde62a25b/jetified-lifecycle-livedata-core-ktx-2.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0] /home/ian/.gradle/caches/transforms-2/files-2.1/b2f5b1227ff38292cdbb4d54d1d7b51f/jetified-lifecycle-viewmodel-savedstate-2.2.0/AndroidManifest.xml:20:5-22:41
@@ -260,3 +258,9 @@ INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xm
 		INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
 		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
 		INJECTED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:55:13-57:53
+	android:resource
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:57:17-51
+	android:name
+		ADDED from /home/ian/dev/hyperspectral-camera/app/src/main/AndroidManifest.xml:56:17-67

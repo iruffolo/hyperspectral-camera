@@ -1,24 +1,57 @@
-com/example/android/camera2/basic/fragments/ImageViewerFragmentArgs.java
- com.example.android.camera2.basic.fragments.ImageViewerFragmentArgs
- com.example.android.camera2.basic.fragments.ImageViewerFragmentArgs$1
- com.example.android.camera2.basic.fragments.ImageViewerFragmentArgs$Builder
-com/example/android/camera2/basic/databinding/FragmentCameraBinding.java
- com.example.android.camera2.basic.databinding.FragmentCameraBinding
-com/example/android/camera2/basic/fragments/PermissionsFragmentDirections.java
- com.example.android.camera2.basic.fragments.PermissionsFragmentDirections
-com/example/android/camera2/basic/databinding/ActivityCameraBinding.java
- com.example.android.camera2.basic.databinding.ActivityCameraBinding
-com/example/android/camera2/basic/fragments/CameraFragmentDirections.java
- com.example.android.camera2.basic.fragments.CameraFragmentDirections
- com.example.android.camera2.basic.fragments.CameraFragmentDirections$1
- com.example.android.camera2.basic.fragments.CameraFragmentDirections$ActionCameraToJpegViewer
-com/example/android/camera2/basic/fragments/SelectorFragmentDirections.java
- com.example.android.camera2.basic.fragments.SelectorFragmentDirections
- com.example.android.camera2.basic.fragments.SelectorFragmentDirections$1
- com.example.android.camera2.basic.fragments.SelectorFragmentDirections$ActionSelectorToCamera
-com/example/android/camera2/basic/BuildConfig.java
- com.example.android.camera2.basic.BuildConfig
-com/example/android/camera2/basic/fragments/CameraFragmentArgs.java
- com.example.android.camera2.basic.fragments.CameraFragmentArgs
- com.example.android.camera2.basic.fragments.CameraFragmentArgs$1
- com.example.android.camera2.basic.fragments.CameraFragmentArgs$Builder
+com/example/android/camera2/video/BuildConfig.java
+ com.example.android.camera2.video.BuildConfig
+com/example/android/camera2/video/fragments/DynamicRangeFragmentDirections.java
+ com.example.android.camera2.video.fragments.DynamicRangeFragmentDirections
+ com.example.android.camera2.video.fragments.DynamicRangeFragmentDirections$1
+ com.example.android.camera2.video.fragments.DynamicRangeFragmentDirections$ActionDynamicRangeToPreview
+ com.example.android.camera2.video.fragments.DynamicRangeFragmentDirections$ActionDynamicRangeToPreviewStabilization
+ com.example.android.camera2.video.fragments.DynamicRangeFragmentDirections$ActionDynamicRangeToRecordMode
+com/example/android/camera2/video/fragments/RecordModeFragmentArgs.java
+ com.example.android.camera2.video.fragments.RecordModeFragmentArgs
+ com.example.android.camera2.video.fragments.RecordModeFragmentArgs$1
+ com.example.android.camera2.video.fragments.RecordModeFragmentArgs$Builder
+com/example/android/camera2/video/fragments/PermissionsFragmentDirections.java
+ com.example.android.camera2.video.fragments.PermissionsFragmentDirections
+com/example/android/camera2/video/fragments/SelectorFragmentDirections.java
+ com.example.android.camera2.video.fragments.SelectorFragmentDirections
+ com.example.android.camera2.video.fragments.SelectorFragmentDirections$1
+ com.example.android.camera2.video.fragments.SelectorFragmentDirections$ActionSelectorToDynamicRange
+ com.example.android.camera2.video.fragments.SelectorFragmentDirections$ActionSelectorToPreview
+ com.example.android.camera2.video.fragments.SelectorFragmentDirections$ActionSelectorToPreviewStabilization
+ com.example.android.camera2.video.fragments.SelectorFragmentDirections$ActionSelectorToRecordMode
+com/example/android/camera2/video/fragments/RecordModeFragmentDirections.java
+ com.example.android.camera2.video.fragments.RecordModeFragmentDirections
+ com.example.android.camera2.video.fragments.RecordModeFragmentDirections$1
+ com.example.android.camera2.video.fragments.RecordModeFragmentDirections$ActionRecordModeToFilter
+ com.example.android.camera2.video.fragments.RecordModeFragmentDirections$ActionRecordModeToPreview
+com/example/android/camera2/video/fragments/DynamicRangeFragmentArgs.java
+ com.example.android.camera2.video.fragments.DynamicRangeFragmentArgs
+ com.example.android.camera2.video.fragments.DynamicRangeFragmentArgs$1
+ com.example.android.camera2.video.fragments.DynamicRangeFragmentArgs$Builder
+com/example/android/camera2/video/databinding/FragmentPreviewBinding.java
+ com.example.android.camera2.video.databinding.FragmentPreviewBinding
+com/example/android/camera2/video/fragments/PreviewStabilizationFragmentDirections.java
+ com.example.android.camera2.video.fragments.PreviewStabilizationFragmentDirections
+ com.example.android.camera2.video.fragments.PreviewStabilizationFragmentDirections$1
+ com.example.android.camera2.video.fragments.PreviewStabilizationFragmentDirections$ActionPreviewStabilizationToPreview
+ com.example.android.camera2.video.fragments.PreviewStabilizationFragmentDirections$ActionPreviewStabilizationToRecordMode
+com/example/android/camera2/video/fragments/PreviewStabilizationFragmentArgs.java
+ com.example.android.camera2.video.fragments.PreviewStabilizationFragmentArgs
+ com.example.android.camera2.video.fragments.PreviewStabilizationFragmentArgs$1
+ com.example.android.camera2.video.fragments.PreviewStabilizationFragmentArgs$Builder
+com/example/android/camera2/video/databinding/ActivityCameraBinding.java
+ com.example.android.camera2.video.databinding.ActivityCameraBinding
+com/example/android/camera2/video/fragments/PreviewFragmentDirections.java
+ com.example.android.camera2.video.fragments.PreviewFragmentDirections
+com/example/android/camera2/video/fragments/FilterFragmentArgs.java
+ com.example.android.camera2.video.fragments.FilterFragmentArgs
+ com.example.android.camera2.video.fragments.FilterFragmentArgs$1
+ com.example.android.camera2.video.fragments.FilterFragmentArgs$Builder
+com/example/android/camera2/video/fragments/FilterFragmentDirections.java
+ com.example.android.camera2.video.fragments.FilterFragmentDirections
+ com.example.android.camera2.video.fragments.FilterFragmentDirections$1
+ com.example.android.camera2.video.fragments.FilterFragmentDirections$ActionFilterToPreview
+com/example/android/camera2/video/fragments/PreviewFragmentArgs.java
+ com.example.android.camera2.video.fragments.PreviewFragmentArgs
+ com.example.android.camera2.video.fragments.PreviewFragmentArgs$1
+ com.example.android.camera2.video.fragments.PreviewFragmentArgs$Builder

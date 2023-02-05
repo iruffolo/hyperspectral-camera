@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/permissions_fragment"
-        android:name="com.example.android.camera2.basic.fragments.PermissionsFragment"
+        android:name="com.example.android.camera2.video.fragments.PermissionsFragment"
         android:label="Permissions" >
 
         <action
@@ -35,20 +35,33 @@
 
     <fragment
         android:id="@+id/selector_fragment"
-        android:name="com.example.android.camera2.basic.fragments.SelectorFragment"
+        android:name="com.example.android.camera2.video.fragments.SelectorFragment"
         android:label="Selector" >
 
         <action
-            android:id="@+id/action_selector_to_camera"
+            android:id="@+id/action_selector_to_dynamic_range"
+            app:destination="@id/dynamic_range_fragment" />
+
+        <action
+            android:id="@+id/action_selector_to_preview_stabilization"
+            app:destination="@id/preview_stabilization_fragment" />
+
+        <action
+            android:id="@+id/action_selector_to_record_mode"
             app:launchSingleTop="true"
-            app:destination="@id/camera_fragment" />
+            app:destination="@id/record_mode_fragment" />
+
+        <action
+            android:id="@+id/action_selector_to_preview"
+            app:launchSingleTop="true"
+            app:destination="@id/preview_fragment" />
 
     </fragment>
 
     <fragment
-        android:id="@+id/camera_fragment"
-        android:name="com.example.android.camera2.basic.fragments.CameraFragment"
-        android:label="Camera" >
+        android:id="@+id/dynamic_range_fragment"
+        android:name="com.example.android.camera2.video.fragments.DynamicRangeFragment"
+        android:label="DynamicRange" >
 
         <argument
             android:name="camera_id"
@@ -56,42 +69,195 @@
             app:nullable="false"/>
 
         <argument
-            android:name="pixel_format"
-            app:argType="integer"
-            app:nullable="false"/>
+            android:name="width"
+            app:argType="integer" />
+
+        <argument
+            android:name="height"
+            app:argType="integer" />
+
+        <argument
+            android:name="fps"
+            app:argType="integer" />
 
         <action
-            android:id="@+id/action_camera_to_permissions"
-            app:destination="@id/permissions_fragment"
-            app:popUpTo="@id/camera_fragment"
-            app:popUpToInclusive="true"/>
-
-        <action
-            android:id="@+id/action_camera_to_jpeg_viewer"
+            android:id="@+id/action_dynamic_range_to_preview_stabilization"
             app:launchSingleTop="true"
-            app:destination="@id/image_viewer_fragment" />
+            app:destination="@id/preview_stabilization_fragment" />
+
+        <action
+            android:id="@+id/action_dynamic_range_to_record_mode"
+            app:launchSingleTop="true"
+            app:destination="@id/record_mode_fragment" />
+
+        <action
+            android:id="@+id/action_dynamic_range_to_preview"
+            app:launchSingleTop="true"
+            app:destination="@id/preview_fragment" />
 
     </fragment>
 
     <fragment
-        android:id="@+id/image_viewer_fragment"
-        android:name="com.example.android.camera2.basic.fragments.ImageViewerFragment"
-        android:label="Image Viewer" >
+        android:id="@+id/preview_stabilization_fragment"
+        android:name="com.example.android.camera2.video.fragments.PreviewStabilizationFragment"
+        android:label="PreviewStabilization" >
 
         <argument
-            android:name="file_path"
+            android:name="camera_id"
             app:argType="string"
             app:nullable="false"/>
 
         <argument
-            android:name="orientation"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:name="width"
+            app:argType="integer" />
 
         <argument
-            android:name="depth"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:name="height"
+            app:argType="integer" />
+
+        <argument
+            android:name="fps"
+            app:argType="integer" />
+
+        <argument
+            android:name="dynamicRange"
+            app:argType="long" />
+
+        <action
+            android:id="@+id/action_preview_stabilization_to_record_mode"
+            app:launchSingleTop="true"
+            app:destination="@id/record_mode_fragment" />
+
+        <action
+            android:id="@+id/action_preview_stabilization_to_preview"
+            app:launchSingleTop="true"
+            app:destination="@id/preview_fragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/record_mode_fragment"
+        android:name="com.example.android.camera2.video.fragments.RecordModeFragment"
+        android:label="RecordMode" >
+
+        <argument
+            android:name="camera_id"
+            app:argType="string"
+            app:nullable="false"/>
+
+        <argument
+            android:name="width"
+            app:argType="integer" />
+
+        <argument
+            android:name="height"
+            app:argType="integer" />
+
+        <argument
+            android:name="fps"
+            app:argType="integer" />
+
+        <argument
+            android:name="dynamicRange"
+            app:argType="long" />
+
+        <argument
+            android:name="previewStabilization"
+            app:argType="boolean" />
+
+        <action
+            android:id="@+id/action_record_mode_to_preview"
+            app:launchSingleTop="true"
+            app:destination="@id/preview_fragment" />
+
+        <action
+            android:id="@+id/action_record_mode_to_filter"
+            app:launchSingleTop="true"
+            app:destination="@id/filter_fragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/filter_fragment"
+        android:name="com.example.android.camera2.video.fragments.FilterFragment"
+        android:label="Filter" >
+
+        <argument
+            android:name="camera_id"
+            app:argType="string"
+            app:nullable="false"/>
+
+        <argument
+            android:name="width"
+            app:argType="integer" />
+
+        <argument
+            android:name="height"
+            app:argType="integer" />
+
+        <argument
+            android:name="fps"
+            app:argType="integer" />
+
+        <argument
+            android:name="dynamicRange"
+            app:argType="long" />
+
+        <argument
+            android:name="previewStabilization"
+            app:argType="boolean" />
+
+        <action
+            android:id="@+id/action_filter_to_preview"
+            app:launchSingleTop="true"
+            app:destination="@id/preview_fragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/preview_fragment"
+        android:name="com.example.android.camera2.video.fragments.PreviewFragment"
+        android:label="Preview" >
+
+        <argument
+            android:name="camera_id"
+            app:argType="string"
+            app:nullable="false"/>
+
+        <argument
+            android:name="width"
+            app:argType="integer" />
+
+        <argument
+            android:name="height"
+            app:argType="integer" />
+
+        <argument
+            android:name="fps"
+            app:argType="integer" />
+
+        <argument
+            android:name="dynamicRange"
+            app:argType="long" />
+
+        <argument
+            android:name="previewStabilization"
+            app:argType="boolean" />
+
+        <argument
+            android:name="filterOn"
+            app:argType="boolean" />
+
+        <argument
+            android:name="useHardware"
+            app:argType="boolean" />
+
+        <action
+            android:id="@+id/action_preview_to_permissions"
+            app:destination="@id/permissions_fragment"
+            app:popUpTo="@id/preview_fragment"
+            app:popUpToInclusive="true"/>
+
     </fragment>
 
 </navigation>

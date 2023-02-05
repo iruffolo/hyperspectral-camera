@@ -16,26 +16,27 @@
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.android.camera2.basic">
+    package="com.example.android.camera2.video">
 
     <!-- Permission declarations -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
-    <!-- A camera with (optional) RAW capability is required to use this application -->
+    <!-- A camera with burst capability is required to use this application -->
     <uses-feature android:name="android.hardware.camera.any" />
-    <uses-feature android:name="android.hardware.camera.raw" android:required="false" />
 
     <application
         android:allowBackup="true"
-        android:fullBackupContent="true"
-        android:label="CamRecorder"
+        android:label="VideoRecorder"
         android:icon="@drawable/ic_launcher"
-        tools:ignore="GoogleAppIndexingWarning">
+        android:exported="false"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
         <activity
-            android:name="com.example.android.camera2.basic.CameraActivity"
+            android:name="com.example.android.camera2.video.CameraActivity"
             android:clearTaskOnLaunch="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:exported="true">
 
             <!-- Main app intent filter -->
             <intent-filter>
@@ -44,6 +45,18 @@
             </intent-filter>
 
         </activity>
+
+        <!-- FileProvider used to share media with other apps -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
     </application>
 
 </manifest>

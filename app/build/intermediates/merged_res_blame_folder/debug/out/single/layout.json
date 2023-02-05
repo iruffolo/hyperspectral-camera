@@ -1,7 +1,7 @@
 [
     {
-        "merged": "/home/ian/dev/hyperspectral-camera/app/build/intermediates/incremental/mergeDebugResources/stripped.dir/layout/fragment_camera.xml",
-        "source": "/home/ian/dev/hyperspectral-camera/app/src/main/res/layout/fragment_camera.xml"
+        "merged": "/home/ian/dev/hyperspectral-camera/app/build/intermediates/incremental/mergeDebugResources/stripped.dir/layout/fragment_preview.xml",
+        "source": "/home/ian/dev/hyperspectral-camera/app/src/main/res/layout/fragment_preview.xml"
     },
     {
         "merged": "/home/ian/dev/hyperspectral-camera/app/build/intermediates/incremental/mergeDebugResources/stripped.dir/layout/activity_camera.xml",

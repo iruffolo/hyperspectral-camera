@@ -1,4 +1,4 @@
-com.example.android.camera2.basic
+com.example.android.camera2.video
 anim abc_fade_in
 anim abc_fade_out
 anim abc_grow_fade_in_from_bottom
@@ -646,6 +646,8 @@ color abc_tint_spinner
 color abc_tint_switch_track
 color accent_material_dark
 color accent_material_light
+color androidx_core_ripple_material_light
+color androidx_core_secondary_text_default_material_light
 color background_floating_material_dark
 color background_floating_material_light
 color background_material_dark
@@ -1071,7 +1073,6 @@ drawable ic_launcher
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
-drawable ic_photo
 drawable ic_shutter
 drawable ic_shutter_focused
 drawable ic_shutter_normal
@@ -1139,11 +1140,13 @@ id action_bar_root
 id action_bar_spinner
 id action_bar_subtitle
 id action_bar_title
-id action_camera_to_jpeg_viewer
-id action_camera_to_permissions
 id action_container
 id action_context_bar
 id action_divider
+id action_dynamic_range_to_preview
+id action_dynamic_range_to_preview_stabilization
+id action_dynamic_range_to_record_mode
+id action_filter_to_preview
 id action_image
 id action_menu_divider
 id action_menu_presenter
@@ -1151,7 +1154,15 @@ id action_mode_bar
 id action_mode_bar_stub
 id action_mode_close_button
 id action_permissions_to_selector
-id action_selector_to_camera
+id action_preview_stabilization_to_preview
+id action_preview_stabilization_to_record_mode
+id action_preview_to_permissions
+id action_record_mode_to_filter
+id action_record_mode_to_preview
+id action_selector_to_dynamic_range
+id action_selector_to_preview
+id action_selector_to_preview_stabilization
+id action_selector_to_record_mode
 id action_text
 id actions
 id activity_chooser_view_content
@@ -1166,7 +1177,6 @@ id beginning
 id blocking
 id bottom
 id buttonPanel
-id camera_fragment
 id capture_button
 id center
 id center_horizontal
@@ -1195,6 +1205,7 @@ id dialog_button
 id dimensions
 id direct
 id disableHome
+id dynamic_range_fragment
 id edit_query
 id end
 id enterAlways
@@ -1206,12 +1217,12 @@ id fill
 id fill_horizontal
 id fill_vertical
 id filled
+id filter_fragment
 id fixed
 id forever
 id fragment_container
 id fragment_container_view_tag
 id ghost_view
-id glide_custom_view_target_tag
 id gone
 id group_divider
 id groups
@@ -1221,7 +1232,6 @@ id icon
 id icon_group
 id ifRoom
 id image
-id image_viewer_fragment
 id info
 id invisible
 id italic
@@ -1262,9 +1272,12 @@ id parent_matrix
 id percent
 id permissions_fragment
 id pin
+id preview_fragment
+id preview_stabilization_fragment
 id progress_circular
 id progress_horizontal
 id radio
+id record_mode_fragment
 id right
 id right_icon
 id right_side
@@ -1424,7 +1437,7 @@ layout design_navigation_item_subheader
 layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_password_icon
-layout fragment_camera
+layout fragment_preview
 layout mtrl_layout_snackbar
 layout mtrl_layout_snackbar_include
 layout notification_action
@@ -2073,5 +2086,5 @@ styleable ThemeEnforcement android_textAppearance enforceMaterialTheme enforceTe
 styleable Toolbar android_gravity android_minHeight buttonGravity collapseContentDescription collapseIcon contentInsetEnd contentInsetEndWithActions contentInsetLeft contentInsetRight contentInsetStart contentInsetStartWithNavigation logo logoDescription maxButtonHeight menu navigationContentDescription navigationIcon popupTheme subtitle subtitleTextAppearance subtitleTextColor title titleMargin titleMarginBottom titleMarginEnd titleMarginStart titleMarginTop titleMargins titleTextAppearance titleTextColor
 styleable View android_theme android_focusable paddingEnd paddingStart theme
 styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
-styleable ViewPager2 android_orientation
 styleable ViewStubCompat android_id android_layout android_inflatedId
+xml file_paths

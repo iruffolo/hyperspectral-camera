@@ -1,37 +1,36 @@
 
-Android Camera2Basic Sample
+Android Camera2Video Sample
 ===========================
 
-This sample demonstrates using the Camera2 API to capture a JPEG, DEPTH or RAW frame.
-Check the source code to see a simple example of how to display the camera preview
-and capture a still image using the default configuration with the selected pixel
-format.
+This sample captures video record via the Camera2 API including displaying
+a camera preview and capturing a high-speed (slow motion) video using
+repeating capture requests.
 
 Introduction
 ------------
 
-The [Camera2 API][1] allows users to capture RAW images, i.e. unprocessed pixel data
-directly from the camera sensor that has not yet been converted into a format and
-colorspace typically used for displaying and storing images viewed by humans.  The
-[DngCreator][2] class is provided as part of the Camera2 API as a utility for saving
-RAW images as DNG files.
+The [Camera2 API][1] allows users to capture video from the camera by
+sending repeating capture requests from the camera framework to a
+[media recorder][2].
 
-This sample displays a live camera preview in a TextureView, and saves JPEG and DNG
-file for each image captured.
+This sample displays a live camera preview in SurfaceView, allows the user to
+press and hold the screen to record a video, and also encodes the recording
+in an MP4 video file.
 
 [1]: https://developer.android.com/reference/android/hardware/camera2/package-summary.html
-[2]: https://developer.android.com/reference/android/hardware/camera2/DngCreator.html
+[2]: https://developer.android.com/reference/android/media/MediaRecorder
 
 Pre-requisites
 --------------
 
 - Android SDK 29+
-- Android Studio 3.5+
+- Android Studio 3.6+
+- Device with video capture capability (or emulator)
 
 Screenshots
 -------------
 
-<img src="screenshots/main.png" height="400" alt="Screenshot"/> 
+<img src="screenshots/main.png" height="400" alt="Screenshot"/>
 
 Getting Started
 ---------------
