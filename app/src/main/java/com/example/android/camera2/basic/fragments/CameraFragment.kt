@@ -28,11 +28,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Surface
-import android.view.SurfaceHolder
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
 import androidx.exifinterface.media.ExifInterface
@@ -42,9 +39,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
+import com.example.android.camera.utils.OrientationLiveData
 import com.example.android.camera.utils.computeExifOrientation
 import com.example.android.camera.utils.getPreviewOutputSize
-import com.example.android.camera.utils.OrientationLiveData
 import com.example.android.camera2.basic.CameraActivity
 import com.example.android.camera2.basic.R
 import com.example.android.camera2.basic.databinding.FragmentCameraBinding
@@ -56,11 +53,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeoutException
-import java.util.Date
-import java.util.Locale
-import kotlin.RuntimeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -128,6 +123,8 @@ class CameraFragment : Fragment() {
     /** Live data listener for changes in the device orientation relative to the camera */
     private lateinit var relativeOrientation: OrientationLiveData
 
+    private lateinit var captureRequest: CaptureRequest.Builder
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -174,6 +171,66 @@ class CameraFragment : Fragment() {
             }
         })
 
+        fragmentCameraBinding.sensitivityIso?.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    // updated continuously as the user slides the thumb
+                    fragmentCameraBinding.sensitivityISOText?.text = "ISO: $progress"
+
+                    session.stopRepeating()
+                    captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, progress)
+                    session.setRepeatingRequest(captureRequest.build(), null, cameraHandler)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                }
+        })
+
+        fragmentCameraBinding.exposureTime?.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    // updated continuously as the user slides the thumb
+                    fragmentCameraBinding.exposureTimeText?.text = "Exposure Time: $progress"
+
+                    session.stopRepeating()
+                    captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, progress.toLong())
+                    session.setRepeatingRequest(captureRequest.build(), null, cameraHandler)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                }
+            })
+
+        fragmentCameraBinding.frameDuration?.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    // updated continuously as the user slides the thumb
+                    fragmentCameraBinding.frameDurationText?.text = "Frame Duration: $progress"
+
+                    session.stopRepeating()
+                    captureRequest.set(CaptureRequest.SENSOR_FRAME_DURATION, progress.toLong())
+                    session.setRepeatingRequest(captureRequest.build(), null, cameraHandler)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                }
+            })
+
         // Used to rotate the output media to match device orientation
         relativeOrientation = OrientationLiveData(requireContext(), characteristics).apply {
             observe(viewLifecycleOwner, Observer { orientation ->
@@ -209,18 +266,11 @@ class CameraFragment : Fragment() {
 
                 Log.d("Ian", "Phys chars $phys");
 
-//                var phys = characteristics.getPhysicalCameraIds();
-
                 if (cameraCapabilities != null) {
                     for (c in cameraCapabilities) {
                         Log.d("Ian", "Capability $c");
                     }
                 }
-
-
-//                Log.d("Ian", characteristics.toString());
-//                Log.d("Ian", cameraCapabilities.toString());
-//                Log.d("Ian", cameraLensFacing.toString());
             }
         } catch (e: CameraAccessException) {
             e.message?.let { Log.e(TAG, it) }
@@ -241,8 +291,15 @@ class CameraFragment : Fragment() {
         // Start a capture session using our open camera and list of Surfaces where frames will go
         session = createCaptureSession(camera, targets, cameraHandler)
 
-        val captureRequest = camera.createCaptureRequest(
+        captureRequest = camera.createCaptureRequest(
                 CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder.holder.surface) }
+
+        // Set some settings
+        captureRequest.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+//        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 117162276)
+        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 100000)
+        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, 50)
+        captureRequest.set(CaptureRequest.SENSOR_FRAME_DURATION, 50);
 
         // This will keep sending the capture request as frequently as possible until the
         // session is torn down or session.stopRepeating() is called
@@ -457,6 +514,7 @@ class CameraFragment : Fragment() {
                     val output = createFile(requireContext(), "dng")
                     FileOutputStream(output).use { dngCreator.writeImage(it, result.image) }
                     cont.resume(output)
+                    Log.e("Ian", "File written")
                 } catch (exc: IOException) {
                     Log.e(TAG, "Unable to write DNG image to file", exc)
                     cont.resumeWithException(exc)
@@ -518,6 +576,8 @@ class CameraFragment : Fragment() {
          */
         private fun createFile(context: Context, extension: String): File {
             val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
+
+            Log.e("Ian", "Writing DNG FILE$context.filesDir")
             return File(context.filesDir, "IMG_${sdf.format(Date())}.$extension")
         }
     }
