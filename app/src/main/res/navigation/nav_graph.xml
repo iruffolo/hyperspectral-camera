@@ -26,10 +26,8 @@
         android:label="Permissions" >
 
         <action
-            android:id="@+id/action_permissions_to_selector"
-            app:destination="@id/selector_fragment"
-            app:popUpTo="@id/permissions_fragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_permissions_fragment_to_bluetoothFragment"
+            app:destination="@id/bluetoothFragment" />
 
     </fragment>
 
@@ -39,9 +37,11 @@
         android:label="Selector" >
 
         <action
-            android:id="@+id/action_selector_to_camera"
-            app:launchSingleTop="true"
+            android:id="@+id/action_selector_fragment_to_camera_fragment"
             app:destination="@id/camera_fragment" />
+        <action
+            android:id="@+id/action_selector_fragment_to_permissions_fragment"
+            app:destination="@id/permissions_fragment" />
 
     </fragment>
 
@@ -92,6 +92,14 @@
             android:name="depth"
             app:argType="boolean"
             android:defaultValue="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/bluetoothFragment"
+        android:name="com.example.android.camera2.basic.fragments.BluetoothFragment"
+        android:label="BluetoothFragment" >
+        <action
+            android:id="@+id/action_bluetoothFragment_to_selector_fragment"
+            app:destination="@id/selector_fragment" />
     </fragment>
 
 </navigation>

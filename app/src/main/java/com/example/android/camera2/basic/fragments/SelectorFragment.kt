@@ -59,7 +59,7 @@ class SelectorFragment : Fragment() {
                 view.findViewById<TextView>(android.R.id.text1).text = item.title
                 view.setOnClickListener {
                     Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                            .navigate(SelectorFragmentDirections.actionSelectorToCamera(
+                            .navigate(SelectorFragmentDirections.actionSelectorFragmentToCameraFragment(
                                     item.cameraId, item.format))
                 }
             }
