@@ -28,6 +28,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.example.android.camera2.basic.databinding.BluetoothBinding
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -35,8 +37,6 @@ import kotlin.collections.ArrayList
 class BluetoothFragment : Fragment() {
 
     private var mBluetoothAdapter: BluetoothAdapter? = null
-
-    private var mBluetoothDevice: BluetoothDevice? = null
 
     private var _fragmentBtBinding: BluetoothBinding? = null
     private val fragmentBtBinding get() = _fragmentBtBinding!!
@@ -68,14 +68,17 @@ class BluetoothFragment : Fragment() {
         }
     }
 
-//    private val mUUID : UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+    private val mUUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    private val uuid: ParcelUuid = ParcelUuid.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+    // Thread to make BT connection
+    private var mConnectThread : ConnectThread? = null
+    // Thread to handle BT communication
+    private var mConnectedThread : ConnectedThread? = null
 
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
 
         private val mmSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            device.createInsecureRfcommSocketToServiceRecord(uuid.uuid)
+            device.createInsecureRfcommSocketToServiceRecord(mUUID)
         }
 
         public override fun run() {
@@ -91,7 +94,8 @@ class BluetoothFragment : Fragment() {
 
                 // The connection attempt succeeded. Perform work associated with
                 // the connection in a separate thread.
-//                manageMyConnectedSocket(socket)
+                mConnectedThread = ConnectedThread(socket)
+                mConnectedThread!!.write("Connected to Android\n".toByteArray())
             }
         }
 
@@ -105,12 +109,39 @@ class BluetoothFragment : Fragment() {
         }
     }
 
-    private var mConnectThread : ConnectThread? = null
+    private inner class ConnectedThread(private val mmSocket: BluetoothSocket) : Thread() {
+
+        private val mmOutStream: OutputStream = mmSocket.outputStream
+        private val mmBuffer: ByteArray = ByteArray(1024) // mmBuffer store for the stream
+
+        private val mTag: String = "BT Thread"
+
+        // Call this from the main activity to send data to the remote device.
+        fun write(bytes: ByteArray) {
+            try {
+                mmOutStream.write(bytes)
+            } catch (e: IOException) {
+                Log.e(mTag, "Error occurred when sending data", e)
+                // Raise toast msg with failure
+                Toast.makeText(context, "Couldn't send data to other BT device",
+                    Toast.LENGTH_LONG).show();
+                return
+            }
+        }
+
+        // Call this method from the main activity to shut down the connection.
+        fun cancel() {
+            try {
+                mmSocket.close()
+            } catch (e: IOException) {
+                Log.e(mTag, "Could not close the connect socket", e)
+            }
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Log.d("BLUETOOTH FRAG", "ok we got here")
 
         // Init the bluetooth
         // Get local Bluetooth adapter
@@ -159,10 +190,6 @@ class BluetoothFragment : Fragment() {
             Log.d("Bluetooth", "Listing BT devices")
 
             val paired: Set<BluetoothDevice>? = mBluetoothAdapter?.bondedDevices;
-            paired?.forEach { device ->
-                val deviceName = device.name
-                val deviceHardwareAddress = device.address // MAC address
-            }
 
             mBluetoothList.clear()
             if (paired != null) {
@@ -195,15 +222,20 @@ class BluetoothFragment : Fragment() {
                     BluetoothFragmentDirections.actionBluetoothFragmentToSelectorFragment())
             }
         }
+
         fragmentBtBinding.calibButton.setOnClickListener {
             Log.d("Bluetooth", "BT to Calibration")
         }
 
+        // When an item on BT device list is clicked, start connection
         fragmentBtBinding.listView.setOnItemClickListener { parent, _, position, _ ->
             val device = parent.getItemAtPosition(position) as BluetoothDevice
             val name = device.name
             Log.d("Bluetooth", "Connecting to BT device: $name")
 
+            if (mConnectThread != null) {
+                mConnectedThread?.cancel()
+            }
             mConnectThread = ConnectThread(device)
             mConnectThread!!.run()
         }
