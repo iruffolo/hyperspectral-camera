@@ -28,6 +28,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
+import android.util.Range
 import android.view.*
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
@@ -59,6 +60,7 @@ import java.util.concurrent.TimeoutException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+
 
 class CameraFragment : Fragment() {
 
@@ -264,6 +266,14 @@ class CameraFragment : Fragment() {
 
                 var phys = characteristics.getPhysicalCameraIds();
 
+                val exposureTimeRange: Range<Long>? =
+                    characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)
+                if (null != exposureTimeRange) {
+                    Log.d("Ian",
+                        "exposure time range => lower : " + exposureTimeRange.lower +
+                        "\thigher : " + exposureTimeRange.upper)
+                }
+
                 Log.d("Ian", "Phys chars $phys");
 
                 if (cameraCapabilities != null) {
@@ -295,9 +305,13 @@ class CameraFragment : Fragment() {
                 CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder.holder.surface) }
 
         // Set some settings
+        captureRequest.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
         captureRequest.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+        captureRequest.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
+        captureRequest.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
+
 //        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 117162276)
-        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 100000)
+//        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 100000)
         captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, 50)
         captureRequest.set(CaptureRequest.SENSOR_FRAME_DURATION, 50);
 
