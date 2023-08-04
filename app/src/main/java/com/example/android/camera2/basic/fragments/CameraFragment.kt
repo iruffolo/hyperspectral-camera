@@ -18,7 +18,6 @@ package com.example.android.camera2.basic.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Camera
 import android.graphics.Color
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
@@ -31,6 +30,7 @@ import android.os.HandlerThread
 import android.util.Log
 import android.util.Range
 import android.view.*
+import android.widget.CompoundButton
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
@@ -128,6 +128,9 @@ class CameraFragment : Fragment() {
 
     private lateinit var captureRequest: CaptureRequest.Builder
 
+    /** Current Mode */
+    private var mGroundTruthMode : Boolean = false
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -215,6 +218,18 @@ class CameraFragment : Fragment() {
                 }
             })
 
+        fragmentCameraBinding.gtSwitch?.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // The toggle is enabled
+                mGroundTruthMode = true
+                Log.d("GTSWITCH", "ON")
+            } else {
+                // The toggle is disabled
+                mGroundTruthMode = false
+                Log.d("GTSWITCH", "OFF")
+            }
+        }
+
         // Used to rotate the output media to match device orientation
         relativeOrientation = OrientationLiveData(requireContext(), characteristics).apply {
             observe(viewLifecycleOwner, Observer { orientation ->
@@ -288,10 +303,8 @@ class CameraFragment : Fragment() {
         captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
             fragmentCameraBinding.exposureTime?.progress?.toLong())
 
-//        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY,
-//            fragmentCameraBinding.sensitivityIso?.progress? )
-
-//        captureRequest.set(CaptureRequest.SENSOR_FRAME_DURATION, 50);
+        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY,
+            fragmentCameraBinding.sensitivityIso?.progress)
 
         // This will keep sending the capture request as frequently as possible until the
         // session is torn down or session.stopRepeating() is called
@@ -322,15 +335,6 @@ class CameraFragment : Fragment() {
                         exif.saveAttributes()
                         Log.d(TAG, "EXIF metadata saved: ${output.absolutePath}")
                     }
-
-                    // Display the photo taken to user
-//                    lifecycleScope.launch(Dispatchers.Main) {
-//                        navController.navigate(CameraFragmentDirections
-//                                .actionCameraToJpegViewer(output.absolutePath)
-//                                .setOrientation(result.orientation)
-//                                .setDepth(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-//                                        result.format == ImageFormat.DEPTH_JPEG))
-//                    }
                 }
 
                 // Re-enable click listener after photo is taken

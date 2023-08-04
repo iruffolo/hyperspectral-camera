@@ -32,31 +32,32 @@
 
     <ImageButton
         android:id="@+id/capture_button"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_gravity="bottom|center"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="20dp"
         android:scaleType="fitCenter"
+        android:layout_gravity="bottom|center"
         android:background="@drawable/ic_shutter"
         android:contentDescription="@string/capture" />
 
     <View
         android:id="@+id/overlay_config"
         android:layout_width="wrap_content"
-        android:layout_height="120dp"
+        android:layout_height="130dp"
         android:foreground="@android:color/white"
         android:foregroundTint="#66FFFFFF" />
 
     <LinearLayout
         android:id="@+id/SettingsLayout"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/sensitivity_ISO_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="1dp"
             android:text="ISO: 500" />
 
         <SeekBar
@@ -71,16 +72,24 @@
             android:id="@+id/exposure_time_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="1dp"
             android:text="Exposure Time: 10000000 (ns)" />
 
         <SeekBar
             android:id="@+id/exposure_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:min="41280"
             android:max="976800000"
+            android:min="41280"
             android:progress="10000000"
             android:visibility="visible" />
+
+        <Switch
+            android:id="@+id/gt_switch"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Ground Truth Mode" />
+
     </LinearLayout>
 </FrameLayout>
