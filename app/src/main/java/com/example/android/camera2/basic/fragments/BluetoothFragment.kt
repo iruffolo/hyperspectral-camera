@@ -10,25 +10,21 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.ParcelUuid
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.ListAdapter
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import com.example.android.camera2.basic.CameraActivity
 import com.example.android.camera2.basic.databinding.BluetoothBinding
 import java.io.IOException
-import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
 import kotlin.collections.ArrayList
@@ -73,9 +69,9 @@ class BluetoothFragment : Fragment() {
     // Thread to make BT connection
     private var mConnectThread : ConnectThread? = null
     // Thread to handle BT communication
-    private var mConnectedThread : ConnectedThread? = null
+    var mConnectedThread : ConnectedThread? = null
 
-    private inner class ConnectThread(device: BluetoothDevice) : Thread() {
+    inner class ConnectThread(device: BluetoothDevice) : Thread() {
 
         private val mmSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
             device.createInsecureRfcommSocketToServiceRecord(mUUID)
@@ -96,6 +92,9 @@ class BluetoothFragment : Fragment() {
                 // the connection in a separate thread.
                 mConnectedThread = ConnectedThread(socket)
                 mConnectedThread!!.write("Connected to Android\n".toByteArray())
+
+                // Add thread to main activity for access in other fragments
+                CameraActivity.setBluetoothThread(mConnectedThread!!)
             }
         }
 
@@ -109,7 +108,7 @@ class BluetoothFragment : Fragment() {
         }
     }
 
-    private inner class ConnectedThread(private val mmSocket: BluetoothSocket) : Thread() {
+    inner class ConnectedThread(private val mmSocket: BluetoothSocket) : Thread() {
 
         private val mmOutStream: OutputStream = mmSocket.outputStream
         private val mmBuffer: ByteArray = ByteArray(1024) // mmBuffer store for the stream
@@ -215,6 +214,7 @@ class BluetoothFragment : Fragment() {
 
             (mAdapter as ArrayAdapter<Any?>).notifyDataSetChanged()
         }
+
         fragmentBtBinding.camButton.setOnClickListener {
             Log.d("Bluetooth", "BT to Camera")
             lifecycleScope.launchWhenStarted {

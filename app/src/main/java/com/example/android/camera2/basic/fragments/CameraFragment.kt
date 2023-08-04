@@ -18,6 +18,7 @@ package com.example.android.camera2.basic.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Camera
 import android.graphics.Color
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
@@ -139,6 +140,7 @@ class CameraFragment : Fragment() {
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         fragmentCameraBinding.captureButton.setOnApplyWindowInsetsListener { v, insets ->
             v.translationX = (-insets.systemWindowInsetRight).toFloat()
             v.translationY = (-insets.systemWindowInsetBottom).toFloat()
@@ -253,35 +255,28 @@ class CameraFragment : Fragment() {
         // Open the selected camera
 
         Log.d("Ian", "CAMERA BBY");
+
         try {
-            val cameraIdList = cameraManager.cameraIdList // may be empty
+            Log.d("Ian", "Camera ID ${args.cameraId}");
 
-            // iterate over available camera devices
-            for (cameraId in cameraIdList) {
-                Log.d("Ian", "Camera ID $cameraId");
+            val characteristics = cameraManager.getCameraCharacteristics(args.cameraId)
 
-                val characteristics = cameraManager.getCameraCharacteristics(cameraId)
-                val cameraLensFacing = characteristics.get(CameraCharacteristics.LENS_FACING)
-                val cameraCapabilities = characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)
-
-                var phys = characteristics.getPhysicalCameraIds();
-
-                val exposureTimeRange: Range<Long>? =
-                    characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)
-                if (null != exposureTimeRange) {
-                    Log.d("Ian",
-                        "exposure time range => lower : " + exposureTimeRange.lower +
-                        "\thigher : " + exposureTimeRange.upper)
-                }
-
-                Log.d("Ian", "Phys chars $phys");
-
-                if (cameraCapabilities != null) {
-                    for (c in cameraCapabilities) {
-                        Log.d("Ian", "Capability $c");
-                    }
-                }
+            val exposureTimeRange: Range<Long>? =
+                characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)
+            if (exposureTimeRange != null) {
+                Log.d("Ian",
+                    "exposure time range => lower : " + exposureTimeRange.lower +
+                            "\thigher : " + exposureTimeRange.upper)
             }
+
+            val maxGain: Int? =
+                characteristics.get(CameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)
+            if (maxGain != null)
+            {
+//                fragmentCameraBinding.sensitivityIso?.max = maxGain
+            }
+
+            Log.d("Ian", "Max gain $maxGain")
         } catch (e: CameraAccessException) {
             e.message?.let { Log.e(TAG, it) }
         }
@@ -310,10 +305,13 @@ class CameraFragment : Fragment() {
         captureRequest.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
         captureRequest.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
 
-//        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 117162276)
-//        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 100000)
-        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, 50)
-        captureRequest.set(CaptureRequest.SENSOR_FRAME_DURATION, 50);
+        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
+            fragmentCameraBinding.exposureTime?.progress?.toLong())
+
+//        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY,
+//            fragmentCameraBinding.sensitivityIso?.progress? )
+
+//        captureRequest.set(CaptureRequest.SENSOR_FRAME_DURATION, 50);
 
         // This will keep sending the capture request as frequently as possible until the
         // session is torn down or session.stopRepeating() is called
@@ -321,6 +319,8 @@ class CameraFragment : Fragment() {
 
         // Listen to the capture button
         fragmentCameraBinding.captureButton.setOnClickListener {
+
+            CameraActivity.getBluetoothThread()?.write("allo from the cam".toByteArray())
 
             // Disable click listener to prevent multiple requests simultaneously in flight
             it.isEnabled = false

@@ -20,6 +20,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.android.camera2.basic.databinding.ActivityCameraBinding
+import com.example.android.camera2.basic.fragments.BluetoothFragment
+import com.example.android.camera2.basic.fragments.BluetoothFragment.ConnectedThread
+
 
 class CameraActivity : AppCompatActivity() {
 
@@ -52,5 +55,14 @@ class CameraActivity : AppCompatActivity() {
         const val ANIMATION_FAST_MILLIS = 50L
         const val ANIMATION_SLOW_MILLIS = 100L
         private const val IMMERSIVE_FLAG_TIMEOUT = 500L
+
+        var btThread : BluetoothFragment.ConnectedThread? = null
+
+        fun getBluetoothThread(): ConnectedThread? {
+            return btThread
+        }
+        fun setBluetoothThread(thread: ConnectedThread) {
+            btThread = thread
+        }
     }
 }
