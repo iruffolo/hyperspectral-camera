@@ -215,26 +215,6 @@ class CameraFragment : Fragment() {
                 }
             })
 
-        fragmentCameraBinding.frameDuration?.setOnSeekBarChangeListener(
-            object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    // updated continuously as the user slides the thumb
-                    fragmentCameraBinding.frameDurationText?.text = "Frame Duration: $progress"
-
-                    session.stopRepeating()
-                    captureRequest.set(CaptureRequest.SENSOR_FRAME_DURATION, progress.toLong())
-                    session.setRepeatingRequest(captureRequest.build(), null, cameraHandler)
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                }
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                }
-            })
-
         // Used to rotate the output media to match device orientation
         relativeOrientation = OrientationLiveData(requireContext(), characteristics).apply {
             observe(viewLifecycleOwner, Observer { orientation ->
