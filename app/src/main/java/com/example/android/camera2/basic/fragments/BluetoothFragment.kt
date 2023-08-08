@@ -97,15 +97,6 @@ class BluetoothFragment : Fragment() {
                 CameraActivity.setBluetoothThread(mConnectedThread!!)
             }
         }
-
-        // Closes the client socket and causes the thread to finish.
-        fun cancel() {
-            try {
-                mmSocket?.close()
-            } catch (e: IOException) {
-                Log.e("Bluetooth Socket", "Could not close the client socket", e)
-            }
-        }
     }
 
     inner class ConnectedThread(private val mmSocket: BluetoothSocket) : Thread() {
@@ -120,7 +111,7 @@ class BluetoothFragment : Fragment() {
                 Log.e(mTag, "Error occurred when sending data", e)
                 // Raise toast msg with failure
                 Toast.makeText(context, "Couldn't send data to other BT device",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_LONG).show()
                 return
             }
         }
@@ -141,7 +132,7 @@ class BluetoothFragment : Fragment() {
 
         // Init the bluetooth
         // Get local Bluetooth adapter
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
@@ -151,12 +142,12 @@ class BluetoothFragment : Fragment() {
         }
 
         if (!mBluetoothAdapter?.isEnabled!!) {
-            val turnOn = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnOn, 0);
-            Toast.makeText(context, "BT Turned on",Toast.LENGTH_LONG).show();
+            val turnOn = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            startActivityForResult(turnOn, 0)
+            Toast.makeText(context, "BT Turned on",Toast.LENGTH_LONG).show()
         }
-        val getVis = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        startActivityForResult(getVis, 0);
+        val getVis = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
+        startActivityForResult(getVis, 0)
 
         // Register for broadcasts when a device is discovered.
         val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
@@ -185,7 +176,7 @@ class BluetoothFragment : Fragment() {
         fragmentBtBinding.listButton.setOnClickListener {
             Log.d("Bluetooth", "Listing BT devices")
 
-            val paired: Set<BluetoothDevice>? = mBluetoothAdapter?.bondedDevices;
+            val paired: Set<BluetoothDevice>? = mBluetoothAdapter?.bondedDevices
 
             mBluetoothList.clear()
             if (paired != null) {

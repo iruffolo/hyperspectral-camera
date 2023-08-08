@@ -65,7 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <View
             android:id="@+id/overlay_config"
@@ -107,8 +107,7 @@
                 android:layout_height="wrap_content"
                 android:max="976800000"
                 android:min="41280"
-                android:progress="10000000"
-                android:visibility="visible" />
+                android:progress="10000000" />
 
             <Switch
                 android:id="@+id/gt_switch"
