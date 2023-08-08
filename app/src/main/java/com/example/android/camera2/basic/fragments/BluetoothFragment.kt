@@ -51,12 +51,12 @@ class BluetoothFragment : Fragment() {
                     // Discovery has found a device. Get the BluetoothDevice
                     // object and its info from the Intent.
                     val device: BluetoothDevice =
-                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice
 
                     mBluetoothDevices?.add(device)
 
                     if (device.name != null)
-                        mBluetoothList?.add(device)
+                        mBluetoothList.add(device)
 
                     mAdapter?.notifyDataSetChanged()
                 }
@@ -64,7 +64,7 @@ class BluetoothFragment : Fragment() {
         }
     }
 
-    private val mUUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private val mUUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
     // Thread to make BT connection
     private var mConnectThread : ConnectThread? = null
@@ -77,7 +77,7 @@ class BluetoothFragment : Fragment() {
             device.createInsecureRfcommSocketToServiceRecord(mUUID)
         }
 
-        public override fun run() {
+        override fun run() {
             // Cancel discovery because it otherwise slows down the connection.
             mBluetoothAdapter?.cancelDiscovery()
 
@@ -109,10 +109,7 @@ class BluetoothFragment : Fragment() {
     }
 
     inner class ConnectedThread(private val mmSocket: BluetoothSocket) : Thread() {
-
         private val mmOutStream: OutputStream = mmSocket.outputStream
-        private val mmBuffer: ByteArray = ByteArray(1024) // mmBuffer store for the stream
-
         private val mTag: String = "BT Thread"
 
         // Call this from the main activity to send data to the remote device.
@@ -195,7 +192,7 @@ class BluetoothFragment : Fragment() {
                 for (bt in paired) mBluetoothList.add(bt)
             }
 
-            (mAdapter as ArrayAdapter<Any?>).notifyDataSetChanged()
+            (mAdapter as ArrayAdapter<*>).notifyDataSetChanged()
         }
 
         // Does a search for discoverable devices, lists by mac address
@@ -212,7 +209,7 @@ class BluetoothFragment : Fragment() {
             mBluetoothAdapter?.startDiscovery()
             mBluetoothList.clear()
 
-            (mAdapter as ArrayAdapter<Any?>).notifyDataSetChanged()
+            (mAdapter as ArrayAdapter<*>).notifyDataSetChanged()
         }
 
         fragmentBtBinding.camButton.setOnClickListener {

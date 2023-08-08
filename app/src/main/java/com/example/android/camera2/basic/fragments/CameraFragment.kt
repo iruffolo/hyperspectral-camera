@@ -127,6 +127,8 @@ class CameraFragment : Fragment() {
 
     private lateinit var captureRequest: CaptureRequest.Builder
 
+    private var mConfigMenu : Boolean = false
+
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
     private var mGroundTruthDelayMs : Long = 500
@@ -160,6 +162,7 @@ class CameraFragment : Fragment() {
                     width: Int,
                     height: Int) = Unit
 
+            @RequiresApi(Build.VERSION_CODES.P)
             override fun surfaceCreated(holder: SurfaceHolder) {
                 // Selects appropriate preview size and configures view finder
                 val previewSize = getPreviewOutputSize(
@@ -229,6 +232,16 @@ class CameraFragment : Fragment() {
                 mGroundTruthMode = false
                 Log.d("GTSWITCH", "OFF")
             }
+        }
+
+        fragmentCameraBinding.configButton?.setOnClickListener {
+            Log.d("Config", "Changing to config screen")
+            if (mConfigMenu) {
+                fragmentCameraBinding.SettingsLayout?.visibility = View.GONE
+            } else {
+                fragmentCameraBinding.SettingsLayout?.visibility = View.VISIBLE
+            }
+            mConfigMenu = !mConfigMenu
         }
 
         // Used to rotate the output media to match device orientation
@@ -309,7 +322,7 @@ class CameraFragment : Fragment() {
         // Listen to the capture button
         fragmentCameraBinding.captureButton.setOnClickListener {
 
-//            CameraActivity.getBluetoothThread()?.write("allo from the cam".toByteArray())
+            CameraActivity.getBluetoothThread()?.write("allo from the cam".toByteArray())
 
             // Disable click listener to prevent multiple requests simultaneously in flight
             it.isEnabled = false
