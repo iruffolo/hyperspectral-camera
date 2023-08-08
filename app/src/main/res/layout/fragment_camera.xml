@@ -84,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
-                android:text="ISO: 500" />
+                android:text="@string/iso_text" />
 
             <SeekBar
                 android:id="@+id/sensitivity_iso"

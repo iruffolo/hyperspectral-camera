@@ -17,4 +17,5 @@
     <string name="app_name">Camera2Basic</string>
     <string name="capture">Capture</string>
     <string name="configuration">Configuration</string>
+    <string name="iso_text">ISO: %1$d</string>
 </resources>

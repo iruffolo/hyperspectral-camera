@@ -40,6 +40,7 @@ import com.example.android.camera.utils.OrientationLiveData
 import com.example.android.camera.utils.computeExifOrientation
 import com.example.android.camera.utils.getPreviewOutputSize
 import com.example.android.camera2.basic.CameraActivity
+import com.example.android.camera2.basic.R
 import com.example.android.camera2.basic.databinding.FragmentCameraBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -198,7 +199,8 @@ class CameraFragment : Fragment() {
                     fromUser: Boolean
                 ) {
                     // updated continuously as the user slides the thumb
-                    fragmentCameraBinding.sensitivityISOText?.text = "ISO: $progress"
+//                    fragmentCameraBinding.sensitivityISOText?.text = "ISO: $progress"
+                    fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, progress)
 
                     session.stopRepeating()
                     captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, progress)
