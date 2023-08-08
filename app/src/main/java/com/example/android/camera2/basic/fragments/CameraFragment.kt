@@ -30,11 +30,9 @@ import android.os.HandlerThread
 import android.util.Log
 import android.util.Range
 import android.view.*
-import android.widget.CompoundButton
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
-import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -48,6 +46,7 @@ import com.example.android.camera2.basic.CameraActivity
 import com.example.android.camera2.basic.R
 import com.example.android.camera2.basic.databinding.FragmentCameraBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.Closeable
@@ -130,6 +129,8 @@ class CameraFragment : Fragment() {
 
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
+    private var mGroundTruthDelayMs : Long = 500
+    private var mNumPhotos : Int = 10
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -263,15 +264,10 @@ class CameraFragment : Fragment() {
                     "exposure time range => lower : " + exposureTimeRange.lower +
                             "\thigher : " + exposureTimeRange.upper)
             }
-
             val maxGain: Int? =
                 characteristics.get(CameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)
-            if (maxGain != null)
-            {
-//                fragmentCameraBinding.sensitivityIso?.max = maxGain
-            }
-
             Log.d("Ian", "Max gain $maxGain")
+
         } catch (e: CameraAccessException) {
             e.message?.let { Log.e(TAG, it) }
         }
@@ -313,33 +309,38 @@ class CameraFragment : Fragment() {
         // Listen to the capture button
         fragmentCameraBinding.captureButton.setOnClickListener {
 
-            CameraActivity.getBluetoothThread()?.write("allo from the cam".toByteArray())
+//            CameraActivity.getBluetoothThread()?.write("allo from the cam".toByteArray())
 
             // Disable click listener to prevent multiple requests simultaneously in flight
             it.isEnabled = false
 
-            // Perform I/O heavy operations in a different scope
-            lifecycleScope.launch(Dispatchers.IO) {
-                takePhoto().use { result ->
-                    Log.d(TAG, "Result received: $result")
-
-                    // Save the result to disk
-                    val output = saveResult(result)
-                    Log.d(TAG, "Image saved: ${output.absolutePath}")
-
-                    // If the result is a JPEG file, update EXIF metadata with orientation info
-                    if (output.extension == "jpg") {
-                        val exif = ExifInterface(output.absolutePath)
-                        exif.setAttribute(
-                                ExifInterface.TAG_ORIENTATION, result.orientation.toString())
-                        exif.saveAttributes()
-                        Log.d(TAG, "EXIF metadata saved: ${output.absolutePath}")
+            // Regular Mode
+            if (!mGroundTruthMode)
+            {
+                // Perform I/O heavy operations in a different scope
+                lifecycleScope.launch(Dispatchers.IO) {
+                    takePhoto().use { result ->
+                        // Save the result to disk
+                        val output = saveResult(result)
+                        Log.d("ImgCapture", "Image saved: ${output.absolutePath}")
                     }
                 }
-
-                // Re-enable click listener after photo is taken
-                it.post { it.isEnabled = true }
+            } else { // Ground Truth Mode
+               // Perform I/O heavy operations in a different scope
+               lifecycleScope.launch(Dispatchers.IO) {
+                   for (i in 0 until mNumPhotos) {
+                       takePhoto().use { result ->
+                           // Save the result to disk
+                           val output = saveResult(result)
+                           Log.d("ImgCapture", "Image saved: ${output.absolutePath}")
+                       }
+                       delay(mGroundTruthDelayMs)
+                   }
+               }
             }
+
+            // Re-enable click listener after photo is taken
+            it.post { it.isEnabled = true }
         }
     }
 
@@ -512,7 +513,7 @@ class CameraFragment : Fragment() {
                     val output = createFile(requireContext(), "dng")
                     FileOutputStream(output).use { dngCreator.writeImage(it, result.image) }
                     cont.resume(output)
-                    Log.e("Ian", "File written")
+                    Log.d("Ian", "File written")
                 } catch (exc: IOException) {
                     Log.e(TAG, "Unable to write DNG image to file", exc)
                     cont.resumeWithException(exc)
@@ -575,7 +576,7 @@ class CameraFragment : Fragment() {
         private fun createFile(context: Context, extension: String): File {
             val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
 
-            Log.e("Ian", "Writing DNG FILE$context.filesDir")
+//            val file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
             return File(context.filesDir, "IMG_${sdf.format(Date())}.$extension")
         }
     }

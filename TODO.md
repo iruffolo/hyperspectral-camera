@@ -6,11 +6,13 @@
 
 ## Config
 
-- New page for config
+- ~~New page for config~~
 
 ## Ground truth mode
 
-- Add another camera button that takes multiple images or something
+- ~~Add another camera button that takes multiple images or something~~
+- ~~GT toggle~~
+- More config buttons for GT freq & number of images
 
 ## Misc QOL
 
