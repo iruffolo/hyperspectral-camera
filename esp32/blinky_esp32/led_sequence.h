@@ -1,11 +1,10 @@
 #ifndef LED_SEQUENCE
 #define LED_SEQUENCE
 
-
 class LedSequence 
 {
 public:
-    LedSequence();
+    LedSequence() {};
 
 private:
 
