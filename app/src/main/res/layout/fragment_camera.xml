@@ -84,7 +84,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
-                android:text="@string/iso_text" />
+                android:text="@string/iso_text"
+                android:textColor="#000000" />
 
             <SeekBar
                 android:id="@+id/sensitivity_iso"
@@ -99,7 +100,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
-                android:text="Exposure Time: 10000000 (ns)" />
+                android:text="Exposure Time: 10000000 (ns)"
+                android:textColor="#000000" />
 
             <SeekBar
                 android:id="@+id/exposure_time"
