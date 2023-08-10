@@ -12,8 +12,6 @@ Adafruit_NeoPixel onePixel = Adafruit_NeoPixel(1,
                                                NEO_GRB + NEO_KHZ800);
 BluetoothSerial SerialBT;
 
-// test
-
 // Frequency to cycle LEDs 
 int freq = 500;
 
