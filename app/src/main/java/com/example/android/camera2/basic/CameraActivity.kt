@@ -56,7 +56,8 @@ class CameraActivity : AppCompatActivity() {
         const val ANIMATION_SLOW_MILLIS = 100L
         private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
-        var btThread : BluetoothFragment.ConnectedThread? = null
+        /** Global thread for Bluetooth communication */
+        private var btThread : BluetoothFragment.ConnectedThread? = null
 
         fun getBluetoothThread(): ConnectedThread? {
             return btThread

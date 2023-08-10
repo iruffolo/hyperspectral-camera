@@ -34,10 +34,7 @@ import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.example.android.camera.utils.OrientationLiveData
 import com.example.android.camera.utils.computeExifOrientation
@@ -71,11 +68,6 @@ class CameraFragment : Fragment() {
 
     /** AndroidX navigation arguments */
     private val args: CameraFragmentArgs by navArgs()
-
-    /** Host's navigation controller */
-    private val navController: NavController by lazy {
-        Navigation.findNavController(requireActivity(), R.id.fragment_container)
-    }
 
     /** Detects, characterizes, and connects to a CameraDevice (used for all camera operations) */
     private val cameraManager: CameraManager by lazy {
@@ -127,6 +119,8 @@ class CameraFragment : Fragment() {
 
     private lateinit var captureRequest: CaptureRequest.Builder
 
+    private var mConfigMenu : Boolean = false
+
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
     private var mGroundTruthDelayMs : Long = 500
@@ -160,6 +154,7 @@ class CameraFragment : Fragment() {
                     width: Int,
                     height: Int) = Unit
 
+            @RequiresApi(Build.VERSION_CODES.P)
             override fun surfaceCreated(holder: SurfaceHolder) {
                 // Selects appropriate preview size and configures view finder
                 val previewSize = getPreviewOutputSize(
@@ -179,6 +174,23 @@ class CameraFragment : Fragment() {
             }
         })
 
+        initializeButtons()
+    }
+
+    private fun initializeButtons() {
+
+        /** Button to open configuration menu */
+        fragmentCameraBinding.configButton?.setOnClickListener {
+            Log.d("Config", "Changing to config screen")
+            if (mConfigMenu) {
+                fragmentCameraBinding.SettingsLayout?.visibility = View.GONE
+            } else {
+                fragmentCameraBinding.SettingsLayout?.visibility = View.VISIBLE
+            }
+            mConfigMenu = !mConfigMenu
+        }
+
+        /** ISO/GAIN Slider */
         fragmentCameraBinding.sensitivityIso?.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
@@ -187,7 +199,8 @@ class CameraFragment : Fragment() {
                     fromUser: Boolean
                 ) {
                     // updated continuously as the user slides the thumb
-                    fragmentCameraBinding.sensitivityISOText?.text = "ISO: $progress"
+//                    fragmentCameraBinding.sensitivityISOText?.text = "ISO: $progress"
+                    fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, progress)
 
                     session.stopRepeating()
                     captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, progress)
@@ -197,8 +210,9 @@ class CameraFragment : Fragment() {
                 }
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 }
-        })
+            })
 
+        /** Exposure time slider */
         fragmentCameraBinding.exposureTime?.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
@@ -219,6 +233,7 @@ class CameraFragment : Fragment() {
                 }
             })
 
+        /** Ground truth mode toggle switch */
         fragmentCameraBinding.gtSwitch?.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 // The toggle is enabled
@@ -229,13 +244,6 @@ class CameraFragment : Fragment() {
                 mGroundTruthMode = false
                 Log.d("GTSWITCH", "OFF")
             }
-        }
-
-        // Used to rotate the output media to match device orientation
-        relativeOrientation = OrientationLiveData(requireContext(), characteristics).apply {
-            observe(viewLifecycleOwner, Observer { orientation ->
-                Log.d(TAG, "Orientation changed: $orientation")
-            })
         }
     }
 
@@ -250,10 +258,10 @@ class CameraFragment : Fragment() {
     private fun initializeCamera() = lifecycleScope.launch(Dispatchers.Main) {
         // Open the selected camera
 
-        Log.d("Ian", "CAMERA BBY");
+        Log.d("Ian", "CAMERA BBY")
 
         try {
-            Log.d("Ian", "Camera ID ${args.cameraId}");
+            Log.d("Ian", "Camera ID ${args.cameraId}")
 
             val characteristics = cameraManager.getCameraCharacteristics(args.cameraId)
 
@@ -291,10 +299,10 @@ class CameraFragment : Fragment() {
                 CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder.holder.surface) }
 
         // Set some settings
-        captureRequest.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
-        captureRequest.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
-        captureRequest.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
-        captureRequest.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
+        captureRequest.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO)
+        captureRequest.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
+        captureRequest.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
+        captureRequest.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START)
 
         captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
             fragmentCameraBinding.exposureTime?.progress?.toLong())
@@ -309,7 +317,7 @@ class CameraFragment : Fragment() {
         // Listen to the capture button
         fragmentCameraBinding.captureButton.setOnClickListener {
 
-//            CameraActivity.getBluetoothThread()?.write("allo from the cam".toByteArray())
+            CameraActivity.getBluetoothThread()?.write("allo from the cam".toByteArray())
 
             // Disable click listener to prevent multiple requests simultaneously in flight
             it.isEnabled = false
@@ -549,6 +557,18 @@ class CameraFragment : Fragment() {
         super.onDestroyView()
     }
 
+    /**
+     * Create a [File] named a using formatted timestamp with the current date and time.
+     *
+     * @return [File] created.
+     */
+    private fun createFile(context: Context, extension: String): File {
+        val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
+
+//            val file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        return File(context.filesDir, "IMG_${sdf.format(Date())}.$extension")
+    }
+
     companion object {
         private val TAG = CameraFragment::class.java.simpleName
 
@@ -568,16 +588,5 @@ class CameraFragment : Fragment() {
             override fun close() = image.close()
         }
 
-        /**
-         * Create a [File] named a using formatted timestamp with the current date and time.
-         *
-         * @return [File] created.
-         */
-        private fun createFile(context: Context, extension: String): File {
-            val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
-
-//            val file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            return File(context.filesDir, "IMG_${sdf.format(Date())}.$extension")
-        }
     }
 }
