@@ -1,3 +1,10 @@
+#ifndef LED_SEQUENCE
+#define LED_SEQUENCE
 
 
-int seq;
+class LedSequence 
+{
+    int seq[1028];
+};
+
+#endif
