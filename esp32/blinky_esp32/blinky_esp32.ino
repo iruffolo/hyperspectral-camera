@@ -50,19 +50,22 @@ void loop() {
         read_bluetooth();
     }
 
-    cycle_colors_neopixel(freq);
+    // cycle_colors_neopixel(freq);
 
-    cycle_led_sequence(0, 1000);
+    cycle_led_sequence(0, 100000);
 }
 
 void cycle_led_sequence(int seq_num, int delay_us) {
 
     // Rotate through random LED sequence
-    for (i=0; i<NUM_ROW; i++) {
-        int led = leds[seq[seq_num][i]]
+    for (int i=0; i<NUM_ROW; i++) {
+        int led = leds[seq[seq_num][i]];
         digitalWrite(led, HIGH);
         delayMicroseconds(delay_us);
         digitalWrite(led, LOW);
+
+        sprintf(msg, "Idx: %d\tLED: %d\n\r", seq[seq_num][i], led);
+        Serial.write(msg);
 
         // Every 500 rows, turn on white led
         if (i % 500 == 0) {
