@@ -21,7 +21,7 @@ char msg[1024];
 //Violet to Far red
 int const leds[] = {12, 27, 15, 32, 14, SCL, SDA, SCK, A5, 33, RX, TX, 19};
 int const num_leds = 13;
-int const WHITE_LED = 21;
+int const WHITE_LED = SDA;
 
 void setup() {
     Serial.begin(115200); // Start serial connection for debugging
@@ -52,7 +52,7 @@ void loop() {
 
     // cycle_colors_neopixel(freq);
 
-    cycle_led_sequence(0, 100000);
+    cycle_led_sequence(0, 1000000);
 }
 
 void cycle_led_sequence(int seq_num, int delay_us) {
