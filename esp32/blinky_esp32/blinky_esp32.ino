@@ -6,6 +6,7 @@
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
 
+#include "seq.h"
 
 Adafruit_NeoPixel onePixel = Adafruit_NeoPixel(1, 
                                                PIN_NEOPIXEL, 
@@ -21,8 +22,7 @@ char msg[1024];
 int leds[] = {12, 27, 15, 32, 14, SCL, SDA, SCK, A5, 33, RX, TX, 19, 21};
 int num_leds = 14;
 
-void setup() 
-{
+void setup() {
     Serial.begin(115200); // Start serial connection for debugging
 
     // Say hi!
@@ -37,39 +37,19 @@ void setup()
     onePixel.show();              // Update the pixel state
 
     // Setup external LEDs
-    for (int i =0; i<num_leds; i++){
+    for (int i =0; i<num_leds; i++) {
         pinMode(leds[i], OUTPUT);
         digitalWrite(leds[i], LOW);
     }
 }
 
-void loop() 
-{
-    cycle_colors(freq);
 
-
+void loop() {
     if (SerialBT.available()) {
-        int count = 0;
-        int new_freq = 0;
-
-        // Recv bluetooth, print to serial
-        while (SerialBT.available()) {
-            char c = SerialBT.read();
-
-            Serial.write(c);
-
-            if (isdigit(c))
-            {
-                int x = atoi(&c);
-                new_freq = new_freq*10^count + x;
-            }
-        }
-
-        freq = new_freq = 0 ? freq : new_freq;
-    
-        sprintf(msg, "Setting freq: %d\n\r", freq);
-        Serial.write(msg);
+        read_bluetooth();
     }
+
+    cycle_colors(freq);
 }
 
 
@@ -93,4 +73,27 @@ void cycle_colors(int freq)
         delay(freq);
         digitalWrite(leds[i], LOW);
     }
+}
+
+void read_bluetooth() {
+    int count = 0;
+    int new_freq = 0;
+
+    // Recv bluetooth, print to serial
+    while (SerialBT.available()) {
+        char c = SerialBT.read();
+
+        Serial.write(c);
+
+        if (isdigit(c))
+        {
+            int x = atoi(&c);
+            new_freq = new_freq*10^count + x;
+        }
+    }
+
+    freq = new_freq = 0 ? freq : new_freq;
+
+    sprintf(msg, "Setting freq: %d\n\r", freq);
+    Serial.write(msg);
 }
