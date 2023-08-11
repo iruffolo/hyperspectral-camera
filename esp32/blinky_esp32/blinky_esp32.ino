@@ -18,9 +18,10 @@ int freq = 500;
 
 char msg[1024];
 
-//Violet to Far red, then white
-int leds[] = {12, 27, 15, 32, 14, SCL, SDA, SCK, A5, 33, RX, TX, 19, 21};
-int num_leds = 14;
+//Violet to Far red
+int const leds[] = {12, 27, 15, 32, 14, SCL, SDA, SCK, A5, 33, RX, TX, 19};
+int const num_leds = 13;
+int const WHITE_LED = 21;
 
 void setup() {
     Serial.begin(115200); // Start serial connection for debugging
@@ -49,11 +50,31 @@ void loop() {
         read_bluetooth();
     }
 
-    cycle_colors(freq);
+    cycle_colors_neopixel(freq);
+
+    cycle_led_sequence(0, 1000);
+}
+
+void cycle_led_sequence(int seq_num, int delay_us) {
+
+    // Rotate through random LED sequence
+    for (i=0; i<NUM_ROW; i++) {
+        int led = leds[seq[seq_num][i]]
+        digitalWrite(led, HIGH);
+        delayMicroseconds(delay_us);
+        digitalWrite(led, LOW);
+
+        // Every 500 rows, turn on white led
+        if (i % 500 == 0) {
+            digitalWrite(WHITE_LED, HIGH);
+            delayMicroseconds(delay_us);
+            digitalWrite(WHITE_LED, LOW);
+        }
+    }
 }
 
 
-void cycle_colors(int freq)
+void cycle_colors_neopixel(int freq)
 {
     onePixel.setPixelColor(0, 255, 0, 0);   //  Set pixel 0 to (r,g,b) color value
     onePixel.show();            // Update pixel state
@@ -66,13 +87,6 @@ void cycle_colors(int freq)
     onePixel.setPixelColor(0, 0, 255, 0);
     onePixel.show();
     delay(freq);
-
-    for(int i=0; i<num_leds; i++){
-        digitalWrite(leds[i], HIGH);
-        // delayMicroseconds(freq);
-        delay(freq);
-        digitalWrite(leds[i], LOW);
-    }
 }
 
 void read_bluetooth() {
