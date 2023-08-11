@@ -3,8 +3,8 @@
 #ifndef SEQ
 #define SEQ
 
-static constexpr int NUM_SEQ = 5;
-static constexpr int NUM_ROW = 1000;
+constexpr int NUM_SEQ = 5;
+constexpr int NUM_ROW = 1000;
 
 extern int seq[NUM_SEQ][NUM_ROW];
 
