@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     numLeds = 10
     numSeq = 5
-    numRows = 1000
+    numRows = 500
 
     seq = createSeq(numLeds, numRows, numSeq)
 

@@ -4,7 +4,7 @@
 #define SEQ
 
 constexpr int NUM_SEQ = 5;
-constexpr int NUM_ROW = 1000;
+constexpr int NUM_ROW = 500;
 
 extern int seq[NUM_SEQ][NUM_ROW];
 
