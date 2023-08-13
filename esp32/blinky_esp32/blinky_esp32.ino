@@ -112,5 +112,5 @@ void read_bluetooth() {
     sprintf(msg, "Setting freq: %d", freq);
     Serial.write(msg);
 
-    Serial.write("\n\r")
+    Serial.write("\n\r");
 }
