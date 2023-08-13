@@ -68,8 +68,6 @@ class BluetoothFragment : Fragment() {
 
     // Thread to make BT connection
     private var mConnectThread : ConnectThread? = null
-    // Thread to handle BT communication
-    var mConnectedThread : ConnectedThread? = null
 
     inner class ConnectThread(device: BluetoothDevice) : Thread() {
 
@@ -85,16 +83,11 @@ class BluetoothFragment : Fragment() {
                 // Connect to the remote device through the socket. This call blocks
                 // until it succeeds or throws an exception.
                 socket.connect()
-
                 Log.d("Bluetooth", "Thread connected")
 
-                // The connection attempt succeeded. Perform work associated with
-                // the connection in a separate thread.
-                mConnectedThread = ConnectedThread(socket)
-                mConnectedThread!!.write("Connected to Android\n".toByteArray())
-
                 // Add thread to main activity for access in other fragments
-                CameraActivity.setBluetoothThread(mConnectedThread!!)
+                CameraActivity.setBluetoothThread(ConnectedThread(socket))
+                CameraActivity.getBluetoothThread()?.write("Connected to Android\n".toByteArray())
             }
         }
     }
@@ -125,7 +118,6 @@ class BluetoothFragment : Fragment() {
             }
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -221,9 +213,8 @@ class BluetoothFragment : Fragment() {
             val name = device.name
             Log.d("Bluetooth", "Connecting to BT device: $name")
 
-            if (mConnectThread != null) {
-                mConnectedThread?.cancel()
-            }
+            CameraActivity.getBluetoothThread()?.cancel()
+
             mConnectThread = ConnectThread(device)
             mConnectThread!!.run()
         }

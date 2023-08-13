@@ -122,6 +122,8 @@ class CameraFragment : Fragment() {
 
     private var mConfigMenu : Boolean = false
 
+    private var mBT : BluetoothFragment.ConnectedThread? = null
+
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
     private var mGroundTruthDelayMs : Long = 500
@@ -181,6 +183,8 @@ class CameraFragment : Fragment() {
                 Log.d(TAG, "Orientation changed: $orientation")
             })
         }
+
+        mBT = CameraActivity.getBluetoothThread()
 
         initializeButtons()
     }
@@ -325,7 +329,7 @@ class CameraFragment : Fragment() {
         // Listen to the capture button
         fragmentCameraBinding.captureButton.setOnClickListener {
 
-            CameraActivity.getBluetoothThread()?.write("allo from the cam".toByteArray())
+            mBT?.write("allo from the cam\n".toByteArray())
 
             // Disable click listener to prevent multiple requests simultaneously in flight
             it.isEnabled = false
@@ -337,26 +341,31 @@ class CameraFragment : Fragment() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     takePhoto().use { result ->
                         // Save the result to disk
-                        val output = saveResult(result)
+                        val output = saveResult(result, "NOTGT")
                         Log.d("ImgCapture", "Image saved: ${output.absolutePath}")
                     }
                 }
             } else { // Ground Truth Mode
-               // Perform I/O heavy operations in a different scope
-               lifecycleScope.launch(Dispatchers.IO) {
-                   for (i in 0 until mNumPhotos) {
-                       takePhoto().use { result ->
-                           // Save the result to disk
-                           val output = saveResult(result)
-                           Log.d("ImgCapture", "Image saved: ${output.absolutePath}")
-                       }
-                       delay(mGroundTruthDelayMs)
-                   }
-               }
+                takeGTPhoto()
             }
 
             // Re-enable click listener after photo is taken
             it.post { it.isEnabled = true }
+        }
+    }
+
+    private fun takeGTPhoto()
+    {
+        // Perform I/O heavy operations in a different scope
+        lifecycleScope.launch(Dispatchers.IO) {
+            for (i in 0 until mNumPhotos) {
+                takePhoto().use { result ->
+                    // Save the result to disk
+                    val output = saveResult(result, "GT")
+                    Log.d("ImgCapture", "Image saved: ${output.absolutePath}")
+                }
+                delay(mGroundTruthDelayMs)
+            }
         }
     }
 
@@ -505,28 +514,14 @@ class CameraFragment : Fragment() {
     }
 
     /** Helper function used to save a [CombinedCaptureResult] into a [File] */
-    private suspend fun saveResult(result: CombinedCaptureResult): File = suspendCoroutine { cont ->
+    private suspend fun saveResult(result: CombinedCaptureResult, label: String): File = suspendCoroutine { cont ->
         when (result.format) {
-
-            // When the format is JPEG or DEPTH JPEG we can simply save the bytes as-is
-            ImageFormat.JPEG, ImageFormat.DEPTH_JPEG -> {
-                val buffer = result.image.planes[0].buffer
-                val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
-                try {
-                    val output = createFile(requireContext(), "jpg")
-                    FileOutputStream(output).use { it.write(bytes) }
-                    cont.resume(output)
-                } catch (exc: IOException) {
-                    Log.e(TAG, "Unable to write JPEG image to file", exc)
-                    cont.resumeWithException(exc)
-                }
-            }
 
             // When the format is RAW we use the DngCreator utility library
             ImageFormat.RAW_SENSOR -> {
                 val dngCreator = DngCreator(characteristics, result.metadata)
                 try {
-                    val output = createFile(requireContext(), "dng")
+                    val output = createFile(requireContext(), label, "dng")
                     FileOutputStream(output).use { dngCreator.writeImage(it, result.image) }
                     cont.resume(output)
                     Log.d("Ian", "File written")
@@ -570,11 +565,11 @@ class CameraFragment : Fragment() {
      *
      * @return [File] created.
      */
-    private fun createFile(context: Context, extension: String): File {
+    private fun createFile(context: Context, label: String, extension: String): File {
         val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
 
 //            val file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        return File(context.filesDir, "IMG_${sdf.format(Date())}.$extension")
+        return File(context.filesDir, "IMG_${label}_${sdf.format(Date())}.$extension")
     }
 
     companion object {
