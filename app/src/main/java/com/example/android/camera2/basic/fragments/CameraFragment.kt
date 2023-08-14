@@ -126,8 +126,8 @@ class CameraFragment : Fragment() {
 
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
-    private var mGroundTruthDelayMs : Long = 500
-    private var mNumPhotos : Int = 10
+    private var mPhotoDelay : Long = 100
+    private var mNumPhotos : Int = 5
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -270,7 +270,7 @@ class CameraFragment : Fragment() {
     private fun initializeCamera() = lifecycleScope.launch(Dispatchers.Main) {
         // Open the selected camera
 
-        Log.d("Ian", "CAMERA BBY")
+        mBT?.write("Initializing Camera\n".toByteArray())
 
         try {
             Log.d("Ian", "Camera ID ${args.cameraId}")
@@ -329,24 +329,15 @@ class CameraFragment : Fragment() {
         // Listen to the capture button
         fragmentCameraBinding.captureButton.setOnClickListener {
 
-            mBT?.write("allo from the cam\n".toByteArray())
-
             // Disable click listener to prevent multiple requests simultaneously in flight
             it.isEnabled = false
 
             // Regular Mode
             if (!mGroundTruthMode)
             {
-                // Perform I/O heavy operations in a different scope
-                lifecycleScope.launch(Dispatchers.IO) {
-                    takePhoto().use { result ->
-                        // Save the result to disk
-                        val output = saveResult(result, "NOTGT")
-                        Log.d("ImgCapture", "Image saved: ${output.absolutePath}")
-                    }
-                }
+                takePhotoMode(1, "RS")
             } else { // Ground Truth Mode
-                takeGTPhoto()
+                takePhotoMode(mNumPhotos, "GT")
             }
 
             // Re-enable click listener after photo is taken
@@ -354,17 +345,19 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun takeGTPhoto()
+    private fun takePhotoMode(numPhotos: Int, mode: String)
     {
         // Perform I/O heavy operations in a different scope
         lifecycleScope.launch(Dispatchers.IO) {
-            for (i in 0 until mNumPhotos) {
+            for (i in 0 until numPhotos) {
+                mBT?.write("${mode}:$i\n".toByteArray())
+
                 takePhoto().use { result ->
                     // Save the result to disk
-                    val output = saveResult(result, "GT")
+                    val output = saveResult(result, "$mode$i")
                     Log.d("ImgCapture", "Image saved: ${output.absolutePath}")
                 }
-                delay(mGroundTruthDelayMs)
+                delay(mPhotoDelay)
             }
         }
     }
@@ -480,8 +473,6 @@ class CameraFragment : Fragment() {
 
                         // Dequeue images while timestamps don't match
                         val image = imageQueue.take()
-                        // TODO(owahltinez): b/142011420
-                        // if (image.timestamp != resultTimestamp) continue
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
                                 image.format != ImageFormat.DEPTH_JPEG &&
                                 image.timestamp != resultTimestamp) continue
@@ -576,7 +567,7 @@ class CameraFragment : Fragment() {
         private val TAG = CameraFragment::class.java.simpleName
 
         /** Maximum number of images that will be held in the reader's buffer */
-        private const val IMAGE_BUFFER_SIZE: Int = 3
+        private const val IMAGE_BUFFER_SIZE: Int = 16
 
         /** Maximum time allowed to wait for the result of an image capture */
         private const val IMAGE_CAPTURE_TIMEOUT_MILLIS: Long = 5000
