@@ -3,14 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from process_raw import DngFile
 
-filenames = ["LRM_20230209_153302",
-             "LRM_20230308_191906",
-             "LRM_20230308_194536",
-             "LRM_20230308_195133"]
+filenames = ["IMG_RS0_2023_08_13_21_11_36_245.dng"]
 
 for filename in filenames:
     # Download raw.dng for test:
     dng_path = f"./{filename}.dng"
+    dng_path = filename
 
     dng = DngFile.read(dng_path)
 
