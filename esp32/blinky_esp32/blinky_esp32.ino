@@ -1,54 +1,48 @@
-#include <Adafruit_NeoPixel.h>
 #include <stdio.h>
-
 #include "BluetoothSerial.h"
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
-
 #include "seq.h"
 
-Adafruit_NeoPixel onePixel = Adafruit_NeoPixel(1, 
-                                               PIN_NEOPIXEL, 
-                                               NEO_GRB + NEO_KHZ800);
+
+/********** GLOBALS **********/
+
+// Bluetooth serial object
 BluetoothSerial SerialBT;
 
 // Frequency to cycle LEDs 
 int freq = 500;
 
+// Flag indicating msg has been received on Bluetooth
 bool msg_recv = false;
 
-
-//Violet to Far red
+// LEDs
+int const WHITE_LED = SDA;
+// Violet to Far red
 int const leds[] = {12, 27, 15, 32, 14, SCL, SDA, SCK, A5, 33, RX, TX, 19};
 int const num_leds = 13;
-int const WHITE_LED = SDA;
 
+// Current mode for main loop
 enum Mode {
     PASSIVE,
     RS_CAPTURE,
     GT_CAPTURE
 };
 
-enum Mode currMode;
+enum Mode currMode = Mode::PASSIVE;
 
 
 void setup() {
-    Serial.begin(115200); // Start serial connection for debugging
-
-    // Say hi!
+    // Start serial connection for debugging
+    Serial.begin(115200); 
     Serial.println("Hello!");
 
-    SerialBT.begin("ESP32test"); //Bluetooth device name
-
-    // Neopixel
-    onePixel.begin();             // Start the NeoPixel object
-    onePixel.clear();             // Set NeoPixel color to black (0,0,0)
-    onePixel.setBrightness(20);   // Affects all subsequent settings
-    onePixel.show();              // Update the pixel state
+    //Bluetooth device name
+    SerialBT.begin("ESP32test"); 
 
     // Setup external LEDs
-    for (int i =0; i<num_leds; i++) {
+    for (int i = 0; i < num_leds; i++) {
         pinMode(leds[i], OUTPUT);
         digitalWrite(leds[i], LOW);
     }
@@ -56,13 +50,12 @@ void setup() {
 
 
 void loop() {
-    if (SerialBT.available()) {
-        read_bluetooth();
-    }
-
     switch (currMode) {
-        // Do nothing, continue to listen on Bluetooth
+        // Continue to listen on Bluetooth for commands
         case Mode::PASSIVE:
+            if (SerialBT.available()) {
+                read_bluetooth();
+            }
             break;
 
         // Capture rolling shutter images with LEDs cycling
@@ -76,8 +69,6 @@ void loop() {
             break;
     }
 
-    // cycle_colors_neopixel(freq);
-
     // cycle_led_sequence(0, 100000);
 }
 
@@ -89,8 +80,9 @@ void cycle_led_sequence(int seq_num, int delay_us) {
     digitalWrite(WHITE_LED, LOW);
 
     // Rotate through random LED sequence
-    for (int i=0; i<NUM_ROW; i++) {
+    for (int i = 0; i < NUM_ROW; i++) {
         int led = leds[seq[seq_num][i]];
+
         digitalWrite(led, HIGH);
         delayMicroseconds(delay_us);
         digitalWrite(led, LOW);
@@ -98,22 +90,6 @@ void cycle_led_sequence(int seq_num, int delay_us) {
         // sprintf(msg, "Idx: %d\tLED: %d\n\r", seq[seq_num][i], led);
         // Serial.write(msg);
     }
-}
-
-
-void cycle_colors_neopixel(int freq)
-{
-    onePixel.setPixelColor(0, 255, 0, 0);   //  Set pixel 0 to (r,g,b) color value
-    onePixel.show();            // Update pixel state
-    delay(freq);                // wait for a half second
-
-    onePixel.setPixelColor(0, 0, 0, 255);  
-    onePixel.show();
-    delay(freq);
-
-    onePixel.setPixelColor(0, 0, 255, 0);
-    onePixel.show();
-    delay(freq);
 }
 
 void read_bluetooth() {
