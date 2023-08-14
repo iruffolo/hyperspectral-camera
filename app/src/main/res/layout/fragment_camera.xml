@@ -91,7 +91,7 @@
                 android:id="@+id/sensitivity_iso"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:max="800"
+                android:max="10000"
                 android:progress="500"
                 android:visibility="visible" />
 

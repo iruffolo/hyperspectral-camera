@@ -125,7 +125,7 @@ class CameraFragment : Fragment() {
 
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
-    private var mCommandDelay: Long = 10
+    private var mCommandDelay: Long = 20
     private var mNumGtPhotos : Int = 10
 
     override fun onCreateView(
@@ -256,6 +256,24 @@ class CameraFragment : Fragment() {
                 Log.d("GTSWITCH", "OFF")
             }
         }
+
+        // Listen to the capture button
+        fragmentCameraBinding.captureButton.setOnClickListener {
+
+            // Disable click listener to prevent multiple requests simultaneously in flight
+            it.isEnabled = false
+
+            // Regular Mode
+            if (!mGroundTruthMode)
+            {
+                takePhotoMode(1, "RS")
+            } else { // Ground Truth Mode
+                takePhotoMode(mNumGtPhotos, "GT")
+            }
+
+            // Re-enable click listener after photo is taken
+            it.post { it.isEnabled = true }
+        }
     }
 
     /**
@@ -300,6 +318,9 @@ class CameraFragment : Fragment() {
         imageReader = ImageReader.newInstance(
                 size.width, size.height, args.pixelFormat, IMAGE_BUFFER_SIZE)
 
+//        Log.d("Ian", "size ${size.width}   ${size.height}")
+//        Log.d("Ian", "pixel format ${args.pixelFormat}")
+
         // Creates list of Surfaces where the camera will output frames
         val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface, imageReader.surface)
 
@@ -312,36 +333,23 @@ class CameraFragment : Fragment() {
         // Set some settings
         captureRequest.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO)
         captureRequest.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
-        captureRequest.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
-        captureRequest.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START)
+        // captureRequest.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
+        // captureRequest.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START)
 
-        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
-            fragmentCameraBinding.exposureTime?.progress?.toLong())
+//        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
+//            fragmentCameraBinding.exposureTime?.progress?.toLong())
+//        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY,
+//            fragmentCameraBinding.sensitivityIso?.progress)
 
-        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY,
-            fragmentCameraBinding.sensitivityIso?.progress)
+        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 41280)
+        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, 800)
+
+//        captureRequest.set(CaptureRequest.SENSOR_FRAME_DURATION, 4000000)
 
         // This will keep sending the capture request as frequently as possible until the
         // session is torn down or session.stopRepeating() is called
         session.setRepeatingRequest(captureRequest.build(), null, cameraHandler)
 
-        // Listen to the capture button
-        fragmentCameraBinding.captureButton.setOnClickListener {
-
-            // Disable click listener to prevent multiple requests simultaneously in flight
-            it.isEnabled = false
-
-            // Regular Mode
-            if (!mGroundTruthMode)
-            {
-                takePhotoMode(1, "RS")
-            } else { // Ground Truth Mode
-                takePhotoMode(mNumGtPhotos, "GT")
-            }
-
-            // Re-enable click listener after photo is taken
-            it.post { it.isEnabled = true }
-        }
     }
 
     private fun takePhotoMode(numPhotos: Int, mode: String)
@@ -439,7 +447,14 @@ class CameraFragment : Fragment() {
         }, imageReaderHandler)
 
         val captureRequest = session.device.createCaptureRequest(
-                CameraDevice.TEMPLATE_STILL_CAPTURE).apply { addTarget(imageReader.surface) }
+                CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(imageReader.surface) }
+//                CameraDevice.TEMPLATE_STILL_CAPTURE).apply { addTarget(imageReader.surface) }
+
+        captureRequest.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO)
+        captureRequest.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
+        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 41280)
+        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, 800)
+
         session.capture(captureRequest.build(), object : CameraCaptureSession.CaptureCallback() {
 
             override fun onCaptureStarted(
@@ -507,6 +522,29 @@ class CameraFragment : Fragment() {
     /** Helper function used to save a [CombinedCaptureResult] into a [File] */
     private suspend fun saveResult(result: CombinedCaptureResult, label: String): String = suspendCoroutine { cont ->
         when (result.format) {
+
+            // When the format is JPEG or DEPTH JPEG we can simply save the bytes as-is
+            ImageFormat.JPEG, ImageFormat.DEPTH_JPEG -> {
+                val buffer = result.image.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
+                try {
+                    val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
+                    val filename = "IMG_${label}_${sdf.format(Date())}.jpg"
+
+                    val resolver = requireContext().contentResolver
+                    val contentValues = ContentValues().apply{
+                        put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/HyperspectralCam")
+                    }
+                    val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+                    resolver.openOutputStream(uri!!).use {it!!.write(bytes)}
+                    cont.resume("Test")
+                } catch (exc: IOException) {
+                    Log.e(TAG, "Unable to write JPEG image to file", exc)
+                    cont.resumeWithException(exc)
+                }
+            }
 
             // When the format is RAW we use the DngCreator utility library
             ImageFormat.RAW_SENSOR -> {
