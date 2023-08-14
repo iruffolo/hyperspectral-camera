@@ -17,16 +17,15 @@
 package com.example.android.camera2.basic.fragments
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Color
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
 import android.media.Image
 import android.media.ImageReader
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
+import android.os.*
+import android.provider.MediaStore
 import android.util.Log
 import android.util.Range
 import android.view.*
@@ -34,8 +33,8 @@ import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.android.camera.utils.OrientationLiveData
 import com.example.android.camera.utils.computeExifOrientation
@@ -179,9 +178,9 @@ class CameraFragment : Fragment() {
 
         // Used to rotate the output media to match device orientation
         relativeOrientation = OrientationLiveData(requireContext(), characteristics).apply {
-            observe(viewLifecycleOwner, Observer { orientation ->
+            observe(viewLifecycleOwner) { orientation ->
                 Log.d(TAG, "Orientation changed: $orientation")
-            })
+            }
         }
 
         mBT = CameraActivity.getBluetoothThread()
@@ -355,8 +354,7 @@ class CameraFragment : Fragment() {
 
                 takePhoto().use { result ->
                     // Save the result to disk
-                    val output = saveResult(result, "$mode$i")
-                    Log.d("ImgCapture", "Image saved: ${output.absolutePath}")
+                    saveResult(result, "$mode$i")
                 }
                 mBT?.write("RESET:0\n".toByteArray())
                 delay(mCommandDelay) // Delay to give time for LEDs to turn off
@@ -507,17 +505,27 @@ class CameraFragment : Fragment() {
     }
 
     /** Helper function used to save a [CombinedCaptureResult] into a [File] */
-    private suspend fun saveResult(result: CombinedCaptureResult, label: String): File = suspendCoroutine { cont ->
+    private suspend fun saveResult(result: CombinedCaptureResult, label: String): String = suspendCoroutine { cont ->
         when (result.format) {
 
             // When the format is RAW we use the DngCreator utility library
             ImageFormat.RAW_SENSOR -> {
                 val dngCreator = DngCreator(characteristics, result.metadata)
                 try {
-                    val output = createFile(requireContext(), label, "dng")
-                    FileOutputStream(output).use { dngCreator.writeImage(it, result.image) }
-                    cont.resume(output)
-                    Log.d("Ian", "File written")
+                    val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
+                    val filename = "IMG_${label}_${sdf.format(Date())}.dng"
+
+                    val resolver = requireContext().contentResolver
+                    val contentValues = ContentValues().apply{
+                        put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/HyperspectralCam")
+                    }
+                    val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                    resolver.openOutputStream(uri!!).use {
+                        dngCreator.writeImage(it!!, result.image)
+                    }
+                    Log.d("Ian", "Image saved: $uri")
+                    cont.resume("Done")
                 } catch (exc: IOException) {
                     Log.e(TAG, "Unable to write DNG image to file", exc)
                     cont.resumeWithException(exc)
@@ -551,18 +559,6 @@ class CameraFragment : Fragment() {
     override fun onDestroyView() {
         _fragmentCameraBinding = null
         super.onDestroyView()
-    }
-
-    /**
-     * Create a [File] named a using formatted timestamp with the current date and time.
-     *
-     * @return [File] created.
-     */
-    private fun createFile(context: Context, label: String, extension: String): File {
-        val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
-
-        return File(activity?.getExternalFilesDir((null)) ?: context.filesDir,
-            "IMG_${label}_${sdf.format(Date())}.$extension")
     }
 
     companion object {
