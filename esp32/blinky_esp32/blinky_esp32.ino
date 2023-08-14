@@ -29,10 +29,19 @@ enum Mode {
     RS_CAPTURE,
     GT_CAPTURE
 };
+enum Mode curr_mode = Mode::PASSIVE;
 
-enum Mode currMode = Mode::PASSIVE;
+// Index for LED in ground truth mode
+int delay_gt_ms = 500;
+int curr_gt_led = 0;
 
+// Index for random LED sequence pattern in rolling shutter mode
+int delay_rs_us = 1000;
+int curr_rs_seq = 0;
 
+//!
+//! Setup function to initialize peripherals etc.
+//! 
 void setup() {
     // Start serial connection for debugging
     Serial.begin(115200); 
@@ -49,8 +58,12 @@ void setup() {
 }
 
 
+//!
+//! Main loop - loop runs through different modes depending on commands 
+//! received on bluetooth.
+//!
 void loop() {
-    switch (currMode) {
+    switch (curr_mode) {
         // Continue to listen on Bluetooth for commands
         case Mode::PASSIVE:
             if (SerialBT.available()) {
@@ -60,18 +73,27 @@ void loop() {
 
         // Capture rolling shutter images with LEDs cycling
         case Mode::RS_CAPTURE:
-            
+            cycle_led_sequence(curr_rs_seq, delay_rs_us);
+
+            curr_mode = Mode::PASSIVE;
             break;
 
-        // Capture sequence of GT images with LEDs static 
+        // Capture GT image with LED static 
         case Mode::GT_CAPTURE:
+            digitalWrite(leds[curr_gt_led], HIGH);
+            delay(delay_gt_ms);
+            digitalWrite(leds[curr_gt_led], LOW);
             
+            curr_mode = Mode::PASSIVE;
             break;
     }
-
-    // cycle_led_sequence(0, 100000);
 }
 
+
+
+//!
+//! Cycles through the LEDs at some frequency
+//!
 void cycle_led_sequence(int seq_num, int delay_us) {
 
     // Start sequence with white LED
@@ -86,20 +108,26 @@ void cycle_led_sequence(int seq_num, int delay_us) {
         digitalWrite(led, HIGH);
         delayMicroseconds(delay_us);
         digitalWrite(led, LOW);
-
-        // sprintf(msg, "Idx: %d\tLED: %d\n\r", seq[seq_num][i], led);
-        // Serial.write(msg);
     }
 }
 
+//!
+//! Reads messages from bluetooth 
+//!
+//! Protocal is as follows:
+//! Every message is expected to contain the mode, a value, and be terimated by
+//! a newline character, e.g. MODE:VALUE\n
+//!     
+//! A sample message could be - GT:3\n
+//! This message indicates the current mode should be in ground truth, and 
+//! be capturing the 3rd image in the sequence.
+//!
 void read_bluetooth() {
-    int count = 0;
-    int new_freq = 0;
 
+    // Buffer for receiving messages
     char bt_msg[1024];
-    char serial_msg[1024];
 
-    // Recv bluetooth msg until receiving a newline char (indicating end of msg)
+    // Recv bluetooth msg
     while (SerialBT.available()) {
         const char c = SerialBT.read();
 
@@ -123,31 +151,36 @@ void read_bluetooth() {
         mode = strtok(bt_msg, ":");
         value = strtok(NULL, ":");
 
-        Serial.write(mode);
-        Serial.write("\n\r");
-
         if (value != NULL) {
             int v = atoi(value);
 
             // Rolling shutter mode
             if (strcmp(mode, "RS") == 0) {
-                Serial.write("Bloop");
+                Serial.write("Rolling shutter mode");
+                curr_mode = Mode::RS_CAPTURE;
+                curr_rs_seq = v;
             }
             // Ground truth mode
             else if (strcmp(mode, "GT") == 0) {
+                Serial.write("Ground truth mode");
+                curr_mode = Mode::GT_CAPTURE;
 
+                curr_gt_led = v < num_leds ? v : 0;
             }
             // Setting param modes
             // Frequency
             else if (strcmp(mode, "FREQ") == 0) {
 
             }
+            else {
+                curr_mode = Mode::PASSIVE;
+            }
         }
 
         // Reset message 
         memset(bt_msg, 0, 1024);
-        msg_recv = false;
-
         Serial.write("\n\r"); 
+
+        msg_recv = false;
     }
 }
