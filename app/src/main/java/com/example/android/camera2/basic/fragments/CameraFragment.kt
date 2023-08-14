@@ -126,9 +126,8 @@ class CameraFragment : Fragment() {
 
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
-    private var mPhotoDelay : Long = 100
     private var mCommandDelay: Long = 10
-    private var mNumPhotos : Int = 5
+    private var mNumGtPhotos : Int = 10
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -338,7 +337,7 @@ class CameraFragment : Fragment() {
             {
                 takePhotoMode(1, "RS")
             } else { // Ground Truth Mode
-                takePhotoMode(mNumPhotos, "GT")
+                takePhotoMode(mNumGtPhotos, "GT")
             }
 
             // Re-enable click listener after photo is taken
@@ -359,7 +358,8 @@ class CameraFragment : Fragment() {
                     val output = saveResult(result, "$mode$i")
                     Log.d("ImgCapture", "Image saved: ${output.absolutePath}")
                 }
-                delay(mPhotoDelay)
+                mBT?.write("RESET:0\n".toByteArray())
+                delay(mCommandDelay) // Delay to give time for LEDs to turn off
             }
         }
     }
