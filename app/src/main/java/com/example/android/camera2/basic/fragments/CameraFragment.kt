@@ -127,6 +127,7 @@ class CameraFragment : Fragment() {
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
     private var mPhotoDelay : Long = 100
+    private var mCommandDelay: Long = 10
     private var mNumPhotos : Int = 5
 
     override fun onCreateView(
@@ -351,6 +352,7 @@ class CameraFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             for (i in 0 until numPhotos) {
                 mBT?.write("${mode}:$i\n".toByteArray())
+                delay(mCommandDelay) // Delay to give time for LEDs to turn on
 
                 takePhoto().use { result ->
                     // Save the result to disk
@@ -559,8 +561,8 @@ class CameraFragment : Fragment() {
     private fun createFile(context: Context, label: String, extension: String): File {
         val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
 
-//            val file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        return File(context.filesDir, "IMG_${label}_${sdf.format(Date())}.$extension")
+        return File(activity?.getExternalFilesDir((null)) ?: context.filesDir,
+            "IMG_${label}_${sdf.format(Date())}.$extension")
     }
 
     companion object {
