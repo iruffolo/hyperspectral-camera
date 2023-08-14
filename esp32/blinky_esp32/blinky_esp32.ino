@@ -20,9 +20,23 @@ int freq = 500;
 bool msg_recv = false;
 
 // LEDs
-int const WHITE_LED = SDA;
+int const WHITE_LED = 19;
 // Violet to Far red
-int const leds[] = {12, 27, 15, 32, 14, SCL, SDA, SCK, A5, 33, RX, TX, 19};
+int const leds[] = {
+    12,     // Blue 
+    27,     // Lighter blue
+    15,     // Lightest blue 
+    32,     // Cyan 
+    14,     // Green 
+    SCL,    // Yellow 
+    SCK,    // Orange 
+    A5,     // RED1 
+    33,     // RED2 
+    RX,     // RED3 
+    TX,     // RED4 
+    19,     // WHITE 
+    SDA     // ALSO WHITE (Yellowish?)
+};
 int const num_leds = 13;
 
 // Current mode for main loop
@@ -30,7 +44,8 @@ enum Mode {
     PASSIVE,
     RS_CAPTURE,
     GT_CAPTURE,
-    RESET
+    RESET,
+    DEBUG_LED
 };
 enum Mode curr_mode = Mode::PASSIVE;
 
@@ -38,7 +53,7 @@ enum Mode curr_mode = Mode::PASSIVE;
 int curr_gt_led = 0;
 
 // Index for random LED sequence pattern in rolling shutter mode
-int delay_rs_us = 10;
+int delay_rs_us = 11;
 int curr_rs_seq = 0;
 
 //!
@@ -95,6 +110,12 @@ void loop () {
             for (int i = 0; i < num_leds; i++) {
                 digitalWrite(leds[i], LOW);
             }
+            curr_mode = Mode::PASSIVE;
+            break;
+
+        // Slowly turn on each LED
+        case Mode::DEBUG_LED:
+            debug_leds();
             curr_mode = Mode::PASSIVE;
             break;
 
@@ -173,21 +194,21 @@ void read_bluetooth(void* pvParameters) {
                 if (value != NULL) {
                     int v = atoi(value);
 
-                    // Rolling shutter mode
                     if (strcmp(mode, "RS") == 0) {
                         Serial.write("Rolling shutter mode");
                         curr_mode = Mode::RS_CAPTURE;
                         curr_rs_seq = v;
                     }
-                    // Ground truth mode
                     else if (strcmp(mode, "GT") == 0) {
                         Serial.write("Ground truth mode");
                         curr_mode = Mode::GT_CAPTURE;
                         curr_gt_led = v < num_leds ? v : 0;
                     }
-                    // Reset all LEDs to off 
                     else if (strcmp(mode, "RESET") == 0) {
                         curr_mode = Mode::RESET;
+                    }
+                    else if (strcmp(mode, "DEBUG") == 0) {
+                        curr_mode = Mode::DEBUG_LED;
                     }
                     else {
                         curr_mode = Mode::PASSIVE;
@@ -201,5 +222,20 @@ void read_bluetooth(void* pvParameters) {
                 msg_recv = false;
             }
         }
+    }
+}
+
+void debug_leds() {
+
+    char debug_msg[1024];
+
+    for (int i = 0; i < num_leds; i++) {
+
+        sprintf(debug_msg, "Turning on LED: %d\n\r", i);
+        Serial.write(debug_msg);
+
+        digitalWrite(leds[i], HIGH);
+        delay(5000);
+        digitalWrite(leds[i], LOW);
     }
 }
