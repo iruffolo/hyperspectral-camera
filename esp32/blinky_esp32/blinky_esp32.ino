@@ -29,13 +29,13 @@ int const leds[] = {
     32,     // Cyan 
     14,     // Green 
     SCL,    // Yellow 
+    SDA,    // Lime 
     SCK,    // Orange 
     A5,     // RED1 
     33,     // RED2 
     RX,     // RED3 
     TX,     // RED4 
-    19,     // WHITE 
-    SDA     // ALSO WHITE (Yellowish?)
+    19      // WHITE 
 };
 int const num_leds = 13;
 
@@ -53,8 +53,13 @@ enum Mode curr_mode = Mode::PASSIVE;
 int curr_gt_led = 0;
 
 // Index for random LED sequence pattern in rolling shutter mode
-int delay_rs_us = 11;
+int delay_on_rs_us = 10;
+int delay_off_rs_us = 0;
+int delay_white_multiple = 1;
 int curr_rs_seq = 0;
+
+// Delay for debug
+int delay_debug_ms = 5000;
 
 //!
 //! Setup function to initialize peripherals etc.
@@ -96,7 +101,7 @@ void loop () {
         // Capture rolling shutter images with LEDs cycling
         case Mode::RS_CAPTURE:
             // Repeat sequence until RESET command is received
-            cycle_led_sequence(curr_rs_seq, delay_rs_us);
+            cycle_led_sequence(curr_rs_seq);
             break;
 
         // Capture GT image with LED static 
@@ -126,24 +131,25 @@ void loop () {
 }
 
 
-
 //!
 //! Cycles through the LEDs at some frequency
 //!
-void cycle_led_sequence(int seq_num, int delay_us) {
+void cycle_led_sequence(int seq_num) {
 
     // Start sequence with white LED
     digitalWrite(WHITE_LED, HIGH);
-    delayMicroseconds(delay_us);
+    delayMicroseconds(delay_on_rs_us * delay_white_multiple);
     digitalWrite(WHITE_LED, LOW);
+    delayMicroseconds(delay_off_rs_us);
 
     // Rotate through random LED sequence
     for (int i = 0; i < NUM_ROW; i++) {
         int led = leds[seq[seq_num][i]];
 
         digitalWrite(led, HIGH);
-        delayMicroseconds(delay_us);
+        delayMicroseconds(delay_on_rs_us);
         digitalWrite(led, LOW);
+        delayMicroseconds(delay_off_rs_us);
     }
 }
 
@@ -161,7 +167,7 @@ void cycle_led_sequence(int seq_num, int delay_us) {
 void read_bluetooth(void* pvParameters) {
 
     // Buffer for receiving messages
-    char bt_msg[1024];
+    char bt_msg[1024] = {};
 
     for (;;) {
 
@@ -204,11 +210,21 @@ void read_bluetooth(void* pvParameters) {
                         curr_mode = Mode::GT_CAPTURE;
                         curr_gt_led = v < num_leds ? v : 0;
                     }
+                    else if (strcmp(mode, "LEDON") == 0) {
+                        delay_on_rs_us = v;
+                    }
+                    else if (strcmp(mode, "LEDOFF") == 0) {
+                        delay_off_rs_us = v;
+                    }
+                    else if (strcmp(mode, "WHITEON") == 0) {
+                        delay_white_multiple = v;
+                    }
                     else if (strcmp(mode, "RESET") == 0) {
                         curr_mode = Mode::RESET;
                     }
                     else if (strcmp(mode, "DEBUG") == 0) {
                         curr_mode = Mode::DEBUG_LED;
+                        delay_debug_ms = v;
                     }
                     else {
                         curr_mode = Mode::PASSIVE;
@@ -235,7 +251,7 @@ void debug_leds() {
         Serial.write(debug_msg);
 
         digitalWrite(leds[i], HIGH);
-        delay(5000);
+        delay(delay_debug_ms);
         digitalWrite(leds[i], LOW);
     }
 }
