@@ -176,10 +176,6 @@ void toggle_leds(T seq, int seq_num)
     denom = denom > 1 ? denom : 1;
     int num_rows = (int)(NUM_ROW[num_leds_mplx-1]/denom);
 
-    char debug_msg[1028];
-    sprintf(debug_msg, "Num rows: %d\n\r", num_rows);
-    Serial.write(debug_msg);
-
     // Rotate through random LED sequence
     for (int i = 0; i < num_rows; i++) {
 
