@@ -125,7 +125,7 @@ class CameraFragment : Fragment() {
 
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
-    private var mCommandDelay: Long = 20
+    private var mCommandDelay: Long = 30
     private var mNumGtPhotos : Int = 10
 
     /** Camera Capture Parameters **/
