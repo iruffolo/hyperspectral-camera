@@ -127,6 +127,7 @@ class CameraFragment : Fragment() {
     private var mGroundTruthMode : Boolean = false
     private var mCommandDelay: Long = 30
     private var mNumGtPhotos : Int = 10
+    private var mNumRsPhotos : Int = 1
 
     /** Camera Capture Parameters **/
     private var mSensorExposureTime : Long = 41280
@@ -270,6 +271,41 @@ class CameraFragment : Fragment() {
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
 
+        /** Listen to the image capture button */
+        fragmentCameraBinding.captureButton.setOnClickListener {
+
+            // Disable click listener to prevent multiple requests simultaneously in flight
+            it.isEnabled = false
+
+            // Regular Mode
+            if (!mGroundTruthMode)
+            {
+                takePhotoMode(mNumRsPhotos, "RS")
+            } else { // Ground Truth Mode
+                takePhotoMode(mNumGtPhotos, "GT")
+            }
+
+            // Re-enable click listener after photo is taken
+            it.post { it.isEnabled = true }
+        }
+
+        /** Slider for number of rolling shutter images  */
+        fragmentCameraBinding.rsNumImages?.progress = mNumRsPhotos - 1
+        fragmentCameraBinding.rsNumImagesText?.text = getString(R.string.rs_num_images_text, mNumRsPhotos)
+        fragmentCameraBinding.rsNumImages?.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    mNumRsPhotos = progress + 1
+                    fragmentCameraBinding.rsNumImagesText?.text = getString(R.string.rs_num_images_text, mNumRsPhotos)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+
         /** Ground truth mode toggle switch */
         fragmentCameraBinding.gtSwitch?.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -281,24 +317,6 @@ class CameraFragment : Fragment() {
                 mGroundTruthMode = false
                 Log.d("Ground Truth Switch", "OFF")
             }
-        }
-
-        /** Listen to the image capture button */
-        fragmentCameraBinding.captureButton.setOnClickListener {
-
-            // Disable click listener to prevent multiple requests simultaneously in flight
-            it.isEnabled = false
-
-            // Regular Mode
-            if (!mGroundTruthMode)
-            {
-                takePhotoMode(1, "RS")
-            } else { // Ground Truth Mode
-                takePhotoMode(mNumGtPhotos, "GT")
-            }
-
-            // Re-enable click listener after photo is taken
-            it.post { it.isEnabled = true }
         }
 
         /** DEBUG MODE */
