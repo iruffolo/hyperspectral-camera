@@ -129,7 +129,7 @@ class CameraFragment : Fragment() {
     /** Camera Capture Parameters **/
     private var mSensorExposureTime : Long = 41280
     private var mSensitivity : Int = 400
-    private var mShutterSpeed : Int = 0
+    // private var mShutterSpeed : Int = 0
     private var mControlMode : Int = CaptureRequest.CONTROL_MODE_AUTO
     private var mAutoExposureMode : Int = CaptureRequest.CONTROL_AE_MODE_OFF
     private var mAutoFocusMode: Int = CaptureRequest.CONTROL_AF_MODE_OFF
@@ -202,10 +202,10 @@ class CameraFragment : Fragment() {
             Log.d("Config", "Changing to config screen")
             if (mConfigMenu) {
                 fragmentCameraBinding.SettingsLayout?.visibility = View.GONE
-                fragmentCameraBinding.captureButton?.visibility = View.VISIBLE
+                fragmentCameraBinding.captureButton.visibility = View.VISIBLE
             } else {
                 fragmentCameraBinding.SettingsLayout?.visibility = View.VISIBLE
-                fragmentCameraBinding.captureButton?.visibility = View.GONE
+                fragmentCameraBinding.captureButton.visibility = View.GONE
             }
             mConfigMenu = !mConfigMenu
         }
@@ -326,18 +326,12 @@ class CameraFragment : Fragment() {
         mPreviewRequest = camera.createCaptureRequest(
                 CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder.holder.surface) }
 
-        // Set some settings
+        // Set all the appropriate camera capture settings for image preview
         setCaptureParams(mPreviewRequest)
-
-//        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
-//            fragmentCameraBinding.exposureTime?.progress?.toLong())
-//        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY,
-//            fragmentCameraBinding.sensitivityIso?.progress)
 
         // This will keep sending the capture request as frequently as possible until the
         // session is torn down or session.stopRepeating() is called
         session.setRepeatingRequest(mPreviewRequest.build(), null, cameraHandler)
-
     }
 
     private fun setCaptureParams(request: CaptureRequest.Builder) {
@@ -370,61 +364,6 @@ class CameraFragment : Fragment() {
         }
     }
 
-    /** Opens the camera and returns the opened device (as the result of the suspend coroutine) */
-    @SuppressLint("MissingPermission")
-    private suspend fun openCamera(
-            manager: CameraManager,
-            cameraId: String,
-            handler: Handler? = null
-    ): CameraDevice = suspendCancellableCoroutine { cont ->
-        manager.openCamera(cameraId, object : CameraDevice.StateCallback() {
-            override fun onOpened(device: CameraDevice) = cont.resume(device)
-
-            override fun onDisconnected(device: CameraDevice) {
-                Log.w(TAG, "Camera $cameraId has been disconnected")
-                requireActivity().finish()
-            }
-
-            override fun onError(device: CameraDevice, error: Int) {
-                val msg = when (error) {
-                    ERROR_CAMERA_DEVICE -> "Fatal (device)"
-                    ERROR_CAMERA_DISABLED -> "Device policy"
-                    ERROR_CAMERA_IN_USE -> "Camera in use"
-                    ERROR_CAMERA_SERVICE -> "Fatal (service)"
-                    ERROR_MAX_CAMERAS_IN_USE -> "Maximum cameras in use"
-                    else -> "Unknown"
-                }
-                val exc = RuntimeException("Camera $cameraId error: ($error) $msg")
-                Log.e(TAG, exc.message, exc)
-                if (cont.isActive) cont.resumeWithException(exc)
-            }
-        }, handler)
-    }
-
-    /**
-     * Starts a [CameraCaptureSession] and returns the configured session (as the result of the
-     * suspend coroutine
-     */
-    private suspend fun createCaptureSession(
-            device: CameraDevice,
-            targets: List<Surface>,
-            handler: Handler? = null
-    ): CameraCaptureSession = suspendCoroutine { cont ->
-
-        // Create a capture session using the predefined targets; this also involves defining the
-        // session state callback to be notified of when the session is ready
-        device.createCaptureSession(targets, object : CameraCaptureSession.StateCallback() {
-
-            override fun onConfigured(session: CameraCaptureSession) = cont.resume(session)
-
-            override fun onConfigureFailed(session: CameraCaptureSession) {
-                val exc = RuntimeException("Camera ${device.id} session configuration failed")
-                Log.e(TAG, exc.message, exc)
-                cont.resumeWithException(exc)
-            }
-        }, handler)
-    }
-
     /**
      * Helper function used to capture a still image using the [CameraDevice.TEMPLATE_STILL_CAPTURE]
      * template. It performs synchronization between the [CaptureResult] and the [Image] resulting
@@ -448,7 +387,7 @@ class CameraFragment : Fragment() {
 
         val captureRequest = session.device.createCaptureRequest(
                 CameraDevice.TEMPLATE_MANUAL).apply { addTarget(imageReader.surface) }
-//                CameraDevice.TEMPLATE_STILL_CAPTURE).apply { addTarget(imageReader.surface) }
+                // CameraDevice.TEMPLATE_STILL_CAPTURE).apply { addTarget(imageReader.surface) }
 
         // Set parameters for ISO, exposure time, etc
         setCaptureParams(captureRequest)
@@ -575,6 +514,61 @@ class CameraFragment : Fragment() {
                 cont.resumeWithException(exc)
             }
         }
+    }
+
+    /** Opens the camera and returns the opened device (as the result of the suspend coroutine) */
+    @SuppressLint("MissingPermission")
+    private suspend fun openCamera(
+        manager: CameraManager,
+        cameraId: String,
+        handler: Handler? = null
+    ): CameraDevice = suspendCancellableCoroutine { cont ->
+        manager.openCamera(cameraId, object : CameraDevice.StateCallback() {
+            override fun onOpened(device: CameraDevice) = cont.resume(device)
+
+            override fun onDisconnected(device: CameraDevice) {
+                Log.w(TAG, "Camera $cameraId has been disconnected")
+                requireActivity().finish()
+            }
+
+            override fun onError(device: CameraDevice, error: Int) {
+                val msg = when (error) {
+                    ERROR_CAMERA_DEVICE -> "Fatal (device)"
+                    ERROR_CAMERA_DISABLED -> "Device policy"
+                    ERROR_CAMERA_IN_USE -> "Camera in use"
+                    ERROR_CAMERA_SERVICE -> "Fatal (service)"
+                    ERROR_MAX_CAMERAS_IN_USE -> "Maximum cameras in use"
+                    else -> "Unknown"
+                }
+                val exc = RuntimeException("Camera $cameraId error: ($error) $msg")
+                Log.e(TAG, exc.message, exc)
+                if (cont.isActive) cont.resumeWithException(exc)
+            }
+        }, handler)
+    }
+
+    /**
+     * Starts a [CameraCaptureSession] and returns the configured session (as the result of the
+     * suspend coroutine
+     */
+    private suspend fun createCaptureSession(
+        device: CameraDevice,
+        targets: List<Surface>,
+        handler: Handler? = null
+    ): CameraCaptureSession = suspendCoroutine { cont ->
+
+        // Create a capture session using the predefined targets; this also involves defining the
+        // session state callback to be notified of when the session is ready
+        device.createCaptureSession(targets, object : CameraCaptureSession.StateCallback() {
+
+            override fun onConfigured(session: CameraCaptureSession) = cont.resume(session)
+
+            override fun onConfigureFailed(session: CameraCaptureSession) {
+                val exc = RuntimeException("Camera ${device.id} session configuration failed")
+                Log.e(TAG, exc.message, exc)
+                cont.resumeWithException(exc)
+            }
+        }, handler)
     }
 
     override fun onStop() {
