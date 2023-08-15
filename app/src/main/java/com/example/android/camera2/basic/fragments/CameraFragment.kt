@@ -499,8 +499,8 @@ class CameraFragment : Fragment() {
                     // Save the result to disk
                     saveResult(result, "$mode$i")
                 }
-                mBT?.write("RESET:0\n".toByteArray())
                 delay(mCommandDelay) // Delay to give time for LEDs to turn off
+                mBT?.write("RESET:0\n".toByteArray())
             }
         }
     }
