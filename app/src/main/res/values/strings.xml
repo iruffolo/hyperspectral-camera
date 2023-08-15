@@ -19,4 +19,5 @@
     <string name="configuration">Configuration</string>
     <string name="gt_mode">Ground Truth Mode</string>
     <string name="iso_text">ISO: %1$d</string>
+    <string name="exposure_text">Pixel Exposure Time: %1$d (ns)</string>
 </resources>

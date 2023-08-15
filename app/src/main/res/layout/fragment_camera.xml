@@ -90,26 +90,21 @@
             <SeekBar
                 android:id="@+id/sensitivity_iso"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="10000"
-                android:progress="500"
-                android:visibility="visible" />
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/exposure_time_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
-                android:text="Exposure Time: 10000000 (ns)"
+                android:text="@string/exposure_text"
                 android:textColor="#000000" />
 
             <SeekBar
                 android:id="@+id/exposure_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:max="976800000"
-                android:min="41280"
-                android:progress="10000000" />
+                android:min="50000" />
 
             <Switch
                 android:id="@+id/gt_switch"
