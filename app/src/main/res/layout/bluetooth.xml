@@ -16,38 +16,38 @@
         android:layout_height="match_parent"
         android:foreground="@android:color/transparent" />
 
-    <TextView
-        android:id="@+id/textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="Connect Bluetooth"
-        android:textSize="35dp" />
-
     <LinearLayout
         android:id="@+id/button_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
         android:layout_gravity="center"
-        android:layout_margin="5dp">
+        android:layout_margin="10dp">
+
+        <TextView
+            android:id="@+id/textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Connect Bluetooth"
+            android:textSize="35dp" />
+
+        <TextView
+            android:id="@+id/instructions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/bt_instructions"
+            android:textSize="20dp" />
 
         <Button
             android:id="@+id/list_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
             android:text="List devices" />
 
-
-        <Button
-            android:id="@+id/find_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:text="Find Devices" />
     </LinearLayout>
 
     <LinearLayout
@@ -66,13 +66,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:text="Camera" />
-
-        <Button
-            android:id="@+id/calib_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="Calibrate" />
 
     </LinearLayout>
 

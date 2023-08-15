@@ -65,6 +65,7 @@ class BluetoothFragment : Fragment() {
         }
     }
 
+    // UUID - DO NOT CHANGE THIS
     private val mUUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
     // Thread to make BT connection
@@ -84,11 +85,13 @@ class BluetoothFragment : Fragment() {
                 // Connect to the remote device through the socket. This call blocks
                 // until it succeeds or throws an exception.
                 socket.connect()
-                Log.d("Bluetooth", "Thread connected")
 
                 // Add thread to main activity for access in other fragments
                 CameraActivity.setBluetoothThread(ConnectedThread(socket))
                 CameraActivity.getBluetoothThread()?.write("Connected to Android\n".toByteArray())
+                Log.d("Bluetooth", "Thread connected")
+                Toast.makeText(context, "Device Connected",
+                    Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -173,51 +176,36 @@ class BluetoothFragment : Fragment() {
 
             mBluetoothList.clear()
             if (paired != null) {
-                for (bt in paired) mBluetoothList.add(bt)
+                for (bt in paired) {
+                    mBluetoothList.add(bt.name)
+                    Log.d ("Bluetooth", "device: ${bt.name}")
+                }
             }
 
             (mAdapter as ArrayAdapter<*>).notifyDataSetChanged()
         }
 
-        // Does a search for discoverable devices, lists by mac address
-        fragmentBtBinding.findButton.setOnClickListener {
-            Log.d("Bluetooth", "Find BT Devices")
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    ActivityCompat.requestPermissions(
-                        requireContext() as Activity,
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        1)
-            }
-
-            mBluetoothAdapter?.startDiscovery()
-            mBluetoothList.clear()
-
-            (mAdapter as ArrayAdapter<*>).notifyDataSetChanged()
-        }
-
-        fragmentBtBinding.camButton.setOnClickListener {
-            Log.d("Bluetooth", "BT to Camera")
-            lifecycleScope.launchWhenStarted {
-                Navigation.findNavController(requireActivity(), com.example.android.camera2.basic.R.id.fragment_container).navigate(
-                    BluetoothFragmentDirections.actionBluetoothFragmentToSelectorFragment())
-            }
-        }
-
-        fragmentBtBinding.calibButton.setOnClickListener {
-            Log.d("Bluetooth", "BT to Calibration")
-        }
 
         // When an item on BT device list is clicked, start connection
         fragmentBtBinding.listView.setOnItemClickListener { parent, _, position, _ ->
-            val device = parent.getItemAtPosition(position) as BluetoothDevice
-            val name = device.name
+            val name = parent.getItemAtPosition(position)
+            val device = mBluetoothAdapter!!.bondedDevices.elementAt(position)
+
             Log.d("Bluetooth", "Connecting to BT device: $name")
 
             CameraActivity.getBluetoothThread()?.cancel()
 
             mConnectThread = ConnectThread(device)
             mConnectThread!!.run()
+        }
+
+        /** Go to camera screen */
+        fragmentBtBinding.camButton.setOnClickListener {
+            Log.d("Bluetooth", "BT to Camera")
+            lifecycleScope.launchWhenStarted {
+                Navigation.findNavController(requireActivity(), com.example.android.camera2.basic.R.id.fragment_container).navigate(
+                    BluetoothFragmentDirections.actionBluetoothFragmentToSelectorFragment())
+            }
         }
     }
 

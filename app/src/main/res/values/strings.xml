@@ -26,4 +26,5 @@
     <string name="led_off_hint">LED off time (us)</string>
     <string name="white_on_hint">White LED on multiple</string>
     <string name="rs_num_images_text">Number of rolling shutter images to capture: %1$d</string>
+    <string name="bt_instructions">If device is not seen in list, make sure it is paired via bluetooth in the Android settings.</string>
 </resources>
