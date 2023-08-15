@@ -19,12 +19,13 @@
     <string name="configuration">Configuration</string>
     <string name="gt_mode">Ground Truth Mode\t\t</string>
     <string name="debug_mode">Debug LED Mode\t\t</string>
-    <string name="debug_hint">Debug delay for LEDs (us)</string>
+    <string name="debug_hint">Debug delay for LEDs (ms). Default=%1$dms</string>
     <string name="iso_text">ISO: %1$d</string>
-    <string name="exposure_text">Pixel Exposure Time: %1$d (ns)</string>
-    <string name="led_on_hint">LED on time (us)</string>
-    <string name="led_off_hint">LED off time (us)</string>
-    <string name="white_on_hint">White LED on multiple</string>
+    <string name="exposure_text">Pixel Exposure Time: %1$d (ns) (ss=1/%2$d)</string>
+    <string name="led_on_hint">LED on time (us). Default=%1$d</string>
+    <string name="led_off_hint">LED off time (us). Default=%1$d</string>
+    <string name="white_on_hint">White LED on multiple. Default=%1$dx</string>
     <string name="rs_num_images_text">Number of rolling shutter images to capture: %1$d</string>
     <string name="bt_instructions">If device is not seen in list, make sure it is paired via bluetooth in the Android settings.</string>
+    <string name="rs_num_led_mplx_text">Number of LEDs to multiplex on at the same time: %1$d</string>
 </resources>

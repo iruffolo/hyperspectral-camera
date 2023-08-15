@@ -139,10 +139,11 @@ class CameraFragment : Fragment() {
     private var mAutoFocusTrigger: Int = CaptureRequest.CONTROL_AF_TRIGGER_START
 
     /** LED Parameters (times in microseconds) **/
-    private var mLedDebugDelay : Int = 1000000000
+    private var mLedDebugDelay : Int = 1000 // This is MS
     private var mLedOnTime : Int = 10
     private var mLedOffTime : Int = 0
     private var mWhiteOnMultiple: Int = 1
+    private var mNumLedMultiplex: Int = 1
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -251,7 +252,9 @@ class CameraFragment : Fragment() {
         fragmentCameraBinding.exposureTime?.min = etRange.lower.toInt()
         fragmentCameraBinding.exposureTime?.max = etRange.upper.toInt() / 10
         fragmentCameraBinding.exposureTime?.progress = mSensorExposureTime.toInt()
-        fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text, mSensorExposureTime)
+        fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
+                                                                mSensorExposureTime,
+                                                                1000000000/mSensorExposureTime)
         fragmentCameraBinding.exposureTime?.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
@@ -261,7 +264,9 @@ class CameraFragment : Fragment() {
                 ) {
                     mSensorExposureTime = progress.toLong()
                     // updated continuously as the user slides the thumb
-                    fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text, progress)
+                    fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
+                                                                            mSensorExposureTime,
+                                                                            1000000000/mSensorExposureTime)
 
                     session.stopRepeating()
                     setCaptureParams(mPreviewRequest) // Update capture params with exposure time
@@ -322,12 +327,13 @@ class CameraFragment : Fragment() {
         /** DEBUG MODE */
         /** Debug mode toggle switch */
         fragmentCameraBinding.debugSwitch?.setOnCheckedChangeListener { _, isChecked ->
-            if (!isChecked) {
+            if (isChecked) {
                 Log.d("Debug Switch", "ON")
                 mBT?.write("DEBUG:${mLedDebugDelay}\n".toByteArray())
             }
         }
         /** Debug mode delay text input */
+        fragmentCameraBinding.debugLedDelay?.hint = getString(R.string.debug_hint, mLedDebugDelay)
         fragmentCameraBinding.debugLedDelay?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 var text = fragmentCameraBinding.debugLedDelay!!.text.toString()
@@ -343,8 +349,33 @@ class CameraFragment : Fragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
 
+        /** RESET LEDs */
+        fragmentCameraBinding.reset?.setOnClickListener {
+            Log.d ("IanLED", "Reset LEDs")
+            mBT?.write("RESET:0\n".toByteArray())
+        }
+
         /** LED Parameter Settings */
+        /** Number of LEDs to multiplex on at the same time*/
+        fragmentCameraBinding.rsNumLedMultiplex?.progress = mNumLedMultiplex - 1
+        fragmentCameraBinding.rsNumLedMultiplexText?.text = getString(R.string.rs_num_led_mplx_text,
+            mNumLedMultiplex)
+        fragmentCameraBinding.rsNumLedMultiplex?.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    mNumLedMultiplex = progress + 1
+                    fragmentCameraBinding.rsNumLedMultiplexText?.text = getString(R.string.rs_num_led_mplx_text,
+                        mNumLedMultiplex)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
         /** Input for LED on time */
+        fragmentCameraBinding.ledOnTime?.hint = getString(R.string.led_on_hint, mLedOnTime)
         fragmentCameraBinding.ledOnTime?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 var text = fragmentCameraBinding.ledOnTime!!.text.toString()
@@ -360,6 +391,7 @@ class CameraFragment : Fragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
         /** Input for LED off time */
+        fragmentCameraBinding.ledOffTime?.hint = getString(R.string.led_off_hint, mLedOffTime)
         fragmentCameraBinding.ledOffTime?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 var text = fragmentCameraBinding.ledOffTime!!.text.toString()
@@ -375,6 +407,7 @@ class CameraFragment : Fragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
         /** Input for White LED time multiple i.e. white light is on for X times longer than others */
+        fragmentCameraBinding.whiteOnMultiple?.hint = getString(R.string.white_on_hint, mWhiteOnMultiple)
         fragmentCameraBinding.whiteOnMultiple?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 var text = fragmentCameraBinding.whiteOnMultiple!!.text.toString()
@@ -391,11 +424,13 @@ class CameraFragment : Fragment() {
         })
         /** Button to send LED timing changes on bluetooth */
         fragmentCameraBinding.ledSendUpdate?.setOnClickListener {
-            Log.d("IanLED", "Sending new LED times: ${mLedOnTime}/${mLedOffTime}")
+            Log.d("IanLED", "Sending new LED params: ON/OFF=${mLedOnTime}/${mLedOffTime}"
+                + "\tWhite On=${mWhiteOnMultiple} \tLed to multiplex=${mNumLedMultiplex}")
 
             mBT?.write("LEDON:${mLedOnTime}\n".toByteArray())
             mBT?.write("LEDOFF:${mLedOffTime}\n".toByteArray())
             mBT?.write("WHITEON:${mWhiteOnMultiple}\n".toByteArray())
+            mBT?.write("LEDMPLX:${mNumLedMultiplex}\n".toByteArray())
         }
     }
 
