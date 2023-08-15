@@ -19,6 +19,9 @@
     <string name="configuration">Configuration</string>
     <string name="gt_mode">Ground Truth Mode</string>
     <string name="debug_mode">Debug LED Mode</string>
+    <string name="debug_hint">Debug delay for LEDs (us)</string>
     <string name="iso_text">ISO: %1$d</string>
     <string name="exposure_text">Pixel Exposure Time: %1$d (ns)</string>
+    <string name="led_on_hint">LED on time (us)</string>
+    <string name="led_off_hint">LED off time (us)</string>
 </resources>

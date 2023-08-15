@@ -135,16 +135,55 @@
                 <EditText
                     android:id="@+id/debugLedDelay"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:gravity="right"
-                    android:hint="Debug delay for LEDs (microseconds)"
+                    android:gravity="end"
+                    android:hint="@string/debug_hint"
                     android:inputType="number" />
             </LinearLayout>
 
             <View
                 android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="?android:attr/listDivider"
+                android:backgroundTint="#323232"
+                android:backgroundTintMode="add" />
+
+            <LinearLayout
+                android:layout_width="200dp"
+                android:layout_height="120dp"
+                android:layout_gravity="end"
+                android:orientation="vertical" >
+                <EditText
+                    android:id="@+id/ledOnTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:gravity="end"
+                    android:hint="@string/led_on_hint"
+                    android:inputType="number" />
+                <EditText
+                    android:id="@+id/ledOffTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:gravity="end"
+                    android:hint="@string/led_off_hint"
+                    android:inputType="number" />
+                <Button
+                    android:id="@+id/ledSendUpdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Update LEDs" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider3"
                 android:layout_width="match_parent"
                 android:layout_height="5dp"
                 android:background="?android:attr/listDivider"
