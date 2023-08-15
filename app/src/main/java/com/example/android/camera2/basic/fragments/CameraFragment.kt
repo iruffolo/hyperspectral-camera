@@ -131,7 +131,7 @@ class CameraFragment : Fragment() {
 
     /** Camera Capture Parameters **/
     private var mSensorExposureTime : Long = 41280
-    private var mSensitivity : Int = 400
+    private var mSensitivity : Int = 2000
     // private var mShutterSpeed : Int = 0
     private var mControlMode : Int = CaptureRequest.CONTROL_MODE_AUTO
     private var mAutoExposureMode : Int = CaptureRequest.CONTROL_AE_MODE_OFF
