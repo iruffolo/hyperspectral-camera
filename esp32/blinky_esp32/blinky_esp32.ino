@@ -56,6 +56,7 @@ int curr_gt_led = 0;
 int delay_on_rs_us = 10;
 int delay_off_rs_us = 0;
 int delay_white_multiple = 1;
+int num_leds_mplx = 1;
 int curr_rs_seq = 0;
 
 // Delay for debug
@@ -140,13 +141,58 @@ void cycle_led_sequence(int seq_num) {
     digitalWrite(WHITE_LED, LOW);
     delayMicroseconds(delay_off_rs_us);
 
-    // Rotate through random LED sequence
-    for (int i = 0; i < NUM_ROW; i++) {
-        int led = leds[seq[seq_num][i]];
+    switch (num_leds_mplx) {
+        case 1: 
+            toggle_leds(seq_0, seq_num);
+        case 2:
+            Serial.write("LED TIME 2\n\r");
+            toggle_leds(seq_1, seq_num);
+        case 3:
+            Serial.write("LED TIME 3\n\r");
+            toggle_leds(seq_2, seq_num);
+        // case 4:
+        //     toggle_leds(seq_3, seq_num);
+        // case 5:
+        //     toggle_leds(seq_4, seq_num);
+        // case 6:
+        //     toggle_leds(seq_5, seq_num);
+        // case 7:
+        //     toggle_leds(seq_6, seq_num);
+        // case 8:
+        //     toggle_leds(seq_7, seq_num);
+        // case 9:
+        //     toggle_leds(seq_8, seq_num);
+        default:
+            toggle_leds(seq_0, seq_num);
+    }
+}
 
-        digitalWrite(led, HIGH);
+template<typename T> 
+void toggle_leds(T seq, int seq_num)
+{
+    int num_rows = NUM_ROW[num_leds_mplx-1];
+
+    // Rotate through random LED sequence
+    for (int i = 0; i < num_rows; i++) {
+
+        // Turn all LEDs ON 
+        for (int j = 0; j < num_leds_mplx; j++) {
+            int led = leds[seq[seq_num][i][j]];
+            char debug_msg[128];
+            sprintf(debug_msg, "Turning on LED: %d\n\r", led);
+            Serial.write(debug_msg);
+            digitalWrite(led, HIGH);
+        }
+        Serial.write("\n\r");
+
         delayMicroseconds(delay_on_rs_us);
-        digitalWrite(led, LOW);
+
+        // Turn all LEDs OFF
+        for (int j = 0; j < num_leds_mplx; j++) {
+            int led = leds[seq[seq_num][i][j]];
+            digitalWrite(led, LOW);
+        }
+
         delayMicroseconds(delay_off_rs_us);
     }
 }
@@ -216,6 +262,9 @@ void read_bluetooth(void* pvParameters) {
                     }
                     else if (strcmp(mode, "WHITEON") == 0) {
                         delay_white_multiple = v;
+                    }
+                    else if (strcmp(mode, "LEDMPLX") == 0) {
+                        num_leds_mplx = v < 10 ? v : 1;
                     }
                     else if (strcmp(mode, "RESET") == 0) {
                         curr_mode = Mode::RESET;
