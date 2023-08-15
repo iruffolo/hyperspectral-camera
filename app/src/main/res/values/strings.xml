@@ -24,4 +24,5 @@
     <string name="exposure_text">Pixel Exposure Time: %1$d (ns)</string>
     <string name="led_on_hint">LED on time (us)</string>
     <string name="led_off_hint">LED off time (us)</string>
+    <string name="white_on_hint">White LED on multiple</string>
 </resources>

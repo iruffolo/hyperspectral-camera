@@ -140,7 +140,8 @@ class CameraFragment : Fragment() {
     /** LED Parameters (times in microseconds) **/
     private var mLedDebugDelay : Int = 1000000000
     private var mLedOnTime : Int = 10
-    private var mLedOffTime : Int = 25
+    private var mLedOffTime : Int = 0
+    private var mWhiteOnMultiple: Int = 1
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -355,12 +356,28 @@ class CameraFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
+        /** Input for White LED time multiple i.e. white light is on for X times longer than others */
+        fragmentCameraBinding.whiteOnMultiple?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                var text = fragmentCameraBinding.whiteOnMultiple!!.text.toString()
+
+                try {
+                    mWhiteOnMultiple = text.toInt()
+                    Log.d("IanLED", "New while LED multiple = $mWhiteOnMultiple")
+                } catch (nfe: NumberFormatException) {
+                    Log.e(TAG, "Could not parse text field", nfe)
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        })
         /** Button to send LED timing changes on bluetooth */
         fragmentCameraBinding.ledSendUpdate?.setOnClickListener {
             Log.d("IanLED", "Sending new LED times: ${mLedOnTime}/${mLedOffTime}")
 
             mBT?.write("LEDON:${mLedOnTime}\n".toByteArray())
             mBT?.write("LEDOFF:${mLedOffTime}\n".toByteArray())
+            mBT?.write("WHITEON:${mWhiteOnMultiple}\n".toByteArray())
         }
     }
 
