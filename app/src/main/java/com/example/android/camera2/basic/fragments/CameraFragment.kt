@@ -135,7 +135,7 @@ class CameraFragment : Fragment() {
     // private var mShutterSpeed : Int = 0
     private var mControlMode : Int = CaptureRequest.CONTROL_MODE_AUTO
     private var mAutoExposureMode : Int = CaptureRequest.CONTROL_AE_MODE_OFF
-    private var mAutoFocusMode: Int = CaptureRequest.CONTROL_AF_MODE_OFF
+    private var mAutoFocusMode: Int = CaptureRequest.CONTROL_AF_MODE_AUTO
     private var mAutoFocusTrigger: Int = CaptureRequest.CONTROL_AF_TRIGGER_START
 
     /** LED Parameters (times in microseconds) **/
