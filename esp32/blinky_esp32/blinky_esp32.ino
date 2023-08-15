@@ -70,7 +70,7 @@ void setup() {
     Serial.println("Hello!");
 
     //Bluetooth device name
-    SerialBT.begin("ESP32test"); 
+    SerialBT.begin("ESP32 LED Board"); 
 
     // Setup external LEDs
     for (int i = 0; i < num_leds; i++) {
