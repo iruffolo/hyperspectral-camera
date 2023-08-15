@@ -16,6 +16,7 @@
   -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -65,7 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <View
             android:id="@+id/overlay_config"
@@ -77,6 +78,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="10dp"
             android:orientation="vertical">
 
             <TextView
@@ -106,12 +108,48 @@
                 android:layout_height="wrap_content"
                 android:min="50000" />
 
-            <Switch
-                android:id="@+id/gt_switch"
-                android:layout_width="200dp"
-                android:layout_height="50dp"
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
                 android:layout_marginTop="10dp"
-                android:text="@string/gt_mode" />
+                android:background="?android:attr/listDivider"
+                android:backgroundTint="#323232"
+                android:backgroundTintMode="add" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:orientation="vertical" >
+                <Switch
+                    android:id="@+id/gt_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="@string/gt_mode" />
+                <Switch
+                    android:id="@+id/debug_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="@string/debug_mode" />
+
+                <EditText
+                    android:id="@+id/debugLedDelay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:gravity="right"
+                    android:hint="Debug delay for LEDs (microseconds)"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="?android:attr/listDivider"
+                android:backgroundTint="#323232"
+                android:backgroundTintMode="add" />
 
         </LinearLayout>
     </FrameLayout>

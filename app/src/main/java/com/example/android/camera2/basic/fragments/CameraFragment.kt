@@ -26,6 +26,8 @@ import android.media.Image
 import android.media.ImageReader
 import android.os.*
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.util.Range
 import android.view.*
@@ -134,6 +136,9 @@ class CameraFragment : Fragment() {
     private var mAutoExposureMode : Int = CaptureRequest.CONTROL_AE_MODE_OFF
     private var mAutoFocusMode: Int = CaptureRequest.CONTROL_AF_MODE_OFF
     private var mAutoFocusTrigger: Int = CaptureRequest.CONTROL_AF_TRIGGER_START
+
+    /** LED Parameters **/
+    private var mLedDebugDelay : Int = 1000000000
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -267,11 +272,11 @@ class CameraFragment : Fragment() {
             if (isChecked) {
                 // The toggle is enabled
                 mGroundTruthMode = true
-                Log.d("GTSWITCH", "ON")
+                Log.d("Ground Truth Switch", "ON")
             } else {
                 // The toggle is disabled
                 mGroundTruthMode = false
-                Log.d("GTSWITCH", "OFF")
+                Log.d("Ground Truth Switch", "OFF")
             }
         }
 
@@ -292,6 +297,30 @@ class CameraFragment : Fragment() {
             // Re-enable click listener after photo is taken
             it.post { it.isEnabled = true }
         }
+
+        // Debug LEDs
+        /** Ground truth mode toggle switch */
+        fragmentCameraBinding.debugSwitch?.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked) {
+                Log.d("Debug Switch", "ON")
+            }
+        }
+
+        fragmentCameraBinding.debugLedDelay?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                Log.d("IanLED", "New number = $p0")
+                var text = fragmentCameraBinding.debugLedDelay!!.text.toString()
+
+                try {
+                    mLedDebugDelay = text.toInt()
+                    Log.d("IanLED", "New number int tho = $mLedDebugDelay")
+                } catch (nfe: NumberFormatException) {
+                    Log.e(TAG, "Could not parse text field", nfe)
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        })
     }
 
     /**
