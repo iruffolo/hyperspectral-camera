@@ -144,12 +144,13 @@ void cycle_led_sequence(int seq_num) {
     switch (num_leds_mplx) {
         case 1: 
             toggle_leds(seq_0, seq_num);
+            break;
         case 2:
-            Serial.write("LED TIME 2\n\r");
             toggle_leds(seq_1, seq_num);
+            break;
         case 3:
-            Serial.write("LED TIME 3\n\r");
             toggle_leds(seq_2, seq_num);
+            break;
         // case 4:
         //     toggle_leds(seq_3, seq_num);
         // case 5:
@@ -170,7 +171,14 @@ void cycle_led_sequence(int seq_num) {
 template<typename T> 
 void toggle_leds(T seq, int seq_num)
 {
-    int num_rows = NUM_ROW[num_leds_mplx-1];
+    // Calculatee the number of rows, based on pattern size and thickness
+    float denom = (delay_on_rs_us + delay_off_rs_us)/10.0;
+    denom = denom > 1 ? denom : 1;
+    int num_rows = (int)(NUM_ROW[num_leds_mplx-1]/denom);
+
+    char debug_msg[1028];
+    sprintf(debug_msg, "Num rows: %d\n\r", num_rows);
+    Serial.write(debug_msg);
 
     // Rotate through random LED sequence
     for (int i = 0; i < num_rows; i++) {
@@ -178,12 +186,8 @@ void toggle_leds(T seq, int seq_num)
         // Turn all LEDs ON 
         for (int j = 0; j < num_leds_mplx; j++) {
             int led = leds[seq[seq_num][i][j]];
-            char debug_msg[128];
-            sprintf(debug_msg, "Turning on LED: %d\n\r", led);
-            Serial.write(debug_msg);
             digitalWrite(led, HIGH);
         }
-        Serial.write("\n\r");
 
         delayMicroseconds(delay_on_rs_us);
 
