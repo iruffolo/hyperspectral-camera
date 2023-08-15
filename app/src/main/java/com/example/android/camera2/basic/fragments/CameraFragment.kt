@@ -121,7 +121,7 @@ class CameraFragment : Fragment() {
 
     private var mConfigMenu : Boolean = false
 
-    private var mBT : BluetoothFragment.ConnectedThread? = null
+    private var mBT : BluetoothFragment.ConnectedThread = CameraActivity.getBluetoothThread()!!
 
     /** Current Mode */
     private var mGroundTruthMode : Boolean = false
@@ -194,8 +194,6 @@ class CameraFragment : Fragment() {
                 Log.d(TAG, "Orientation changed: $orientation")
             }
         }
-
-        mBT = CameraActivity.getBluetoothThread()
 
         initializeButtons()
     }
@@ -303,6 +301,7 @@ class CameraFragment : Fragment() {
         fragmentCameraBinding.debugSwitch?.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
                 Log.d("Debug Switch", "ON")
+                mBT.write("DEBUG:${mLedDebugDelay}\n".toByteArray())
             }
         }
 
@@ -335,7 +334,7 @@ class CameraFragment : Fragment() {
         // Open the selected camera
 
         Log.d("Ian", "Initializing Camera ID ${args.cameraId}")
-        mBT?.write("Initializing Camera\n".toByteArray())
+        mBT.write("Initializing Camera\n".toByteArray())
 
         camera = openCamera(cameraManager, args.cameraId, cameraHandler)
 
@@ -380,14 +379,14 @@ class CameraFragment : Fragment() {
         // Perform I/O heavy operations in a different scope
         lifecycleScope.launch(Dispatchers.IO) {
             for (i in 0 until numPhotos) {
-                mBT?.write("${mode}:$i\n".toByteArray())
+                mBT.write("${mode}:$i\n".toByteArray())
                 delay(mCommandDelay) // Delay to give time for LEDs to turn on
 
                 takePhoto().use { result ->
                     // Save the result to disk
                     saveResult(result, "$mode$i")
                 }
-                mBT?.write("RESET:0\n".toByteArray())
+                mBT.write("RESET:0\n".toByteArray())
                 delay(mCommandDelay) // Delay to give time for LEDs to turn off
             }
         }
