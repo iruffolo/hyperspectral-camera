@@ -137,8 +137,10 @@ class CameraFragment : Fragment() {
     private var mAutoFocusMode: Int = CaptureRequest.CONTROL_AF_MODE_OFF
     private var mAutoFocusTrigger: Int = CaptureRequest.CONTROL_AF_TRIGGER_START
 
-    /** LED Parameters **/
+    /** LED Parameters (times in microseconds) **/
     private var mLedDebugDelay : Int = 1000000000
+    private var mLedOnTime : Int = 10
+    private var mLedOffTime : Int = 25
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -280,7 +282,7 @@ class CameraFragment : Fragment() {
             }
         }
 
-        // Listen to the capture button
+        /** Listen to the image capture button */
         fragmentCameraBinding.captureButton.setOnClickListener {
 
             // Disable click listener to prevent multiple requests simultaneously in flight
@@ -298,23 +300,22 @@ class CameraFragment : Fragment() {
             it.post { it.isEnabled = true }
         }
 
-        // Debug LEDs
-        /** Ground truth mode toggle switch */
+        /** DEBUG MODE */
+        /** Debug mode toggle switch */
         fragmentCameraBinding.debugSwitch?.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
                 Log.d("Debug Switch", "ON")
                 mBT?.write("DEBUG:${mLedDebugDelay}\n".toByteArray())
             }
         }
-
+        /** Debug mode delay text input */
         fragmentCameraBinding.debugLedDelay?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                Log.d("IanLED", "New number = $p0")
                 var text = fragmentCameraBinding.debugLedDelay!!.text.toString()
 
                 try {
                     mLedDebugDelay = text.toInt()
-                    Log.d("IanLED", "New number int tho = $mLedDebugDelay")
+                    Log.d("IanLED", "New debug delay = $mLedDebugDelay")
                 } catch (nfe: NumberFormatException) {
                     Log.e(TAG, "Could not parse text field", nfe)
                 }
@@ -322,6 +323,45 @@ class CameraFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
+
+        /** LED Parameter Settings */
+        /** Input for LED on time */
+        fragmentCameraBinding.ledOnTime?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                var text = fragmentCameraBinding.ledOnTime!!.text.toString()
+
+                try {
+                    mLedOnTime = text.toInt()
+                    Log.d("IanLED", "New LED on time = $mLedOnTime")
+                } catch (nfe: NumberFormatException) {
+                    Log.e(TAG, "Could not parse text field", nfe)
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        })
+        /** Input for LED off time */
+        fragmentCameraBinding.ledOffTime?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                var text = fragmentCameraBinding.ledOffTime!!.text.toString()
+
+                try {
+                    mLedOffTime = text.toInt()
+                    Log.d("IanLED", "New LED off time = $mLedOffTime")
+                } catch (nfe: NumberFormatException) {
+                    Log.e(TAG, "Could not parse text field", nfe)
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        })
+        /** Button to send LED timing changes on bluetooth */
+        fragmentCameraBinding.ledSendUpdate?.setOnClickListener {
+            Log.d("IanLED", "Sending new LED times: ${mLedOnTime}/${mLedOffTime}")
+
+            mBT?.write("LEDON:${mLedOnTime}\n".toByteArray())
+            mBT?.write("LEDOFF:${mLedOffTime}\n".toByteArray())
+        }
     }
 
     /**
