@@ -86,8 +86,6 @@ void setup() {
         tskIDLE_PRIORITY,   // Priority
         &btThread,          // Task handle
         0);                 // Pin task to core 0
-
-    delay(500);
 }
 
 
