@@ -221,9 +221,10 @@ class CameraFragment : Fragment() {
         }
 
         /** ISO/GAIN Slider */
-        val maxGain: Int = characteristics.get(CameraCharacteristics.SENSOR_MAX_ANALOG_SENSITIVITY)!!
-        Log.d("Characteristics", "Max gain $maxGain")
-        fragmentCameraBinding.sensitivityIso?.max = maxGain
+        val gainRange: Range<Int> = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)!!
+        Log.d("Ian", "exposure time low: " + gainRange.lower + "\thigh: " + gainRange.upper)
+        fragmentCameraBinding.sensitivityIso?.min = gainRange.lower
+        fragmentCameraBinding.sensitivityIso?.max = gainRange.upper
         fragmentCameraBinding.sensitivityIso?.progress = mSensitivity
         fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, mSensitivity)
         fragmentCameraBinding.sensitivityIso?.setOnSeekBarChangeListener(
