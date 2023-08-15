@@ -33,7 +33,6 @@ import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.android.camera.utils.OrientationLiveData
@@ -48,7 +47,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.Closeable
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -117,7 +115,7 @@ class CameraFragment : Fragment() {
     /** Live data listener for changes in the device orientation relative to the camera */
     private lateinit var relativeOrientation: OrientationLiveData
 
-    private lateinit var captureRequest: CaptureRequest.Builder
+    private lateinit var mPreviewRequest: CaptureRequest.Builder
 
     private var mConfigMenu : Boolean = false
 
@@ -127,6 +125,15 @@ class CameraFragment : Fragment() {
     private var mGroundTruthMode : Boolean = false
     private var mCommandDelay: Long = 20
     private var mNumGtPhotos : Int = 10
+
+    /** Camera Capture Parameters **/
+    private var mSensorExposureTime : Long = 41280
+    private var mSensitivity : Int = 400
+    private var mShutterSpeed : Int = 0
+    private var mControlMode : Int = CaptureRequest.CONTROL_MODE_AUTO
+    private var mAutoExposureMode : Int = CaptureRequest.CONTROL_AE_MODE_OFF
+    private var mAutoFocusMode: Int = CaptureRequest.CONTROL_AF_MODE_OFF
+    private var mAutoFocusTrigger: Int = CaptureRequest.CONTROL_AF_TRIGGER_START
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -190,6 +197,7 @@ class CameraFragment : Fragment() {
 
     private fun initializeButtons() {
 
+
         /** Button to open configuration menu */
         fragmentCameraBinding.configButton?.setOnClickListener {
             Log.d("Config", "Changing to config screen")
@@ -214,8 +222,8 @@ class CameraFragment : Fragment() {
                     fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, progress)
 
                     session.stopRepeating()
-                    captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, progress)
-                    session.setRepeatingRequest(captureRequest.build(), null, cameraHandler)
+                    mPreviewRequest.set(CaptureRequest.SENSOR_SENSITIVITY, progress)
+                    session.setRepeatingRequest(mPreviewRequest.build(), null, cameraHandler)
                 }
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 }
@@ -235,8 +243,8 @@ class CameraFragment : Fragment() {
                     fragmentCameraBinding.exposureTimeText?.text = "Exposure Time: $progress"
 
                     session.stopRepeating()
-                    captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, progress.toLong())
-                    session.setRepeatingRequest(captureRequest.build(), null, cameraHandler)
+                    mPreviewRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, progress.toLong())
+                    session.setRepeatingRequest(mPreviewRequest.build(), null, cameraHandler)
                 }
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 }
@@ -318,38 +326,39 @@ class CameraFragment : Fragment() {
         imageReader = ImageReader.newInstance(
                 size.width, size.height, args.pixelFormat, IMAGE_BUFFER_SIZE)
 
-//        Log.d("Ian", "size ${size.width}   ${size.height}")
-//        Log.d("Ian", "pixel format ${args.pixelFormat}")
-
         // Creates list of Surfaces where the camera will output frames
         val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface, imageReader.surface)
 
         // Start a capture session using our open camera and list of Surfaces where frames will go
         session = createCaptureSession(camera, targets, cameraHandler)
 
-        captureRequest = camera.createCaptureRequest(
+        mPreviewRequest = camera.createCaptureRequest(
                 CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder.holder.surface) }
 
         // Set some settings
-        captureRequest.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO)
-        captureRequest.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
-        // captureRequest.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
-        // captureRequest.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START)
+        setCaptureParams(mPreviewRequest)
 
 //        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
 //            fragmentCameraBinding.exposureTime?.progress?.toLong())
 //        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY,
 //            fragmentCameraBinding.sensitivityIso?.progress)
 
-        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 41280)
-        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, 800)
-
-//        captureRequest.set(CaptureRequest.SENSOR_FRAME_DURATION, 4000000)
-
         // This will keep sending the capture request as frequently as possible until the
         // session is torn down or session.stopRepeating() is called
-        session.setRepeatingRequest(captureRequest.build(), null, cameraHandler)
+        session.setRepeatingRequest(mPreviewRequest.build(), null, cameraHandler)
 
+    }
+
+    private fun setCaptureParams(request: CaptureRequest.Builder) {
+
+        request.set(CaptureRequest.CONTROL_MODE, mControlMode)
+        request.set(CaptureRequest.CONTROL_AE_MODE, mAutoExposureMode)
+        request.set(CaptureRequest.CONTROL_AF_MODE, mAutoFocusMode)
+        request.set(CaptureRequest.CONTROL_AF_TRIGGER, mAutoFocusTrigger)
+
+        request.set(CaptureRequest.SENSOR_EXPOSURE_TIME, mSensorExposureTime)
+        request.set(CaptureRequest.SENSOR_SENSITIVITY, mSensitivity)
+        // request.set(CaptureRequest.SENSOR_FRAME_DURATION, mShutterSpeed)
     }
 
     private fun takePhotoMode(numPhotos: Int, mode: String)
@@ -447,13 +456,11 @@ class CameraFragment : Fragment() {
         }, imageReaderHandler)
 
         val captureRequest = session.device.createCaptureRequest(
-                CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(imageReader.surface) }
+                CameraDevice.TEMPLATE_MANUAL).apply { addTarget(imageReader.surface) }
 //                CameraDevice.TEMPLATE_STILL_CAPTURE).apply { addTarget(imageReader.surface) }
 
-        captureRequest.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO)
-        captureRequest.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
-        captureRequest.set(CaptureRequest.SENSOR_EXPOSURE_TIME, 41280)
-        captureRequest.set(CaptureRequest.SENSOR_SENSITIVITY, 800)
+        // Set parameters for ISO, exposure time, etc
+        setCaptureParams(captureRequest)
 
         session.capture(captureRequest.build(), object : CameraCaptureSession.CaptureCallback() {
 
