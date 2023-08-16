@@ -1,4 +1,4 @@
-package com.example.android.camera2.basic.fragments
+package com.hyperspectral.camera.fragments
 
 import android.Manifest
 import android.R
@@ -23,8 +23,8 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import com.example.android.camera2.basic.CameraActivity
-import com.example.android.camera2.basic.databinding.BluetoothBinding
+import com.hyperspectral.camera.CameraActivity
+import com.hyperspectral.camera.databinding.BluetoothBinding
 import java.io.IOException
 import java.io.OutputStream
 import java.util.*
@@ -203,7 +203,7 @@ class BluetoothFragment : Fragment() {
         fragmentBtBinding.camButton.setOnClickListener {
             Log.d("Bluetooth", "BT to Camera")
             lifecycleScope.launchWhenStarted {
-                Navigation.findNavController(requireActivity(), com.example.android.camera2.basic.R.id.fragment_container).navigate(
+                Navigation.findNavController(requireActivity(), com.hyperspectral.camera.R.id.fragment_container).navigate(
                     BluetoothFragmentDirections.actionBluetoothFragmentToSelectorFragment())
             }
         }

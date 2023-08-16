@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.camera2.basic.fragments
+package com.hyperspectral.camera.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -32,7 +32,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.camera.utils.GenericListAdapter
-import com.example.android.camera2.basic.R
+import com.hyperspectral.camera.R
 
 class SelectorFragment : Fragment() {
 

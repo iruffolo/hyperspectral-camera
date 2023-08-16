@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.example.android.camera2.basic
+package com.hyperspectral.camera
 
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.android.camera2.basic.databinding.ActivityCameraBinding
-import com.example.android.camera2.basic.fragments.BluetoothFragment
-import com.example.android.camera2.basic.fragments.BluetoothFragment.ConnectedThread
+import com.hyperspectral.camera.databinding.ActivityCameraBinding
+import com.hyperspectral.camera.fragments.BluetoothFragment
+import com.hyperspectral.camera.fragments.BluetoothFragment.ConnectedThread
 
 
 class CameraActivity : AppCompatActivity() {

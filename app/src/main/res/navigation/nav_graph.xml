@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/permissions_fragment"
-        android:name="com.example.android.camera2.basic.fragments.PermissionsFragment"
+        android:name="com.hyperspectral.camera.fragments.PermissionsFragment"
         android:label="Permissions" >
 
         <action
@@ -33,7 +33,7 @@
 
     <fragment
         android:id="@+id/selector_fragment"
-        android:name="com.example.android.camera2.basic.fragments.SelectorFragment"
+        android:name="com.hyperspectral.camera.fragments.SelectorFragment"
         android:label="Selector" >
 
         <action
@@ -47,7 +47,7 @@
 
     <fragment
         android:id="@+id/camera_fragment"
-        android:name="com.example.android.camera2.basic.fragments.CameraFragment"
+        android:name="com.hyperspectral.camera.fragments.CameraFragment"
         android:label="Camera" >
 
         <argument
@@ -75,7 +75,7 @@
 
     <fragment
         android:id="@+id/image_viewer_fragment"
-        android:name="com.example.android.camera2.basic.fragments.ImageViewerFragment"
+        android:name="com.hyperspectral.camera.fragments.ImageViewerFragment"
         android:label="Image Viewer" >
 
         <argument
@@ -95,7 +95,7 @@
     </fragment>
     <fragment
         android:id="@+id/bluetoothFragment"
-        android:name="com.example.android.camera2.basic.fragments.BluetoothFragment"
+        android:name="com.hyperspectral.camera.fragments.BluetoothFragment"
         android:label="BluetoothFragment" >
         <action
             android:id="@+id/action_bluetoothFragment_to_selector_fragment"

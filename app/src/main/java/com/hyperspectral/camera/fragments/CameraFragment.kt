@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.camera2.basic.fragments
+package com.hyperspectral.camera.fragments
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
@@ -40,9 +40,9 @@ import androidx.navigation.fragment.navArgs
 import com.example.android.camera.utils.OrientationLiveData
 import com.example.android.camera.utils.computeExifOrientation
 import com.example.android.camera.utils.getPreviewOutputSize
-import com.example.android.camera2.basic.CameraActivity
-import com.example.android.camera2.basic.R
-import com.example.android.camera2.basic.databinding.FragmentCameraBinding
+import com.hyperspectral.camera.CameraActivity
+import com.hyperspectral.camera.R
+import com.hyperspectral.camera.databinding.FragmentCameraBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
