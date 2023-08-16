@@ -41,14 +41,15 @@
 
         <ImageButton
             android:id="@+id/config_button"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="50dp"
-            android:background="@android:drawable/ic_menu_info_details"
-            android:scaleType="fitCenter"
-            android:contentDescription="@string/configuration" />
+            android:layout_marginBottom="70dp"
+            android:background="@drawable/gear_icon"
+            android:backgroundTint="#DDDDDD"
+            android:contentDescription="@string/configuration"
+            android:scaleType="fitCenter" />
 
         <ImageButton
             android:id="@+id/capture_button"
@@ -59,6 +60,7 @@
             android:background="@drawable/ic_shutter"
             android:contentDescription="@string/capture"
             android:scaleType="fitCenter" />
+
     </FrameLayout>>
 
     <FrameLayout
