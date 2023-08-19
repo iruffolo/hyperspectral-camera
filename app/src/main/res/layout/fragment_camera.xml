@@ -30,8 +30,8 @@
 
         <com.example.android.camera.utils.AutoFitSurfaceView
             android:id="@+id/view_finder"
-            android:layout_width="353dp"
-            android:layout_height="402dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_margin="10dp"/>
 
         <View
@@ -41,25 +41,24 @@
             android:foreground="@android:color/transparent" />
 
         <ImageButton
-            android:id="@+id/config_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="70dp"
-            android:background="@drawable/gear_icon"
-            android:backgroundTint="#DDDDDD"
-            android:contentDescription="@string/configuration"
-            android:scaleType="fitCenter" />
-
-        <ImageButton
             android:id="@+id/capture_button"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:layout_marginBottom="60dp"
             android:layout_gravity="bottom|center"
-            android:layout_marginBottom="20dp"
             android:background="@drawable/ic_shutter"
             android:contentDescription="@string/capture"
+            android:scaleType="fitCenter" />
+        <ImageButton
+            android:id="@+id/config_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="60dp"
+            android:layout_gravity="bottom|end"
+            android:background="@drawable/gear_icon"
+            android:backgroundTint="#DDDDDD"
+            android:contentDescription="@string/configuration"
             android:scaleType="fitCenter" />
 
     </FrameLayout>>
@@ -83,7 +82,6 @@
             android:layout_height="match_parent"
             android:layout_margin="20dp"
             android:orientation="vertical">
-
             <TextView
                 android:id="@+id/sensitivity_ISO_text"
                 android:layout_width="wrap_content"
@@ -91,13 +89,11 @@
                 android:layout_margin="1dp"
                 android:text="@string/iso_text"
                 android:textColor="#000000" />
-
             <SeekBar
                 android:id="@+id/sensitivity_iso"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:min="100" />
-
             <TextView
                 android:id="@+id/exposure_time_text"
                 android:layout_width="match_parent"
@@ -105,13 +101,11 @@
                 android:layout_margin="1dp"
                 android:text="@string/exposure_text"
                 android:textColor="#000000" />
-
             <SeekBar
                 android:id="@+id/exposure_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:min="50000" />
-
             <View
                 android:id="@+id/divider1"
                 android:layout_width="match_parent"
@@ -126,7 +120,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
                 android:orientation="vertical">
-
                 <TextView
                     android:id="@+id/rsNumImagesText"
                     android:layout_width="match_parent"
@@ -134,7 +127,6 @@
                     android:layout_margin="1dp"
                     android:text="@string/rs_num_images_text"
                     android:textColor="#000000" />
-
                 <SeekBar
                     android:id="@+id/rsNumImages"
                     android:layout_width="match_parent"
@@ -143,21 +135,18 @@
                     android:max="4"
                     android:progress="0"
                     android:theme="@style/Widget.AppCompat.SeekBar.Discrete" />
-
                 <Switch
                     android:id="@+id/gt_switch"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:gravity="center|end"
                     android:text="@string/gt_mode" />
-
                 <Switch
                     android:id="@+id/debug_switch"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:gravity="center|end"
                     android:text="@string/debug_mode" />
-
                 <EditText
                     android:id="@+id/debugLedDelay"
                     android:layout_width="match_parent"
@@ -166,7 +155,6 @@
                     android:gravity="end"
                     android:hint="@string/debug_hint"
                     android:inputType="number" />
-
                 <Button
                     android:id="@+id/reset"
                     android:layout_width="200dp"
@@ -206,7 +194,6 @@
                 android:layout_height="200dp"
                 android:layout_gravity="start"
                 android:orientation="vertical">
-
                 <EditText
                     android:id="@+id/ledOnTime"
                     android:layout_width="match_parent"
@@ -215,7 +202,6 @@
                     android:ems="10"
                     android:hint="@string/led_on_hint"
                     android:inputType="number" />
-
                 <EditText
                     android:id="@+id/ledOffTime"
                     android:layout_width="match_parent"
@@ -224,7 +210,6 @@
                     android:ems="10"
                     android:hint="@string/led_off_hint"
                     android:inputType="number" />
-
                 <EditText
                     android:id="@+id/whiteOnMultiple"
                     android:layout_width="match_parent"
@@ -233,7 +218,6 @@
                     android:ems="10"
                     android:hint="@string/white_on_hint"
                     android:inputType="number" />
-
                 <Button
                     android:id="@+id/ledSendUpdate"
                     android:layout_width="200dp"
