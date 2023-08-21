@@ -20,14 +20,15 @@ apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs"
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 34
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         applicationId "com.hyperspectral.camera"
         minSdkVersion 26
-        targetSdkVersion 29
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0.0"
+        namespace 'com.hyperspectral.camera'
     }
 
     compileOptions {
@@ -49,10 +50,15 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.hyperspectral.camera'
 }
 
 dependencies {
     implementation project(':utils')
+
+    // Constrained layout
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-alpha12")
+//    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha12")
 
     // Kotlin lang
     implementation 'androidx.core:core-ktx:1.2.0'
@@ -66,7 +72,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     // Navigation library
-    def nav_version = '2.2.2'
+    def nav_version = '2.5.0'
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 

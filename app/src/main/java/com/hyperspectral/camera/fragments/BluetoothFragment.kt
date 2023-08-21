@@ -4,10 +4,7 @@ import android.R
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -38,27 +35,6 @@ class BluetoothFragment : Fragment() {
     private val mBluetoothList = ArrayList<Any>()
 
     private var mAdapter : ArrayAdapter<*>? = null
-
-    // Create a BroadcastReceiver for ACTION_FOUND.
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when(intent.action) {
-                BluetoothDevice.ACTION_FOUND -> {
-                    // Discovery has found a device. Get the BluetoothDevice
-                    // object and its info from the Intent.
-                    val device: BluetoothDevice =
-                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice
-
-                    mBluetoothDevices?.add(device)
-
-                    if (device.name != null)
-                        mBluetoothList.add(device)
-
-                    mAdapter?.notifyDataSetChanged()
-                }
-            }
-        }
-    }
 
     // UUID - DO NOT CHANGE THIS
     private val mUUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
@@ -139,10 +115,6 @@ class BluetoothFragment : Fragment() {
         }
         val getVis = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
         startActivityForResult(getVis, 0)
-
-        // Register for broadcasts when a device is discovered.
-        val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-        activity?.registerReceiver(receiver, filter)
     }
 
     override fun onCreateView(
@@ -206,8 +178,5 @@ class BluetoothFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-
-        // Unregister the ACTION_FOUND receiver.
-        activity?.unregisterReceiver(receiver)
     }
 }

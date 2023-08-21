@@ -28,11 +28,16 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.example.android.camera.utils.AutoFitSurfaceView
-            android:id="@+id/view_finder"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"/>
+            android:layout_height="match_parent">
+
+            <com.example.android.camera.utils.AutoFitSurfaceView
+                android:id="@+id/view_finder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/overlay"
