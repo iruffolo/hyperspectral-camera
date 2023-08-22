@@ -158,7 +158,7 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fragmentCameraBinding.viewFinder.holder.addCallback(object : SurfaceHolder.Callback {
+        fragmentCameraBinding.viewFinder2!!.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceDestroyed(holder: SurfaceHolder) = Unit
 
             override fun surfaceChanged(
@@ -177,10 +177,10 @@ class CameraFragment : Fragment() {
                 )
                 Log.d(TAG, "View finder size: ${fragmentCameraBinding.viewFinder.width} x ${fragmentCameraBinding.viewFinder.height}")
                 Log.d(TAG, "Selected preview size: $previewSize")
-                fragmentCameraBinding.viewFinder.setAspectRatio(
-                    previewSize.width,
-                    previewSize.height
-                )
+//                fragmentCameraBinding.viewFinder.setAspectRatio(
+//                    previewSize.width,
+//                    previewSize.height
+//                )
 
                 // To ensure that size is set, initialize camera in the view's thread
                 view.post { initializeCamera() }
@@ -331,7 +331,7 @@ class CameraFragment : Fragment() {
         fragmentCameraBinding.debugLedDelay?.hint = getString(R.string.debug_hint, mLedDebugDelay)
         fragmentCameraBinding.debugLedDelay?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                var text = fragmentCameraBinding.debugLedDelay!!.text.toString()
+                val text = fragmentCameraBinding.debugLedDelay!!.text.toString()
 
                 try {
                     mLedDebugDelay = text.toInt()
@@ -373,7 +373,7 @@ class CameraFragment : Fragment() {
         fragmentCameraBinding.ledOnTime?.hint = getString(R.string.led_on_hint, mLedOnTime)
         fragmentCameraBinding.ledOnTime?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                var text = fragmentCameraBinding.ledOnTime!!.text.toString()
+                val text = fragmentCameraBinding.ledOnTime!!.text.toString()
 
                 try {
                     mLedOnTime = text.toInt()
@@ -389,7 +389,7 @@ class CameraFragment : Fragment() {
         fragmentCameraBinding.ledOffTime?.hint = getString(R.string.led_off_hint, mLedOffTime)
         fragmentCameraBinding.ledOffTime?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                var text = fragmentCameraBinding.ledOffTime!!.text.toString()
+                val text = fragmentCameraBinding.ledOffTime!!.text.toString()
 
                 try {
                     mLedOffTime = text.toInt()
@@ -405,7 +405,7 @@ class CameraFragment : Fragment() {
         fragmentCameraBinding.whiteOnMultiple?.hint = getString(R.string.white_on_hint, mWhiteOnMultiple)
         fragmentCameraBinding.whiteOnMultiple?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                var text = fragmentCameraBinding.whiteOnMultiple!!.text.toString()
+                val text = fragmentCameraBinding.whiteOnMultiple!!.text.toString()
 
                 try {
                     mWhiteOnMultiple = text.toInt()
@@ -455,13 +455,14 @@ class CameraFragment : Fragment() {
         Log.d("Camera Size", "Width: ${size.width}, Height: ${size.height}")
 
         // Creates list of Surfaces where the camera will output frames
-        val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface, imageReader.surface)
+//        val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface, imageReader.surface)
+        val targets = listOf(fragmentCameraBinding.viewFinder2!!.holder.surface, imageReader.surface)
 
         // Start a capture session using our open camera and list of Surfaces where frames will go
         session = createCaptureSession(camera, targets, cameraHandler)
 
         mPreviewRequest = camera.createCaptureRequest(
-                CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder.holder.surface) }
+                CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder2!!.holder.surface) }
 
         // Set all the appropriate camera capture settings for image preview
         setCaptureParams(mPreviewRequest)
