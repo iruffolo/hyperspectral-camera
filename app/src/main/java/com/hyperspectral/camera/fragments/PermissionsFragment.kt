@@ -28,7 +28,10 @@ import androidx.lifecycle.lifecycleScope
 import com.hyperspectral.camera.R
 
 private const val PERMISSIONS_REQUEST_CODE = 10
-private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
+private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA,
+    Manifest.permission.BLUETOOTH,
+    Manifest.permission.BLUETOOTH_CONNECT,
+    Manifest.permission.BLUETOOTH_SCAN)
 
 /**
  * This [Fragment] requests permissions and, once granted, it will navigate to the next fragment
