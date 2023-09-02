@@ -158,7 +158,7 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fragmentCameraBinding.viewFinder2!!.holder.addCallback(object : SurfaceHolder.Callback {
+        fragmentCameraBinding.viewFinder!!.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceDestroyed(holder: SurfaceHolder) = Unit
 
             override fun surfaceChanged(
@@ -456,13 +456,13 @@ class CameraFragment : Fragment() {
 
         // Creates list of Surfaces where the camera will output frames
 //        val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface, imageReader.surface)
-        val targets = listOf(fragmentCameraBinding.viewFinder2!!.holder.surface, imageReader.surface)
+        val targets = listOf(fragmentCameraBinding.viewFinder!!.holder.surface, imageReader.surface)
 
         // Start a capture session using our open camera and list of Surfaces where frames will go
         session = createCaptureSession(camera, targets, cameraHandler)
 
         mPreviewRequest = camera.createCaptureRequest(
-                CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder2!!.holder.surface) }
+                CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder!!.holder.surface) }
 
         // Set all the appropriate camera capture settings for image preview
         setCaptureParams(mPreviewRequest)
@@ -632,6 +632,7 @@ class CameraFragment : Fragment() {
                     val contentValues = ContentValues().apply{
                         put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
                         put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/HyperspectralCam")
+                        put(MediaStore.MediaColumns.MIME_TYPE, "image/dng")
                     }
                     val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
                     resolver.openOutputStream(uri!!).use {

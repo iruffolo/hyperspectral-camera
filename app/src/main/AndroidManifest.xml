@@ -32,8 +32,8 @@
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
-        android:label="HyperCam"
-        android:icon="@drawable/hyperspectral_icon"
+        android:label="ChromaFlash"
+        android:icon="@mipmap/rainblow_flash"
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity

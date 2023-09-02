@@ -37,7 +37,7 @@
                 android:id="@+id/view_finder"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_margin="10dp"
+                android:layout_margin="5dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -45,15 +45,6 @@
                 tools:layout_editor_absoluteX="10dp"
                 tools:layout_editor_absoluteY="10dp" />
 
-            <SurfaceView
-                android:id="@+id/view_finder2"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintDimensionRatio="H,3025:4032" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
