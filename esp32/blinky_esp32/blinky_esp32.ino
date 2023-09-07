@@ -45,6 +45,7 @@ enum Mode {
     RS_CAPTURE,
     GT_CAPTURE,
     RESET,
+    LIGHT,
     DEBUG_LED
 };
 enum Mode curr_mode = Mode::PASSIVE;
@@ -61,6 +62,7 @@ int curr_rs_seq = 0;
 
 // Delay for debug
 int delay_debug_ms = 5000;
+int curr_light = 0;
 
 //!
 //! Setup function to initialize peripherals etc.
@@ -120,6 +122,11 @@ void loop () {
         // Slowly turn on each LED
         case Mode::DEBUG_LED:
             debug_leds();
+            curr_mode = Mode::PASSIVE;
+            break;
+
+        case Mode::LIGHT:
+            digitalWrite(leds[curr_light], HIGH);
             curr_mode = Mode::PASSIVE;
             break;
 
@@ -272,6 +279,10 @@ void read_bluetooth(void* pvParameters) {
                     else if (strcmp(mode, "DEBUG") == 0) {
                         curr_mode = Mode::DEBUG_LED;
                         delay_debug_ms = v;
+                    }
+                    else if (strcmp(mode, "LIGHT") == 0) {
+                        curr_mode = Mode::LIGHT;
+                        curr_light = v < num_leds ? v : 0;
                     }
                     else {
                         curr_mode = Mode::PASSIVE;
