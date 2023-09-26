@@ -19,23 +19,22 @@ int freq = 500;
 // Flag indicating msg has been received on Bluetooth
 bool msg_recv = false;
 
-// LEDs
 int const WHITE_LED = 19;
 // Violet to Far red
 int const leds[] = {
-    12,     // Blue 
-    27,     // Lighter blue
-    15,     // Lightest blue 
-    32,     // Cyan 
-    14,     // Green 
-    SCL,    // Yellow 
-    SDA,    // Lime 
-    SCK,    // Orange 
-    A5,     // RED1 
-    33,     // RED2 
-    RX,     // RED3 
-    TX,     // RED4 
-    19      // WHITE 
+    12,     // VIOLET (0)
+    27,     // ROYAL BLUE (1)
+    15,     // BLUE (2)
+    32,     // CYAN (3)
+    14,     // GREEN (4)
+    SCL,    // LIME (5)
+    SDA,    // MINT (6)
+    SCK,    // AMBER (7)
+    A5,     // RED ORANGE (8)
+    33,     // RED (9)
+    TX,     // DEEP RED (10)
+    RX,     // FAR RED (11)
+    19      // WHITE (12)
 };
 int const num_leds = 13;
 
