@@ -43,6 +43,7 @@ import com.example.android.camera.utils.getPreviewOutputSize
 import com.hyperspectral.camera.CameraActivity
 import com.hyperspectral.camera.R
 import com.hyperspectral.camera.databinding.FragmentCameraBinding
+import com.hyperspectral.camera.utils.AutoExposure
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -144,6 +145,8 @@ class CameraFragment : Fragment() {
     private var mLedOffTime : Int = 0
     private var mWhiteOnMultiple: Int = 1
     private var mNumLedMultiplex: Int = 1
+
+    private var mAE : AutoExposure = AutoExposure()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -452,17 +455,29 @@ class CameraFragment : Fragment() {
         imageReader = ImageReader.newInstance(
                 size.width, size.height, args.pixelFormat, IMAGE_BUFFER_SIZE)
 
+        imageReader.setOnImageAvailableListener({ reader ->
+            val image = reader.acquireLatestImage()
+
+            image.close()
+        }, imageReaderHandler)
+
+        // Set callback for calculating image exposure
+        imageReader.setOnImageAvailableListener(mAE.autoExposureListener,
+            imageReaderHandler)
+
         Log.d("Camera Size", "Width: ${size.width}, Height: ${size.height}")
 
         // Creates list of Surfaces where the camera will output frames
-//        val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface, imageReader.surface)
-        val targets = listOf(fragmentCameraBinding.viewFinder!!.holder.surface, imageReader.surface)
+        val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface, imageReader.surface)
 
         // Start a capture session using our open camera and list of Surfaces where frames will go
         session = createCaptureSession(camera, targets, cameraHandler)
 
         mPreviewRequest = camera.createCaptureRequest(
-                CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder!!.holder.surface) }
+                CameraDevice.TEMPLATE_PREVIEW).apply {
+                        addTarget(fragmentCameraBinding.viewFinder!!.holder.surface)
+                        addTarget(imageReader.surface)
+                    }
 
         // Set all the appropriate camera capture settings for image preview
         setCaptureParams(mPreviewRequest)
