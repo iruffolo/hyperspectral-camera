@@ -41,14 +41,13 @@ def denoise(img):
     return dst
 
 
-
 if __name__=="__main__":
 
     fn = "LBL_100_0.dng"
     dng, raw = readDNG(fn)
 
     printStats(raw)
-    printImage(raw)
+    printImage(raw**(1/2.2))
 
     rgb = dng.postprocess()  # demosaicing by rawpy
     printStats(rgb, ax=(1,2))
