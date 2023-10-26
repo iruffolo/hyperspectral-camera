@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.hyperspectral.camera.databinding.ActivityCameraBinding
 import com.hyperspectral.camera.fragments.BluetoothFragment
 import com.hyperspectral.camera.fragments.BluetoothFragment.ConnectedThread
+import org.opencv.android.OpenCVLoader
 
 
 class CameraActivity : AppCompatActivity() {
@@ -32,6 +33,9 @@ class CameraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         activityCameraBinding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(activityCameraBinding.root)
+
+        // Initialize OpenCV
+        OpenCVLoader.initDebug()
     }
 
     override fun onResume() {

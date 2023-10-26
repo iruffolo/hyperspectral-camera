@@ -43,6 +43,7 @@ import com.example.android.camera.utils.getPreviewOutputSize
 import com.hyperspectral.camera.CameraActivity
 import com.hyperspectral.camera.R
 import com.hyperspectral.camera.databinding.FragmentCameraBinding
+import com.hyperspectral.camera.utils.AutoExposure
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -145,6 +146,10 @@ class CameraFragment : Fragment() {
     private var mWhiteOnMultiple: Int = 1
     private var mNumLedMultiplex: Int = 1
 
+    private lateinit var mAE : AutoExposure
+
+    private var mAFState : Int = CaptureRequest.CONTROL_AF_STATE_INACTIVE
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -232,7 +237,7 @@ class CameraFragment : Fragment() {
 
                     session.stopRepeating()
                     setCaptureParams(mPreviewRequest) // Update capture params with sensitivity
-                    session.setRepeatingRequest(mPreviewRequest.build(), null, cameraHandler)
+                    session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
 
                     // updated continuously as the user slides the thumb
                     fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, progress)
@@ -265,7 +270,7 @@ class CameraFragment : Fragment() {
 
                     session.stopRepeating()
                     setCaptureParams(mPreviewRequest) // Update capture params with exposure time
-                    session.setRepeatingRequest(mPreviewRequest.build(), null, cameraHandler)
+                    session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
                 }
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
@@ -429,6 +434,27 @@ class CameraFragment : Fragment() {
         }
     }
 
+    /** Preview callback to determine focus has been locked **/
+    private val captureCallback: CameraCaptureSession.CaptureCallback =
+        object : CameraCaptureSession.CaptureCallback() {
+            override fun onCaptureProgressed(
+                session: CameraCaptureSession,
+                request: CaptureRequest,
+                partialResult: CaptureResult
+            ) {
+            }
+
+            override fun onCaptureCompleted(
+                session: CameraCaptureSession,
+                request: CaptureRequest,
+                result: TotalCaptureResult
+            ) {
+                mAFState = result.get(CaptureResult.CONTROL_AF_STATE)!!
+                Log.d("AF", "Focus mode: $mAFState")
+            }
+        }
+
+
     /**
      * Begin all camera operations in a coroutine in the main thread. This function:
      * - Opens the camera
@@ -449,27 +475,32 @@ class CameraFragment : Fragment() {
         val size = characteristics.get(
                 CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
                 .getOutputSizes(args.pixelFormat).maxByOrNull { it.height * it.width }!!
+
+        mAE = AutoExposure(size.width, size.height)
+
         imageReader = ImageReader.newInstance(
                 size.width, size.height, args.pixelFormat, IMAGE_BUFFER_SIZE)
 
         Log.d("Camera Size", "Width: ${size.width}, Height: ${size.height}")
 
         // Creates list of Surfaces where the camera will output frames
-//        val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface, imageReader.surface)
-        val targets = listOf(fragmentCameraBinding.viewFinder!!.holder.surface, imageReader.surface)
+        val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface,
+            imageReader.surface)
 
         // Start a capture session using our open camera and list of Surfaces where frames will go
         session = createCaptureSession(camera, targets, cameraHandler)
 
         mPreviewRequest = camera.createCaptureRequest(
-                CameraDevice.TEMPLATE_PREVIEW).apply { addTarget(fragmentCameraBinding.viewFinder!!.holder.surface) }
+                CameraDevice.TEMPLATE_PREVIEW).apply {
+                        addTarget(fragmentCameraBinding.viewFinder.holder.surface)
+        }
 
         // Set all the appropriate camera capture settings for image preview
         setCaptureParams(mPreviewRequest)
 
         // This will keep sending the capture request as frequently as possible until the
         // session is torn down or session.stopRepeating() is called
-        session.setRepeatingRequest(mPreviewRequest.build(), null, cameraHandler)
+        session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
     }
 
     private fun setCaptureParams(request: CaptureRequest.Builder) {
@@ -491,6 +522,10 @@ class CameraFragment : Fragment() {
             for (i in 0 until numPhotos) {
                 mBT?.write("${mode}:$i\n".toByteArray())
                 delay(mCommandDelay) // Delay to give time for LEDs to turn on
+
+                // Wait for auto focus to lock
+                while (mAFState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+                }
 
                 takePhoto().use { result ->
                     // Save the result to disk
@@ -525,7 +560,6 @@ class CameraFragment : Fragment() {
 
         val captureRequest = session.device.createCaptureRequest(
                 CameraDevice.TEMPLATE_MANUAL).apply { addTarget(imageReader.surface) }
-                // CameraDevice.TEMPLATE_STILL_CAPTURE).apply { addTarget(imageReader.surface) }
 
         // Set parameters for ISO, exposure time, etc
         setCaptureParams(captureRequest)
@@ -734,7 +768,7 @@ class CameraFragment : Fragment() {
         private val TAG = CameraFragment::class.java.simpleName
 
         /** Maximum number of images that will be held in the reader's buffer */
-        private const val IMAGE_BUFFER_SIZE: Int = 16
+        private const val IMAGE_BUFFER_SIZE: Int = 3
 
         /** Maximum time allowed to wait for the result of an image capture */
         private const val IMAGE_CAPTURE_TIMEOUT_MILLIS: Long = 5000

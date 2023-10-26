@@ -16,3 +16,5 @@
 
 include 'app'
 include 'utils'
+include ':sdk'
+project(':sdk').projectDir = new File(rootDir, 'modules/OpenCV-android-sdk/sdk/')
