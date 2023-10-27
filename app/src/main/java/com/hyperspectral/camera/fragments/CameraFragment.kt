@@ -152,6 +152,7 @@ class CameraFragment : Fragment() {
 
     private lateinit var mAE : AutoExposure
 
+    private var mAFToggle : Boolean = true
     private var mAFState : Int = CaptureRequest.CONTROL_AF_STATE_INACTIVE
 
     override fun onCreateView(
@@ -467,6 +468,20 @@ class CameraFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
+
+        /** Toggle for autofocus */
+        fragmentCameraBinding.afSwitch?.isChecked = mAFToggle
+        fragmentCameraBinding.afSwitch?.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // The toggle is enabled
+                mAFToggle = true
+                Log.d("AF", "AF clamp enabled")
+            } else {
+                // The toggle is disabled
+                mAFToggle = false
+                Log.d("AF", "AF clamp disabled")
+            }
+        }
     }
 
     /** Preview callback to determine focus has been locked **/
@@ -559,7 +574,9 @@ class CameraFragment : Fragment() {
                 delay(mCommandDelay) // Delay to give time for LEDs to turn on
 
                 // Wait for auto focus to lock
-                while (mAFState != CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED) {
+                if (mAFToggle) {
+                    while (mAFState != CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED) {
+                    }
                 }
 
                 takePhoto().use { result ->
