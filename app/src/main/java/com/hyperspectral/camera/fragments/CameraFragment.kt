@@ -529,6 +529,11 @@ class CameraFragment : Fragment() {
 
         mAE = AutoExposure(size.width, size.height)
 
+        val configs = characteristics.get(
+                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
+        Log.d("Configs", "$configs")
+
         imageReader = ImageReader.newInstance(
                 size.width, size.height, args.pixelFormat, IMAGE_BUFFER_SIZE)
 

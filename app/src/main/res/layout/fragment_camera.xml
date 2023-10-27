@@ -35,15 +35,15 @@
 
             <com.example.android.camera.utils.AutoFitSurfaceView
                 android:id="@+id/view_finder"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="50dp"
+                android:layout_width="720px"
+                android:layout_height="960px"
+                android:layout_marginTop="100dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintDimensionRatio="3025:4032" />
+                app:layout_constraintDimensionRatio="0.75" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
