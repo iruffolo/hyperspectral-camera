@@ -32,3 +32,10 @@ google-services.json
 # Android Profiling
 *.hprof
 
+# Python VENV
+env
+.env
+
+# Data 
+data
+
