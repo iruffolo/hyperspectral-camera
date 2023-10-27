@@ -52,6 +52,7 @@ import java.io.Closeable
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeoutException
@@ -581,7 +582,7 @@ class CameraFragment : Fragment() {
 
                 takePhoto().use { result ->
                     // Save the result to disk
-                    saveResult(result, "$mode$i")
+                    saveResult(result, "${mode}_$i")
                 }
                 delay(mCommandDelay) // Delay to give time for LEDs to turn off
                 mBT?.write("RESET:0\n".toByteArray())
@@ -689,8 +690,10 @@ class CameraFragment : Fragment() {
                 val buffer = result.image.planes[0].buffer
                 val bytes = ByteArray(buffer.remaining()).apply { buffer.get(this) }
                 try {
-                    val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
-                    val filename = "IMG_${label}_${sdf.format(Date())}.jpg"
+                    val ts = Instant.now().epochSecond
+                    var filename = "${mSceneName}_${ts}_${label}"
+                    filename += "_${mLedOnTime}_${mLedOffTime}_${mNumLedMultiplex}"
+                    filename += "_${mSensorExposureTime}_${mSensitivity}.jpg"
 
                     val resolver = requireContext().contentResolver
                     val contentValues = ContentValues().apply{
@@ -711,8 +714,10 @@ class CameraFragment : Fragment() {
             ImageFormat.RAW_SENSOR -> {
                 val dngCreator = DngCreator(characteristics, result.metadata)
                 try {
-                    val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.US)
-                    val filename = "IMG_${label}_${sdf.format(Date())}.dng"
+                    val ts = Instant.now().epochSecond
+                    var filename = "${mSceneName}_${ts}_${label}"
+                    filename += "_${mLedOnTime}_${mLedOffTime}_${mNumLedMultiplex}"
+                    filename += "_${mSensorExposureTime}_${mSensitivity}.dng"
 
                     val resolver = requireContext().contentResolver
                     val contentValues = ContentValues().apply{
