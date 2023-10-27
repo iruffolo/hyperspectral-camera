@@ -132,6 +132,8 @@ class CameraFragment : Fragment() {
     private var mNumGtPhotos : Int = 10
     private var mNumRsPhotos : Int = 1
 
+    private var mSceneName : String = "ColorChecker"
+
     /** Camera Capture Parameters **/
     private var mSensorExposureTime : Long = 41280
     private var mSensitivity : Int = 2000
@@ -167,27 +169,17 @@ class CameraFragment : Fragment() {
 
         fragmentCameraBinding.viewFinder!!.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceDestroyed(holder: SurfaceHolder) = Unit
-
-            override fun surfaceChanged(
-                    holder: SurfaceHolder,
-                    format: Int,
-                    width: Int,
-                    height: Int) = Unit
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = Unit
 
             @RequiresApi(Build.VERSION_CODES.P)
             override fun surfaceCreated(holder: SurfaceHolder) {
                 // Selects appropriate preview size and configures view finder
-                val previewSize = getPreviewOutputSize(
-                    fragmentCameraBinding.viewFinder.display,
-                    characteristics,
-                    SurfaceHolder::class.java
-                )
-                Log.d(TAG, "View finder size: ${fragmentCameraBinding.viewFinder.width} x ${fragmentCameraBinding.viewFinder.height}")
-                Log.d(TAG, "Selected preview size: $previewSize")
-//                fragmentCameraBinding.viewFinder.setAspectRatio(
-//                    previewSize.width,
-//                    previewSize.height
+//                val previewSize = getPreviewOutputSize(
+//                    fragmentCameraBinding.viewFinder.display,
+//                    characteristics,
+//                    SurfaceHolder::class.java
 //                )
+                Log.d(TAG, "View finder size: ${fragmentCameraBinding.viewFinder.width} x ${fragmentCameraBinding.viewFinder.height}")
 
                 // To ensure that size is set, initialize camera in the view's thread
                 view.post { initializeCamera() }
@@ -459,6 +451,22 @@ class CameraFragment : Fragment() {
             mBT?.write("WHITEON:${mWhiteOnMultiple}\n".toByteArray())
             mBT?.write("LEDMPLX:${mNumLedMultiplex}\n".toByteArray())
         }
+
+        /** Scene name text input */
+        fragmentCameraBinding.sceneName?.hint = getString(R.string.scene_name, mSceneName)
+        fragmentCameraBinding.sceneName?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                var text = fragmentCameraBinding.sceneName!!.text.toString()
+                // remove whitespace
+                text = text.replace("\\s".toRegex(), "")
+
+                mSceneName = text
+                Log.d(tag, "New scene name : $mSceneName")
+                fragmentCameraBinding.sceneName?.hint = getString(R.string.scene_name, mSceneName)
+            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        })
     }
 
     /** Preview callback to determine focus has been locked **/
@@ -477,7 +485,7 @@ class CameraFragment : Fragment() {
                 result: TotalCaptureResult
             ) {
                 mAFState = result.get(CaptureResult.CONTROL_AF_STATE)!!
-                Log.d("AF", "Focus mode: $mAFState")
+                // Log.d("AF", "Focus mode: $mAFState")
             }
         }
 
@@ -551,7 +559,7 @@ class CameraFragment : Fragment() {
                 delay(mCommandDelay) // Delay to give time for LEDs to turn on
 
                 // Wait for auto focus to lock
-                while (mAFState == CaptureRequest.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+                while (mAFState != CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED) {
                 }
 
                 takePhoto().use { result ->

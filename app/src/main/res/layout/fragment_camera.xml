@@ -31,19 +31,19 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp">
+            android:background="#A0D2D2">
 
             <com.example.android.camera.utils.AutoFitSurfaceView
                 android:id="@+id/view_finder"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_margin="5dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="50dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintDimensionRatio="H,3025:4032"
-                tools:layout_editor_absoluteX="10dp"
-                tools:layout_editor_absoluteY="10dp" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintDimensionRatio="3025:4032" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -63,15 +63,16 @@
             android:background="@drawable/ic_shutter"
             android:contentDescription="@string/capture"
             android:scaleType="fitCenter" />
+
         <ImageButton
             android:id="@+id/config_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_gravity="bottom|end"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="60dp"
-            android:layout_gravity="bottom|end"
             android:background="@drawable/gear_icon"
-            android:backgroundTint="#DDDDDD"
+            android:backgroundTint="#646464"
             android:contentDescription="@string/configuration"
             android:scaleType="fitCenter" />
 
@@ -89,7 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:foreground="@android:color/white"
-            android:foregroundTint="#B3FFFFFF" />
+            android:foregroundTint="#CCFFFFFF" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -270,6 +271,12 @@
                 android:background="?android:attr/listDivider"
                 android:backgroundTint="#323232"
                 android:backgroundTintMode="add" />
+
+            <EditText
+                android:id="@+id/scene_name"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="@string/scene_name" />
 
         </LinearLayout>
     </FrameLayout>
