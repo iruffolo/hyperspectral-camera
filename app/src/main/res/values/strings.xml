@@ -18,6 +18,7 @@
     <string name="capture">Capture</string>
     <string name="configuration">Configuration</string>
     <string name="gt_mode">Ground Truth Mode\t\t</string>
+    <string name="w_mode">White LED Mode\t\t</string>
     <string name="debug_mode">Debug LED Mode\t\t</string>
     <string name="debug_hint">Debug delay for LEDs (ms). Default=%1$dms</string>
     <string name="iso_text">ISO: %1$d</string>

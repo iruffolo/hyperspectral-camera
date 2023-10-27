@@ -96,6 +96,7 @@
             android:layout_height="match_parent"
             android:layout_margin="20dp"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/sensitivity_ISO_text"
                 android:layout_width="wrap_content"
@@ -103,11 +104,13 @@
                 android:layout_margin="1dp"
                 android:text="@string/iso_text"
                 android:textColor="#000000" />
+
             <SeekBar
                 android:id="@+id/sensitivity_iso"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:min="100" />
+
             <TextView
                 android:id="@+id/exposure_time_text"
                 android:layout_width="match_parent"
@@ -115,11 +118,13 @@
                 android:layout_margin="1dp"
                 android:text="@string/exposure_text"
                 android:textColor="#000000" />
+
             <SeekBar
                 android:id="@+id/exposure_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:min="50000" />
+
             <View
                 android:id="@+id/divider1"
                 android:layout_width="match_parent"
@@ -132,8 +137,9 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="260dp"
                 android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/rsNumImagesText"
                     android:layout_width="match_parent"
@@ -141,6 +147,7 @@
                     android:layout_margin="1dp"
                     android:text="@string/rs_num_images_text"
                     android:textColor="#000000" />
+
                 <SeekBar
                     android:id="@+id/rsNumImages"
                     android:layout_width="match_parent"
@@ -149,18 +156,28 @@
                     android:max="4"
                     android:progress="0"
                     android:theme="@style/Widget.AppCompat.SeekBar.Discrete" />
+
                 <Switch
                     android:id="@+id/gt_switch"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:gravity="center|end"
                     android:text="@string/gt_mode" />
+
+                <Switch
+                    android:id="@+id/w_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center|end"
+                    android:text="@string/w_mode" />
+
                 <Switch
                     android:id="@+id/debug_switch"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:gravity="center|end"
                     android:text="@string/debug_mode" />
+
                 <EditText
                     android:id="@+id/debugLedDelay"
                     android:layout_width="match_parent"
@@ -169,6 +186,7 @@
                     android:gravity="end"
                     android:hint="@string/debug_hint"
                     android:inputType="number" />
+
                 <Button
                     android:id="@+id/reset"
                     android:layout_width="200dp"
@@ -208,6 +226,7 @@
                 android:layout_height="200dp"
                 android:layout_gravity="start"
                 android:orientation="vertical">
+
                 <EditText
                     android:id="@+id/ledOnTime"
                     android:layout_width="match_parent"
@@ -216,6 +235,7 @@
                     android:ems="10"
                     android:hint="@string/led_on_hint"
                     android:inputType="number" />
+
                 <EditText
                     android:id="@+id/ledOffTime"
                     android:layout_width="match_parent"
@@ -224,6 +244,7 @@
                     android:ems="10"
                     android:hint="@string/led_off_hint"
                     android:inputType="number" />
+
                 <EditText
                     android:id="@+id/whiteOnMultiple"
                     android:layout_width="match_parent"
@@ -232,6 +253,7 @@
                     android:ems="10"
                     android:hint="@string/white_on_hint"
                     android:inputType="number" />
+
                 <Button
                     android:id="@+id/ledSendUpdate"
                     android:layout_width="200dp"

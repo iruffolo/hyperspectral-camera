@@ -125,6 +125,8 @@ class CameraFragment : Fragment() {
     private var mBT : BluetoothFragment.ConnectedThread? = null
 
     /** Current Mode */
+    private enum class CameraMode {GT, RS, W}
+    private var mMode : CameraMode = CameraMode.RS
     private var mGroundTruthMode : Boolean = false
     private var mCommandDelay: Long = 30
     private var mNumGtPhotos : Int = 10
@@ -283,11 +285,19 @@ class CameraFragment : Fragment() {
             it.isEnabled = false
 
             // Regular Mode
-            if (!mGroundTruthMode)
-            {
-                takePhotoMode(mNumRsPhotos, "RS")
-            } else { // Ground Truth Mode
-                takePhotoMode(mNumGtPhotos, "GT")
+            when(mMode) {
+                // White LED mode
+                CameraMode.W -> {
+                    takePhotoMode(1, "W")
+                }
+                // Ground truth mode
+                CameraMode.GT -> {
+                    takePhotoMode(mNumGtPhotos, "GT")
+                }
+                // Rolling shutter mode
+                CameraMode.RS -> {
+                    takePhotoMode(mNumRsPhotos, "RS")
+                }
             }
 
             // Re-enable click listener after photo is taken
@@ -314,13 +324,30 @@ class CameraFragment : Fragment() {
         /** Ground truth mode toggle switch */
         fragmentCameraBinding.gtSwitch?.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
+                // First disable W mode if it is on
+                fragmentCameraBinding.wSwitch?.isChecked = false
                 // The toggle is enabled
-                mGroundTruthMode = true
-                Log.d("Ground Truth Switch", "ON")
+                mMode = CameraMode.GT
+                Log.d("Mode Switch","Camera mode set to Ground Truth (GT)")
             } else {
                 // The toggle is disabled
-                mGroundTruthMode = false
-                Log.d("Ground Truth Switch", "OFF")
+                mMode = CameraMode.RS
+                Log.d("Mode Switch","Camera mode set to Rolling Shutter (RS)")
+            }
+        }
+
+        /** Ground truth mode toggle switch */
+        fragmentCameraBinding.wSwitch?.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // First disable GT mode if it is on
+                fragmentCameraBinding.gtSwitch?.isChecked = false
+                // The toggle is enabled
+                mMode = CameraMode.W
+                Log.d("Mode Switch","Camera mode set to White LED (W)")
+            } else {
+                // The toggle is disabled
+                mMode = CameraMode.RS
+                Log.d("Mode Switch","Camera mode set to Rolling Shutter (RS)")
             }
         }
 

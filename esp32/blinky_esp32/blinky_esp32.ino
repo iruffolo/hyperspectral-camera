@@ -43,6 +43,7 @@ enum Mode {
     PASSIVE,
     RS_CAPTURE,
     GT_CAPTURE,
+    W_CAPTURE,
     RESET,
     LIGHT,
     DEBUG_LED
@@ -107,6 +108,12 @@ void loop () {
         // Capture GT image with LED static 
         case Mode::GT_CAPTURE:
             digitalWrite(leds[curr_gt_led], HIGH);
+            curr_mode = Mode::PASSIVE;
+            break;
+
+        // Capture W image with LED static 
+        case Mode::W_CAPTURE:
+            digitalWrite(WHITE_LED, HIGH);
             curr_mode = Mode::PASSIVE;
             break;
 
@@ -259,6 +266,10 @@ void read_bluetooth(void* pvParameters) {
                         Serial.write("Ground truth mode");
                         curr_mode = Mode::GT_CAPTURE;
                         curr_gt_led = v < num_leds ? v : 0;
+                    }
+                    else if (strcmp(mode, "W") == 0) {
+                        Serial.write("White LED mode");
+                        curr_mode = Mode::W_CAPTURE;
                     }
                     else if (strcmp(mode, "LEDON") == 0) {
                         delay_on_rs_us = v;
