@@ -199,7 +199,7 @@ class CameraFragment : Fragment() {
 
     private fun initializeButtons() {
 
-        fragmentCameraBinding.aeText?.text = getString(R.string.ae_text, 0)
+        fragmentCameraBinding.aeText?.text = getString(R.string.ae_text, "0")
         fragmentCameraBinding.aeRefreshButton?.setOnClickListener {
             Log.d("Auto Exposure", "Refreshing")
 
@@ -212,8 +212,6 @@ class CameraFragment : Fragment() {
             setCaptureParams(captureRequest)
 
             session.capture(captureRequest.build(), null, cameraHandler)
-
-            fragmentCameraBinding.aeText?.text = getString(R.string.ae_text, mAE.mExposure)
         }
 
         /** Button to open configuration menu */
@@ -541,7 +539,13 @@ class CameraFragment : Fragment() {
                 CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
                 .getOutputSizes(args.pixelFormat).maxByOrNull { it.height * it.width }!!
 
-        mAE = AutoExposure()
+//        mAE = AutoExposure {x: String ->
+//            fragmentCameraBinding.aeText?.text = getString(R.string.ae_text, x) }
+        mAE = AutoExposure {x: String -> Log.d("Callback", "$x")
+                fragmentCameraBinding.aeText!!.post(Runnable {
+                    fragmentCameraBinding.aeText?.text = getString(R.string.ae_text, x)
+                })
+            }
 
         Log.d("Pixels", "${args.pixelFormat}")
 

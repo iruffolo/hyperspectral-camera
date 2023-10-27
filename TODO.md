@@ -1,20 +1,22 @@
 # TODO
 
 ## App
-* White LED Mode 
-* Auto Exposure
-* Filename metadata
-    * Custom File Name (requires input)
-    * Mode: GT, RS, W
-    * Frame Number: 1,2,3...
-    * Ton
-    * Toff
-    * MUX = 1,2,3...
-    * SS
-    * ISO
+* ~~White LED Mode~~
+* ~~Auto Exposure (manual mode for now)~~
+* ~~Filename metadata~~
+    * ~~Custom File Name (requires input)~~
+    * ~~Mode: GT, RS, W~~
+    * ~~Frame Number: 1,2,3...~~
+    * ~~Ton~~
+    * ~~Toff~~
+    * ~~MUX = 1,2,3...~~
+    * ~~SS~~
+    * ~~ISO~~
+* ~~Make AF toggle~~
+* ~~Display preview resolution fix~~
 
 ## Arduino (ESP)
-- White LED Mode
+- ~~White LED Mode~~
 - Sequence Update
 
 ## Offline Processing 

@@ -8,9 +8,9 @@ import org.opencv.core.Core
 import org.opencv.core.Mat
 import org.opencv.imgproc.Imgproc
 
-class AutoExposure() {
+class AutoExposure(callback: (String) -> Unit) {
 
-    var mExposure : String = "0"
+    private var mExposure : String = "0"
 
     private val tag = "AutoExposure"
 
@@ -41,6 +41,8 @@ class AutoExposure() {
             val avg = Core.mean(mat)
 
             mExposure = avg.toString().slice(IntRange(1,5))
+
+            callback(mExposure)
 
             image.close()
         }
