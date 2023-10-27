@@ -1,19 +1,23 @@
 # TODO
 
-## Bluetooth
+## App
+* White LED Mode 
+* Auto Exposure
+* Filename metadata
+    * Custom File Name (requires input)
+    * Mode: GT, RS, W
+    * Frame Number: 1,2,3...
+    * Ton
+    * Toff
+    * MUX = 1,2,3...
+    * SS
+    * ISO
 
-- Integrate BT send with camera click button
+## Arduino (ESP)
+- White LED Mode
+- Sequence Update
 
-## Config
+## Offline Processing 
+- Alignment / Row Labelling 
+- Demosaic
 
-- ~~New page for config~~
-
-## Ground truth mode
-
-- ~~Add another camera button that takes multiple images or something~~
-- ~~GT toggle~~
-- More config buttons for GT freq & number of images
-
-## Misc QOL
-
-- Camera images save to proper directory
