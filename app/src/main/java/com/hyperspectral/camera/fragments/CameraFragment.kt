@@ -39,7 +39,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.android.camera.utils.OrientationLiveData
 import com.example.android.camera.utils.computeExifOrientation
-import com.example.android.camera.utils.getPreviewOutputSize
 import com.hyperspectral.camera.CameraActivity
 import com.hyperspectral.camera.R
 import com.hyperspectral.camera.databinding.FragmentCameraBinding
@@ -51,7 +50,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.Closeable
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
@@ -128,7 +126,6 @@ class CameraFragment : Fragment() {
     /** Current Mode */
     private enum class CameraMode {GT, RS, W}
     private var mMode : CameraMode = CameraMode.RS
-    private var mGroundTruthMode : Boolean = false
     private var mCommandDelay: Long = 30
     private var mNumGtPhotos : Int = 10
     private var mNumRsPhotos : Int = 1
@@ -201,6 +198,23 @@ class CameraFragment : Fragment() {
     }
 
     private fun initializeButtons() {
+
+        fragmentCameraBinding.aeText?.text = getString(R.string.ae_text, 0)
+        fragmentCameraBinding.aeRefreshButton?.setOnClickListener {
+            Log.d("Auto Exposure", "Refreshing")
+
+            imageReader.setOnImageAvailableListener(mAE.autoExposureListener, imageReaderHandler)
+
+            val captureRequest = session.device.createCaptureRequest(
+                CameraDevice.TEMPLATE_MANUAL).apply { addTarget(imageReader.surface) }
+
+            // Set parameters for ISO, exposure time, etc
+            setCaptureParams(captureRequest)
+
+            session.capture(captureRequest.build(), null, cameraHandler)
+
+            fragmentCameraBinding.aeText?.text = getString(R.string.ae_text, mAE.mExposure)
+        }
 
         /** Button to open configuration menu */
         fragmentCameraBinding.configButton?.setOnClickListener {
@@ -527,12 +541,9 @@ class CameraFragment : Fragment() {
                 CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
                 .getOutputSizes(args.pixelFormat).maxByOrNull { it.height * it.width }!!
 
-        mAE = AutoExposure(size.width, size.height)
+        mAE = AutoExposure()
 
-        val configs = characteristics.get(
-                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-
-        Log.d("Configs", "$configs")
+        Log.d("Pixels", "${args.pixelFormat}")
 
         imageReader = ImageReader.newInstance(
                 size.width, size.height, args.pixelFormat, IMAGE_BUFFER_SIZE)
