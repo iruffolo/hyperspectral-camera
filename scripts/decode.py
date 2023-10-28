@@ -9,10 +9,9 @@ import matplotlib.pyplot as plt
 import rawpy
 from rawpy import FBDDNoiseReductionMode
 from skimage import color
-from scipy import ndimage
+from scipy import ndimage, convolve
 
-
-pattern = [1,2,3,4,5,6]
+from label_rows import calc_num_rows, calc_labels 
 
 
 def readDNG(filename):
@@ -53,17 +52,27 @@ def denoise(img):
     dst = cv2.fastNlMeansDenoising(img, None, 5, 7, 21)
     return dst
 
-def rollingAvg(x, w=5):
+def rollingAvg(img, w=4, fw=1):
 
-    return ndimage.uniform_filter(x, size=(w,x.shape[1],1), mode='constant')
-    # return np.convolve(x, np.ones(w), 'valid') / w
+    # roll = ndimage.uniform_filter(img, size=(fw, img.shape[1]), mode='wrap')
 
-    roll = np.zeros((a.shape[0]-2*n, a.shape[1], a.shape[2]))
+    roll = np.zeros_like(img)
 
     for i in range(0, roll.shape[0]):
-        x = a[i+2,:,:] + a[i+1,:,:] + a[i,:,:]
-        roll[i,:,:] = x
-        print(i,n)
+        x = np.zeros_like(img[0,:]) 
+
+        for j in range (-w, w+1):
+            idx = i+j
+            if (idx < 0 or idx > roll.shape[0]-1):
+                roll[i,:] = np.ones_like(img[0,:])
+                break
+            else:
+                x = np.stack((x, img[idx,:]), axis=0)
+                x = np.sum(x, axis=0)
+            roll[i,:] = x / ((w*2) + 1)
+
+    # roll = ndimage.uniform_filter(roll, size=(fw, roll.shape[1]), mode='wrap')
+    return roll
 
 
 if __name__=="__main__":
@@ -72,7 +81,6 @@ if __name__=="__main__":
     dir = f"{os.getcwd()}/data_cc/"
 
     files = os.listdir(dir)
-    fn = dir + files[9]
 
     params = dict()
 
@@ -85,22 +93,29 @@ if __name__=="__main__":
         for i,p in enumerate(parameters):
             params[f][map[i]] = p
 
-    dng, raw = readDNG(fn)
+    sorted_files = sorted(params, 
+                          key=lambda x: params[x]['timestamp'])
+
+    fn = sorted_files[8]
+    dng, raw = readDNG(dir + fn)
 
     # lin = linearize(dng, raw)
 
     # demosaicing by rawpy
-    rgb = dng.postprocess(gamma=(2.222,4.5), 
+    rgb = dng.postprocess(gamma=(2.22,4.5), 
                           no_auto_bright=False,
                           fbdd_noise_reduction=FBDDNoiseReductionMode.Full,
                           use_camera_wb=True,
-                          user_black=dng.black_level_per_channel[0])
+                          user_black=dng.black_level_per_channel[0],
+                          output_bps=8)
 
-    fig = plt.figure(figsize=(40,10))
+
+    fig = plt.figure(figsize=(25,5))
+    fig.suptitle(f"{fn}", fontsize=25)
 
     row = 1 
-    col = 6
-    titles=("Red", "Green", "Blue", "RGB", "Moving Avg", "Mask (Black)")
+    col = 7
+    titles=("Red", "Green", "Blue", "RGB", "Gray", "Uniform Filter + Moving Avg", "Mask (Black)")
 
     for i in range(0,3):
         fig.add_subplot(row,col,i+1)
@@ -111,35 +126,56 @@ if __name__=="__main__":
     plt.title(titles[3])
     plt.imshow(rgb)
 
-    # Cut edges off rows
+    gray = color.rgb2gray(rgb)
+    fig.add_subplot(row,col,5)
+    plt.title(titles[4])
+    plt.imshow(gray, cmap='gray')
+
+    # # Cut edges off rows
     # cols = rgb.shape[1]
     # uslice = int(cols - cols/4)
     # lslice = int(cols - cols*3/4)
-    # avg_channel = np.mean(rgb[:,lslice:uslice,:], axis=1)
-    a = rollingAvg(rgb)
-    fig.add_subplot(row,col,5)
-    plt.title(titles[4])
-    plt.imshow(a)
+    # a = rollingAvg(gray[:,lslice:uslice])
+    a = rollingAvg(gray)
 
-    avg_channel = np.mean(a, axis=1)
-
-    # Array for labelling rows
-    mask_black = np.zeros(rgb.shape[0])
-
-    sum = np.sum(avg_channel, axis=1)
-    diff = np.max(avg_channel, axis=1) - np.min(avg_channel, axis=1)
-    std = np.std(a, axis=1)
-
-    np.put(mask_black, np.where((sum < 109) & (diff < 30) & (np.mean(std, axis=1) < 8)), 1)
-
-    for i,x in enumerate(sum):
-        print(i, avg_channel[i], x, diff[i], np.mean(std[i]))
-
-
-    mask_img_black = np.repeat(mask_black[:, np.newaxis], raw.shape[1], axis=1)
     fig.add_subplot(row,col,6)
     plt.title(titles[5])
-    plt.imshow(mask_img_black, cmap="gray")
+    plt.imshow(a, cmap='gray')
+
+
+    avg_gray = np.mean(a, axis=1)
+    std_gray = np.std(a, axis=1)
+    # avg_channel = np.mean(gray, axis=1)
+    # avg = np.mean(avg_channel, axis=1)
+    # sum = np.sum(avg_channel, axis=1)
+    # diff = np.max(avg_channel, axis=1) - np.min(avg_channel, axis=1)
+    # std = np.mean(np.std(a, axis=1), axis=1)
+
+    # Array for labelling rows
+    mask_black = np.zeros(gray.shape[0])
+
+    # mask = np.where((avg < 50) & (sum < 150) & (diff < 35))
+    mask = np.where((avg_gray < 0.20) & (std_gray < 0.1))
+    np.put(mask_black, mask, 1) 
+    
+
+    ## Debug
+    # for i,x in enumerate(sum):
+    #     print(i, avg_channel[i], avg[i], x, diff[i], std[i])
+    for i,x in enumerate(avg_gray):
+        print(i, x, std_gray[i]) 
+
+    mask_img_black = np.repeat(mask_black[:, np.newaxis], raw.shape[1], axis=1)
+    fig.add_subplot(row,col,7)
+    plt.title(titles[6])
+    plt.imshow(mask_img_black, cmap='gray')
     plt.tight_layout()
     plt.show()
+
+    row_labels = calc_labels(mask_black, 
+                             float(params[fn]['ton']), 
+                             float(params[fn]['toff']),
+                             float(params[fn]['black_mul']))
+    print(row_labels)
+
 

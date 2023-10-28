@@ -35,8 +35,10 @@ google-services.json
 # Python VENV
 env
 .env
+__pycache__*
 
 # Data 
 data
 data*
+*.npy
 
