@@ -20,6 +20,9 @@ int freq = 500;
 bool msg_recv = false;
 
 int const WHITE_LED = 19;
+int const BLUE_LED = 15;
+int const RED_LED = 33;
+
 // Violet to Far red
 int const leds[] = {
     12,     // VIOLET (0)
@@ -148,10 +151,19 @@ void loop () {
 //!
 void cycle_led_sequence(int seq_num) {
 
-    // Start sequence with white LED
-    digitalWrite(WHITE_LED, HIGH);
+    // Start sequence with BLUE BLACK RED 
+    // BLUE
+    digitalWrite(BLUE_LED, HIGH);
     delayMicroseconds(delay_on_rs_us * delay_white_multiple);
-    digitalWrite(WHITE_LED, LOW);
+    digitalWrite(BLUE_LED, LOW);
+    delayMicroseconds(delay_off_rs_us);
+    // Everything off (BLACK)
+    delayMicroseconds(delay_on_rs_us * delay_white_multiple);
+    delayMicroseconds(delay_off_rs_us);
+    // RED
+    digitalWrite(RED_LED, HIGH);
+    delayMicroseconds(delay_on_rs_us * delay_white_multiple);
+    digitalWrite(RED_LED, LOW);
     delayMicroseconds(delay_off_rs_us);
 
     switch (num_leds_mplx) {
