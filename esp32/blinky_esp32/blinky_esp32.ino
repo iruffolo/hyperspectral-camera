@@ -31,13 +31,13 @@ int const leds[] = {
     32,     // CYAN (3)
     14,     // GREEN (4)
     SCL,    // LIME (5)
-    SDA,    // MINT (6)
     SCK,    // AMBER (7)
     A5,     // RED ORANGE (8)
     33,     // RED (9)
     TX,     // DEEP RED (10)
     RX,     // FAR RED (11)
-    19      // WHITE (12)
+    19,     // WHITE (12)
+    SDA,    // MINT (6)
 };
 int const num_leds = 13;
 
@@ -154,7 +154,7 @@ void cycle_led_sequence(int seq_num) {
     // Start sequence with BLUE BLACK RED 
     // BLUE
     digitalWrite(BLUE_LED, HIGH);
-    delayMicroseconds(delay_on_rs_us * delay_white_multiple);
+    delayMicroseconds(delay_on_rs_us);
     digitalWrite(BLUE_LED, LOW);
     delayMicroseconds(delay_off_rs_us);
     // Everything off (BLACK)
@@ -162,7 +162,7 @@ void cycle_led_sequence(int seq_num) {
     delayMicroseconds(delay_off_rs_us);
     // RED
     digitalWrite(RED_LED, HIGH);
-    delayMicroseconds(delay_on_rs_us * delay_white_multiple);
+    delayMicroseconds(delay_on_rs_us);
     digitalWrite(RED_LED, LOW);
     delayMicroseconds(delay_off_rs_us);
 
@@ -197,7 +197,7 @@ template<typename T>
 void toggle_leds(T seq, int seq_num)
 {
     // Calculatee the number of rows, based on pattern size and thickness
-    float denom = (delay_on_rs_us + delay_off_rs_us)/10.0;
+    float denom = (delay_on_rs_us + delay_off_rs_us)/5.0;
     denom = denom > 1 ? denom : 1;
     int num_rows = (int)(NUM_ROW[num_leds_mplx-1]/denom);
 

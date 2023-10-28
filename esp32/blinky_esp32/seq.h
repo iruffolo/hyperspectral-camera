@@ -4,12 +4,12 @@
 #define SEQ
 
 constexpr int NUM_SEQ = 5;
-constexpr int NUM_ROW[5] = {500,495,480,420,252,};
+constexpr int NUM_ROW[5] = {495,495,495,330,462,};
 
-extern int seq_0[NUM_SEQ][500][1];
+extern int seq_0[NUM_SEQ][495][1];
 extern int seq_1[NUM_SEQ][495][2];
-extern int seq_2[NUM_SEQ][480][3];
-extern int seq_3[NUM_SEQ][420][4];
-extern int seq_4[NUM_SEQ][252][5];
+extern int seq_2[NUM_SEQ][495][3];
+extern int seq_3[NUM_SEQ][330][4];
+extern int seq_4[NUM_SEQ][462][5];
 
 #endif

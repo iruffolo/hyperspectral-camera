@@ -48,7 +48,7 @@ def formatArray(seq, numMplx=1, line_len=10):
 if __name__ == "__main__":
     print("Generating Sequence")
 
-    numLeds = 10    # Total number of LEDs to cycle through
+    numLeds = 11    # Total number of LEDs to cycle through
     numRows = 500   # Targer number of rows pattern should repeat for
     numSeq = 5      # Number of unique shuffled patterns
     numMplx = 5    # Max number of LEDs to be multiplexed
