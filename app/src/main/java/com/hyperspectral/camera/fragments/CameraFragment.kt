@@ -127,7 +127,7 @@ class CameraFragment : Fragment() {
     private enum class CameraMode {GT, RS, W}
     private var mMode : CameraMode = CameraMode.RS
     private var mCommandDelay: Long = 30
-    private var mNumGtPhotos : Int = 10
+    private var mNumGtPhotos : Int = 12
     private var mNumRsPhotos : Int = 1
 
     private var mSceneName : String = "ColorChecker"
@@ -150,6 +150,7 @@ class CameraFragment : Fragment() {
 
     private lateinit var mAE : AutoExposure
 
+    private var mAEToggle : Boolean = false
     private var mAFToggle : Boolean = true
     private var mAFState : Int = CaptureRequest.CONTROL_AF_STATE_INACTIVE
 
@@ -229,7 +230,7 @@ class CameraFragment : Fragment() {
 
         /** ISO/GAIN Slider */
         val gainRange: Range<Int> = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)!!
-        Log.d("Ian", "exposure time low: " + gainRange.lower + "\thigh: " + gainRange.upper)
+        Log.d("Ian", "ISO time low: " + gainRange.lower + "\thigh: " + gainRange.upper)
         fragmentCameraBinding.sensitivityIso?.min = gainRange.lower
         fragmentCameraBinding.sensitivityIso?.max = gainRange.upper
         fragmentCameraBinding.sensitivityIso?.progress = mSensitivity
@@ -258,7 +259,7 @@ class CameraFragment : Fragment() {
         val etRange: Range<Long> = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)!!
         Log.d("Ian", "exposure time low: " + etRange.lower + "\thigh: " + etRange.upper)
         fragmentCameraBinding.exposureTime?.min = etRange.lower.toInt()
-        fragmentCameraBinding.exposureTime?.max = etRange.upper.toInt() / 10
+        fragmentCameraBinding.exposureTime?.max = etRange.upper.toInt() / 3000
         fragmentCameraBinding.exposureTime?.progress = mSensorExposureTime.toInt()
         fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
                                                                 mSensorExposureTime,
@@ -332,14 +333,19 @@ class CameraFragment : Fragment() {
             if (isChecked) {
                 // First disable W mode if it is on
                 fragmentCameraBinding.wSwitch?.isChecked = false
+                // Turn on AE
+                mAEToggle = true
                 // The toggle is enabled
                 mMode = CameraMode.GT
                 Log.d("Mode Switch","Camera mode set to Ground Truth (GT)")
             } else {
+                // Turn off AE
+                mAEToggle = false
                 // The toggle is disabled
                 mMode = CameraMode.RS
                 Log.d("Mode Switch","Camera mode set to Rolling Shutter (RS)")
             }
+            fragmentCameraBinding.aeSwitch?.isChecked = mAEToggle
         }
 
         /** Ground truth mode toggle switch */
@@ -347,14 +353,19 @@ class CameraFragment : Fragment() {
             if (isChecked) {
                 // First disable GT mode if it is on
                 fragmentCameraBinding.gtSwitch?.isChecked = false
+                // Turn on AE
+                mAEToggle = true
                 // The toggle is enabled
                 mMode = CameraMode.W
                 Log.d("Mode Switch","Camera mode set to White LED (W)")
             } else {
+                // Turn off AE
+                mAEToggle = false
                 // The toggle is disabled
                 mMode = CameraMode.RS
                 Log.d("Mode Switch","Camera mode set to Rolling Shutter (RS)")
             }
+            fragmentCameraBinding.aeSwitch?.isChecked = mAEToggle
         }
 
         /** DEBUG MODE */
@@ -495,6 +506,29 @@ class CameraFragment : Fragment() {
                 Log.d("AF", "AF clamp disabled")
             }
         }
+
+        /** Toggle for autofocus */
+        fragmentCameraBinding.aeSwitch?.isChecked = mAEToggle
+        fragmentCameraBinding.aeSwitch?.setOnCheckedChangeListener { _, isChecked ->
+            if (mMode != CameraMode.RS) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    mAEToggle = true
+                    Log.d("Ian AE", "AE enabled")
+                } else {
+                    // The toggle is disabled
+                    mAEToggle = false
+                    Log.d("Ian AE", "AE disabled")
+                }
+            }
+            else {
+                fragmentCameraBinding.aeSwitch?.isChecked = false
+            }
+            // Reset camera preview
+            session.stopRepeating()
+            setCaptureParams(mPreviewRequest)
+            session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
+        }
     }
 
     /** Preview callback to determine focus has been locked **/
@@ -575,15 +609,24 @@ class CameraFragment : Fragment() {
     }
 
     private fun setCaptureParams(request: CaptureRequest.Builder) {
+        if (mAEToggle) {
+            // Force AF/AE on
+            request.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO)
+            request.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON)
+            request.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
+            request.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START)
+            request.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
+        } else {
+            request.set(CaptureRequest.CONTROL_MODE, mControlMode)
+            request.set(CaptureRequest.CONTROL_AE_MODE, mAutoExposureMode)
+            request.set(CaptureRequest.CONTROL_AF_MODE, mAutoFocusMode)
+            request.set(CaptureRequest.CONTROL_AF_TRIGGER, mAutoFocusTrigger)
+            request.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF)
 
-        request.set(CaptureRequest.CONTROL_MODE, mControlMode)
-        request.set(CaptureRequest.CONTROL_AE_MODE, mAutoExposureMode)
-        request.set(CaptureRequest.CONTROL_AF_MODE, mAutoFocusMode)
-        request.set(CaptureRequest.CONTROL_AF_TRIGGER, mAutoFocusTrigger)
-
-        request.set(CaptureRequest.SENSOR_EXPOSURE_TIME, mSensorExposureTime)
-        request.set(CaptureRequest.SENSOR_SENSITIVITY, mSensitivity)
-        // request.set(CaptureRequest.SENSOR_FRAME_DURATION, mShutterSpeed)
+            request.set(CaptureRequest.SENSOR_EXPOSURE_TIME, mSensorExposureTime)
+            request.set(CaptureRequest.SENSOR_SENSITIVITY, mSensitivity)
+            // request.set(CaptureRequest.SENSOR_FRAME_DURATION, mShutterSpeed)
+        }
     }
 
     private fun takePhotoMode(numPhotos: Int, mode: String)
@@ -592,7 +635,7 @@ class CameraFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             for (i in 0 until numPhotos) {
                 mBT?.write("${mode}:$i\n".toByteArray())
-                delay(mCommandDelay) // Delay to give time for LEDs to turn on
+                delay(mCommandDelay*50) // Delay to give time for LEDs to turn on
 
                 // Wait for auto focus to lock
                 if (mAFToggle) {
@@ -600,7 +643,7 @@ class CameraFragment : Fragment() {
                     }
                 }
 
-                takePhoto().use { result ->
+                takePhoto(mode).use { result ->
                     // Save the result to disk
                     saveResult(result, "${mode}_$i")
                 }
@@ -615,7 +658,7 @@ class CameraFragment : Fragment() {
      * template. It performs synchronization between the [CaptureResult] and the [Image] resulting
      * from the single capture, and outputs a [CombinedCaptureResult] object.
      */
-    private suspend fun takePhoto():
+    private suspend fun takePhoto(mode: String):
             CombinedCaptureResult = suspendCoroutine { cont ->
 
         // Flush any images left in the image reader
@@ -736,7 +779,7 @@ class CameraFragment : Fragment() {
                 try {
                     val ts = Instant.now().epochSecond
                     var filename = "${mSceneName}_${ts}_${label}"
-                    filename += "_${mLedOnTime}_${mLedOffTime}_${mNumLedMultiplex}"
+                    filename += "_${mLedOnTime}_${mLedOffTime}_${mWhiteOnMultiple}_${mNumLedMultiplex}"
                     filename += "_${mSensorExposureTime}_${mSensitivity}.dng"
 
                     val resolver = requireContext().contentResolver

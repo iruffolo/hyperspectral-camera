@@ -30,6 +30,7 @@
     <string name="bt_instructions">If device is not seen in list, make sure it is paired via bluetooth in the Android settings.</string>
     <string name="rs_num_led_mplx_text">Number of LEDs to multiplex on at the same time: %1$d</string>
     <string name="scene_name">Scene Name: %1$s</string>
-    <string name="af_switch">Autofocus Clamp Enable</string>
+    <string name="af_switch">Force Autofocus</string>
+    <string name="ae_switch">Auto Exposure</string>
     <string name="ae_text">Image exposure: %1$s</string>
 </resources>

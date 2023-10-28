@@ -304,12 +304,26 @@
                 android:layout_height="50dp"
                 android:hint="@string/scene_name" />
 
-            <Switch
-                android:id="@+id/af_switch"
-                android:layout_width="150dp"
-                android:layout_height="40dp"
-                android:gravity="center|start"
-                android:text="@string/af_switch" />
+            <LinearLayout
+                android:layout_width="250dp"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+                <Switch
+                    android:id="@+id/af_switch"
+                    android:layout_width="125dp"
+                    android:layout_height="40dp"
+                    android:gravity="center|start"
+                    android:text="@string/af_switch" />
+
+                <Switch
+                    android:id="@+id/ae_switch"
+                    android:layout_width="125dp"
+                    android:layout_height="40dp"
+                    android:gravity="center|start"
+                    android:text="@string/ae_switch" />
+            </LinearLayout>
+
 
         </LinearLayout>
     </FrameLayout>
