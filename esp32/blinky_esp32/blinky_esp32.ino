@@ -31,13 +31,13 @@ int const leds[] = {
     32,     // CYAN (3)
     14,     // GREEN (4)
     SCL,    // LIME (5)
-    SCK,    // AMBER (7)
-    A5,     // RED ORANGE (8)
-    33,     // RED (9)
-    TX,     // DEEP RED (10)
-    RX,     // FAR RED (11)
-    19,     // WHITE (12)
-    SDA,    // MINT (6)
+    SCK,    // AMBER (6)
+    A5,     // RED ORANGE (7)
+    33,     // RED (8)
+    TX,     // DEEP RED (9)
+    RX,     // FAR RED (10)
+    19,     // WHITE (11)
+    SDA,    // MINT (12)
 };
 int const num_leds = 13;
 
