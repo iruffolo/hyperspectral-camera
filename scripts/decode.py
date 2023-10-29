@@ -54,7 +54,7 @@ def denoise(img):
     return dst
 
 
-def rollingAvg(img, w=2, fw=1):
+def rolling_avg(img, w=2, fw=1):
 
     img = ndimage.uniform_filter(img, size=(fw, img.shape[1]), mode='wrap')
 
@@ -62,6 +62,35 @@ def rollingAvg(img, w=2, fw=1):
     roll = np.mean(stacking, axis=0)
 
     return roll
+
+def find_mids(data):
+    pass
+
+
+class ThePlot():
+    def __init__(self, fn):
+        self.titles = ("Raw", "RGB", "Gray", "UF + Moving Avg", "Mask")
+        self.rows = 1
+        self.cols = len(self.titles)
+
+        self.fig, self.ax = plt.subplots(self.rows, self.cols, figsize=(25, 5))
+        self.fig.suptitle(f"{fn}", fontsize=25)
+
+        self.curr = 0
+
+    def add_subplot(self, img, cmap=None):
+        ax = self.ax[self.curr]
+        ax.imshow(img, cmap=cmap)
+        ax.set_title(self.titles[self.curr])
+
+        self.curr += 1
+
+    def vlines(self, mids, ymin=0, ymax=4000):
+        for ax in self.ax:
+            ax.vlines(mids, ymin, ymax)
+
+    def show(self):
+        plt.show()
 
 
 if __name__ == "__main__":
@@ -83,11 +112,8 @@ if __name__ == "__main__":
     sorted_files = sorted(params,
                           key=lambda x: params[x]['timestamp'])
 
-    print(sorted_files)
     fn = sorted_files[1]
     dng, raw = readDNG(dir + fn)
-
-    # lin = linearize(dng, raw)
 
     # demosaicing by rawpy
     rgb = dng.postprocess(gamma=(100, 4.5),
@@ -100,18 +126,20 @@ if __name__ == "__main__":
                           dcb_iterations=5,
                           output_bps=8)
 
-    fig = plt.figure(figsize=(25, 5))
-    fig.suptitle(f"{fn}", fontsize=25)
-
-    titles = ("Raw", "RGB", "Gray", "UF + Moving Avg", "Mask")
-    row = 1
-    col = len(titles)
+    fig = ThePlot(fn)
 
     # RAW
-    fig.add_subplot(row, col, 1)
-    plt.title(titles[0])
     lin = linearize(dng, raw)**(1/100)
-    lin_a = rollingAvg(lin, w=1, fw=15)
+    lin_a = rolling_avg(lin, w=1, fw=15)
+    fig.add_subplot(lin.T, cmap='gray')
+
+    fig.add_subplot(np.transpose(rgb, axes=(1, 0, 2)))
+
+    gray = color.rgb2gray(rgb)
+    fig.add_subplot(gray.T, cmap='gray')
+
+    a = rolling_avg(gray)
+    fig.add_subplot(a.T, cmap='gray')
 
     source = lin_a
     avg_row = np.mean(source, axis=1)
@@ -119,26 +147,6 @@ if __name__ == "__main__":
     stacking = np.array([np.roll(avg_row, x) for x in range(-2, 3)])
     avg_cols = np.mean(stacking, axis=0)
     std_cols = np.std(stacking, axis=0)
-
-    plt.imshow(lin_a.T, cmap='gray')
-    plt.plot(-1*(avg_row+1)**11, alpha=0.4)
-
-    fig.add_subplot(row, col, 2)
-    plt.title(titles[1])
-    plt.imshow(np.transpose(rgb, axes=(1, 0, 2)))
-    plt.plot(-1*(avg_row+1)**11, alpha=0.4)
-
-    gray = color.rgb2gray(rgb)
-    fig.add_subplot(row, col, 3)
-    plt.title(titles[2])
-    plt.imshow(gray.T, cmap='gray')
-    plt.plot(-1*(avg_row+1)**11, alpha=0.4)
-
-    a = rollingAvg(gray)
-    fig.add_subplot(row, col, 4)
-    plt.title(titles[3])
-    plt.imshow(a.T, cmap='gray')
-    plt.plot(-1*(avg_row+1)**11, alpha=0.4)
 
     # Array for labelling rows
     mask_black = np.zeros(gray.shape[0])
@@ -161,7 +169,7 @@ if __name__ == "__main__":
     def consecutive(x, stepsize=5):
         return np.split(x, np.where(np.diff(x) > stepsize)[0]+1)
 
-    r_threshold = 0.58
+    r_threshold = 0.59
     cond = (avg_row < r_threshold) & (std_cols < 0.005)
     masks = np.where(cond)[0]
     mask_groups = consecutive(masks)
@@ -176,10 +184,7 @@ if __name__ == "__main__":
         print(i, x, avg_cols[i], std_row[i], std_cols[i])
 
     mask_img_black = np.repeat(mask_black[:, np.newaxis], raw.shape[1], axis=1)
-    fig.add_subplot(row, col, 5)
-    plt.title(titles[4])
-    plt.imshow(mask_img_black.T, cmap='gray')
-    plt.plot(-1*(avg_row+1)**11, alpha=0.4)
+    fig.add_subplot(mask_img_black.T, cmap='gray')
 
     mask_groups = consecutive(masks)
     print(mask_groups)
@@ -188,23 +193,31 @@ if __name__ == "__main__":
         mask_groups.sort(key=lambda x: len(x), reverse=True)
         mask_groups = mask_groups[:3]
     # Resort in order
-    mask_groups.sort(key=lambda x: sum(x))
+    mask_groups.sort(key=lambda x: np.mean(x))
 
     # Find middle row in group
     mids = np.array([int((np.max(x)-np.min(x))/2) + np.min(x)
                      for x in mask_groups])
+    print(f"mids: {mids}")
+    print(np.diff(mids))
 
-    # black_rows = [np.array([x - 6, x + 6]) for x in mids]
-    # print(black_rows)
+    final_mids = list()
+    diff = np.diff(mids)
+    for i in range(len(diff)):
+        if diff[i] >= 1050 and diff[i] <= 1250:
+            if mids[i] not in final_mids:
+                final_mids.append(mids[i])
+            if mids[i+1] not in final_mids:
+                final_mids.append(mids[i+1])
 
-    row_labels = calc_labels(mask_black.shape[0],
-                             mids,
-                             float(params[fn]['ton']),
-                             float(params[fn]['toff']),
-                             float(params[fn]['black_mul']))
+    row_labels = calc_labels(4000,
+                             np.array(final_mids),
+                             int(params[fn]['ton']),
+                             int(params[fn]['toff']),
+                             int(params[fn]['black_mul']))
     print(row_labels)
     print(row_labels.shape)
 
-    plt.tight_layout()
-    # plt.show()
+    fig.vlines(final_mids)
 
+    fig.show()
