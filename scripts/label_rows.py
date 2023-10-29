@@ -14,8 +14,8 @@ LED_SEQUENCE = [
     "RED",
     "DEEP RED",
     "FAR RED",       # 10
-    "WHITE",
-    "BLACK"
+    "BLACK",
+    "WHITE"
 ]
 
 
@@ -32,12 +32,12 @@ def consecutive(x, stepsize=3):
 
 
 def one_hot_encode(x):
-    x = np.array(x).astype(int)
-    one_hot = np.zeros((x.size, x.max() + 1))
+    x = np.ravel(np.array(x).astype(int)) + 1 
+    one_hot = np.zeros((x.size, x.max()+1))
     one_hot[np.arange(x.size), x] = 1
 
-    # Lazy zero blacks (black is index 12)
-    one_hot = one_hot.T[1:].T
+    # Lazy zero blacks (black is index 12) and drop first row (zeros)
+    one_hot = one_hot.T[1:-1].T
 
     return one_hot
 
@@ -101,18 +101,21 @@ def calc_labels(nrows, black_rows, ton, toff, black_mul,
         labels[target_row_start:target_row_end] = np.array(color_map)
 
     # last black row -> end
-    target_row_start = black_rows[-1] + half_black_pad + extra
+    target_row_start = black_rows[-1] 
     while (True):
-        target_row_end = target_row_start + color_map.shape[0] - half_black_pad
-        labels[target_row_start:target_row_end] = \
-            np.array(color_map[:target_row_end-target_row_start])
+        target_row_end = target_row_start + color_map.shape[0] 
+        x = np.array(color_map[:labels.shape[0]-target_row_end])
+        print(x.shape)
 
-        target_row_start = target_row_start + target_row_end + black_pad
+        labels[target_row_start:target_row_end] = \
+            np.array(color_map[:labels.shape[0]-target_row_start])
+
+        target_row_start = target_row_end
 
         if (target_row_start > labels.shape[0]):
             break
 
-    return one_hot_encode(labels)
+    return labels, one_hot_encode(labels)
 
 
 if __name__ == "__main__":
@@ -122,4 +125,12 @@ if __name__ == "__main__":
     # print(seq.shape)
     # print(calc_num_rows(15, 0, seq.shape[1]))
 
-    print(one_hot_encode(np.array([12.0, 2, 10, 1, 6, 3, 7, 4, 3, 1, 0])))
+    np.set_printoptions(threshold = 10000)
+    np.random.seed(42)
+    x = np.random.randint(0,12,100).reshape(10,10)
+    x[0,0] = 0
+    x[0,1] = 11
+    print(x)
+
+
+    print(one_hot_encode(x))
