@@ -69,7 +69,7 @@ def calc_labels(nrows, black_rows, ton, toff, black_mul,
     # Generated color sequence of LEDs
     seq = np.load(fname)
     n_og_seq = calc_num_rows(ton, toff, seq.shape[1])
-    color_map = make_color_map(seq, n_og_seq, black_mul, v=True)
+    color_map = make_color_map(seq, n_og_seq, black_mul)
     n = len(color_map)
 
     black_rows = black_rows*resolution
@@ -81,15 +81,13 @@ def calc_labels(nrows, black_rows, ton, toff, black_mul,
     print(f"Repeat LEDs: {repeat_leds}x")
 
     color_map = np.repeat(color_map, repeat_leds)
-    print(color_map.shape)
+    print(f"Color map size: {color_map.shape}")
 
     # black_pad = int((row_span % repeat_leds)/2)
     black_pad = row_span - color_map.shape[0]
     half_black_pad = int(black_pad / 2)
     extra = 0 if (black_pad) % 2 == 0 else 1
     print(f"Black pad: {black_pad}")
-
-    print(color_map.shape)
 
     # 0 -> first black row
     target_row = black_rows[0] - half_black_pad
