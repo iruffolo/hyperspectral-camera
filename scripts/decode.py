@@ -170,7 +170,7 @@ if __name__ == "__main__":
     sorted_files = sorted(params,
                           key=lambda x: params[x]['timestamp'])
 
-    fn = sorted_files[3]
+    fn = sorted_files[2]
     dng, raw = readDNG(dir + fn)
 
     # demosaicing by rawpy
@@ -205,11 +205,7 @@ if __name__ == "__main__":
                              int(params[fn]['ton']),
                              int(params[fn]['toff']),
                              int(params[fn]['black_mul']))
-    print(row_labels)
     print(row_labels.shape)
-
-    np.set_printoptions(threshold = 10000)
-    print(np.where(np.sum(one_hot_labels, axis=1) == 0))
 
     fig.plot(row_labels)
 
