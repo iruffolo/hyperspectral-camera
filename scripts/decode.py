@@ -32,7 +32,7 @@ class ThePlot():
         self.curr += 1
 
     def vlines(self, mids, ymin=0, ymax=4000):
-        for ax in self.ax:
+        for ax in self.ax[:-1]:
             ax.vlines(mids, ymin, ymax)
 
     def plot(self, x, y=None):
@@ -200,7 +200,7 @@ if __name__ == "__main__":
 
     mids = find_mids(lin_a)
 
-    row_labels = calc_labels(4000,
+    row_labels, one_hot_labels = calc_labels(4000,
                              np.array(mids),
                              int(params[fn]['ton']),
                              int(params[fn]['toff']),
@@ -208,7 +208,12 @@ if __name__ == "__main__":
     print(row_labels)
     print(row_labels.shape)
 
+    np.set_printoptions(threshold = 10000)
+    print(np.where(np.sum(one_hot_labels, axis=1) == 0))
+
     fig.plot(row_labels)
+
+    fig.plot(np.mean(one_hot_labels, axis=1))
 
     fig.vlines(mids)
     fig.show()
