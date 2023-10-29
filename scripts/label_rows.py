@@ -42,15 +42,16 @@ def one_hot_encode(x):
     return one_hot
 
 
-def make_color_map(seq, n, v=False):
+def make_color_map(seq, n, black_mul, v=False):
 
     col_seq = np.ravel(seq[0][:n])
 
     col_seq = np.insert(col_seq, 0, LED_SEQUENCE.index("BLUE"))
     col_seq = np.append(col_seq, LED_SEQUENCE.index("RED"))
 
-    col_seq = np.insert(col_seq, 0, LED_SEQUENCE.index("BLACK"))
-    col_seq = np.append(col_seq, LED_SEQUENCE.index("BLACK"))
+    for i in range(black_mul):
+        col_seq = np.insert(col_seq, 0, LED_SEQUENCE.index("BLACK"))
+        col_seq = np.append(col_seq, LED_SEQUENCE.index("BLACK"))
 
     if v:
         print("Color sequence:")
@@ -68,7 +69,7 @@ def calc_labels(nrows, black_rows, ton, toff, black_mul,
     # Generated color sequence of LEDs
     seq = np.load(fname)
     n_og_seq = calc_num_rows(ton, toff, seq.shape[1])
-    color_map = make_color_map(seq, n_og_seq, v=True)
+    color_map = make_color_map(seq, n_og_seq, black_mul, v=True)
     n = len(color_map)
 
     black_rows = black_rows*resolution
@@ -80,24 +81,38 @@ def calc_labels(nrows, black_rows, ton, toff, black_mul,
     print(f"Repeat LEDs: {repeat_leds}x")
 
     color_map = np.repeat(color_map, repeat_leds)
+    print(color_map.shape)
 
-    black_pad = int((row_span % repeat_leds)/2)
+    # black_pad = int((row_span % repeat_leds)/2)
+    black_pad = row_span - color_map.shape[0]
+    half_black_pad = int(black_pad / 2)
+    extra = 0 if (black_pad) % 2 == 0 else 1
+    print(f"Black pad: {black_pad}")
+
+    print(color_map.shape)
 
     # 0 -> first black row
-    target_row = black_rows[0] - black_pad
+    target_row = black_rows[0] - half_black_pad
     labels[0:target_row] = np.array(color_map[-target_row:])
     # print(labels[target_row-900:target_row+50])
 
     # Inbetween all black rows
     for i in range(black_rows.shape[0]-1):
-        target_row_start = black_rows[i] + black_pad
-        target_row_end = black_rows[i+1] - black_pad
+        target_row_start = black_rows[i] + half_black_pad + extra
+        target_row_end = black_rows[i+1] - half_black_pad
         labels[target_row_start:target_row_end] = np.array(color_map)
 
     # last black row -> end
-    target_row = black_rows[-1] + black_pad
-    labels[target_row:] = np.array(color_map[:len(labels)-target_row])
-    # print(labels[target_row:target_row+900])
+    target_row_start = black_rows[-1] + half_black_pad + extra
+    while (True):
+        target_row_end = target_row_start + color_map.shape[0] - half_black_pad
+        labels[target_row_start:target_row_end] = \
+            np.array(color_map[:target_row_end-target_row_start])
+
+        target_row_start = target_row_start + target_row_end + black_pad
+
+        if (target_row_start > labels.shape[0]):
+            break
 
     return one_hot_encode(labels)
 
