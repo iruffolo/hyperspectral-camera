@@ -133,7 +133,8 @@ class CameraFragment : Fragment() {
     private var mSceneName : String = "ColorChecker"
 
     /** Camera Capture Parameters **/
-    private var mSensorExposureTime : Long = 41280
+//    private var mSensorExposureTime : Long = 41280
+    private var mSensorExposureTime : Long = 50000
     private var mSensitivity : Int = 2000
     // private var mShutterSpeed : Int = 0
     private var mControlMode : Int = CaptureRequest.CONTROL_MODE_AUTO
@@ -635,7 +636,7 @@ class CameraFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             for (i in 0 until numPhotos) {
                 mBT?.write("${mode}:$i\n".toByteArray())
-                delay(mCommandDelay*50) // Delay to give time for LEDs to turn on
+                delay(mCommandDelay*20) // Delay to give time for LEDs to turn on
 
                 // Wait for auto focus to lock
                 if (mAFToggle) {
