@@ -7,9 +7,9 @@ import numpy as np
 
 if __name__ == "__main__":
 
-    data_dir = "/home/ian/dev/KonicaMinolta-CS2000-MATLAB/data"
+    data_dir = "/home/ian/dev/KonicaMinolta-CS2000-MATLAB/data/colorchecker"
 
-    mat = scipy.io.loadmat(f"{data_dir}/measure01_spectral.mat")
+    mat = scipy.io.loadmat(f"{data_dir}/measure6x3_spectral")
 
     sd = mat["spectralData"]
     print(sd)
