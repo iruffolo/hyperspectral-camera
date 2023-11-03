@@ -67,6 +67,10 @@ int curr_rs_seq = 0;
 int delay_debug_ms = 5000;
 int curr_light = 0;
 
+// Parameter for cutting sequence short 
+// Note 10+ = 5.0
+float two_trs = 1.0;
+
 //!
 //! Setup function to initialize peripherals etc.
 //! 
@@ -169,13 +173,13 @@ void cycle_led_sequence(int seq_num) {
     switch (num_leds_mplx) {
         case 1: 
             toggle_leds(seq_0, seq_num);
-            break;
+            // break;
         case 2:
-            toggle_leds(seq_1, seq_num);
-            break;
+            // toggle_leds(seq_1, seq_num);
+            // break;
         case 3:
-            toggle_leds(seq_2, seq_num);
-            break;
+            // toggle_leds(seq_2, seq_num);
+            // break;
         // case 4:
         //     toggle_leds(seq_3, seq_num);
         // case 5:
@@ -197,7 +201,7 @@ template<typename T>
 void toggle_leds(T seq, int seq_num)
 {
     // Calculatee the number of rows, based on pattern size and thickness
-    float denom = (delay_on_rs_us + delay_off_rs_us)/5.0;
+    float denom = (delay_on_rs_us + delay_off_rs_us)/two_trs;
     denom = denom > 1 ? denom : 1;
     int num_rows = (int)(NUM_ROW[num_leds_mplx-1]/denom);
 

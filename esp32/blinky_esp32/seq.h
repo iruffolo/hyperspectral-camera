@@ -3,13 +3,9 @@
 #ifndef SEQ
 #define SEQ
 
-constexpr int NUM_SEQ = 5;
-constexpr int NUM_ROW[5] = {495,495,495,330,462,};
+constexpr int NUM_SEQ = 1;
+constexpr int NUM_ROW[1] = {4994,};
 
-extern int seq_0[NUM_SEQ][495][1];
-extern int seq_1[NUM_SEQ][495][2];
-extern int seq_2[NUM_SEQ][495][3];
-extern int seq_3[NUM_SEQ][330][4];
-extern int seq_4[NUM_SEQ][462][5];
+extern int seq_0[NUM_SEQ][4994][1];
 
 #endif
