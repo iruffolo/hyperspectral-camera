@@ -30,6 +30,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.util.Range
+import android.util.Size
 import android.view.*
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
@@ -133,8 +134,8 @@ class CameraFragment : Fragment() {
     private var mSceneName : String = "ColorChecker"
 
     /** Camera Capture Parameters **/
-//    private var mSensorExposureTime : Long = 41280
-    private var mSensorExposureTime : Long = 55000
+    private val mRollingShutterTime : Float = 10.7F
+    private var mSensorExposureTime : Long = 60000
     private var mSensitivity : Int = 2000
     // private var mShutterSpeed : Int = 0
     private var mControlMode : Int = CaptureRequest.CONTROL_MODE_AUTO
@@ -148,12 +149,16 @@ class CameraFragment : Fragment() {
     private var mLedOffTime : Int = 0
     private var mWhiteOnMultiple: Int = 1
     private var mNumLedMultiplex: Int = 1
+    private var mNumBlackBands: Int = 2
+    private var mNumRows: Int = 500
 
     private lateinit var mAE : AutoExposure
 
     private var mAEToggle : Boolean = false
     private var mAFToggle : Boolean = true
     private var mAFState : Int = CaptureRequest.CONTROL_AF_STATE_INACTIVE
+
+    private lateinit var mSize : Size
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -197,6 +202,13 @@ class CameraFragment : Fragment() {
         mBT = CameraActivity.getBluetoothThread()
 
         initializeButtons()
+    }
+
+    // Tac = (px - 1) * Trs + Te
+    // Num rows = Tac / (N * (Ton + T off))
+    private fun calcNumRows() {
+        var tAcq = (mSize.height - 1) * mRollingShutterTime + (mSensorExposureTime/1000)
+        mNumRows = (tAcq / (mNumBlackBands * (mLedOnTime + mLedOffTime))).toInt()
     }
 
     private fun initializeButtons() {
@@ -428,6 +440,7 @@ class CameraFragment : Fragment() {
                 try {
                     mLedOnTime = text.toInt()
                     Log.d("IanLED", "New LED on time = $mLedOnTime")
+                    calcNumRows()
                 } catch (nfe: NumberFormatException) {
                     Log.e(TAG, "Could not parse text field", nfe)
                 }
@@ -443,6 +456,7 @@ class CameraFragment : Fragment() {
 
                 try {
                     mLedOffTime = text.toInt()
+                    calcNumRows()
                     Log.d("IanLED", "New LED off time = $mLedOffTime")
                 } catch (nfe: NumberFormatException) {
                     Log.e(TAG, "Could not parse text field", nfe)
@@ -476,6 +490,7 @@ class CameraFragment : Fragment() {
             mBT?.write("LEDOFF:${mLedOffTime}\n".toByteArray())
             mBT?.write("WHITEON:${mWhiteOnMultiple}\n".toByteArray())
             mBT?.write("LEDMPLX:${mNumLedMultiplex}\n".toByteArray())
+            mBT?.write("NROWS:${mNumRows}\n".toByteArray())
         }
 
         /** Scene name text input */
@@ -548,7 +563,15 @@ class CameraFragment : Fragment() {
                 result: TotalCaptureResult
             ) {
                 mAFState = result.get(CaptureResult.CONTROL_AF_STATE)!!
-                // Log.d("AF", "Focus mode: $mAFState")
+
+                var et = result.get(CaptureResult.SENSOR_EXPOSURE_TIME)!!
+                if (mSensorExposureTime != et)
+                {
+                    mSensorExposureTime = et
+                    calcNumRows()
+//                    Log.d("Num rowwsss", "$mNumRows")
+                }
+                // Log.d("Preview exposure", "${result.get(CaptureResult.SENSOR_EXPOSURE_TIME)}")
             }
         }
 
@@ -570,7 +593,7 @@ class CameraFragment : Fragment() {
         camera = openCamera(cameraManager, args.cameraId, cameraHandler)
 
         // Initialize an image reader which will be used to capture still photos
-        val size = characteristics.get(
+        mSize = characteristics.get(
                 CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
                 .getOutputSizes(args.pixelFormat).maxByOrNull { it.height * it.width }!!
 
@@ -585,9 +608,9 @@ class CameraFragment : Fragment() {
         Log.d("Pixels", "${args.pixelFormat}")
 
         imageReader = ImageReader.newInstance(
-                size.width, size.height, args.pixelFormat, IMAGE_BUFFER_SIZE)
+                mSize.width, mSize.height, args.pixelFormat, IMAGE_BUFFER_SIZE)
 
-        Log.d("Camera Size", "Width: ${size.width}, Height: ${size.height}")
+        Log.d("Camera Size", "Width: ${mSize.width}, Height: ${mSize.height}")
 
         // Creates list of Surfaces where the camera will output frames
         val targets = listOf(fragmentCameraBinding.viewFinder.holder.surface,
@@ -626,7 +649,6 @@ class CameraFragment : Fragment() {
 
             request.set(CaptureRequest.SENSOR_EXPOSURE_TIME, mSensorExposureTime)
             request.set(CaptureRequest.SENSOR_SENSITIVITY, mSensitivity)
-            // request.set(CaptureRequest.SENSOR_FRAME_DURATION, mShutterSpeed)
         }
     }
 
@@ -783,7 +805,7 @@ class CameraFragment : Fragment() {
                     val ts = Instant.now().epochSecond
                     var filename = "${mSceneName}_${ts}_${label}"
                     filename += "_${mLedOnTime}_${mLedOffTime}_${mWhiteOnMultiple}_${mNumLedMultiplex}"
-                    filename += "_${mSensorExposureTime}_${mSensitivity}.dng"
+                    filename += "_${mSensorExposureTime}_${mSensitivity}_${mNumRows}.dng"
 
                     val resolver = requireContext().contentResolver
                     val contentValues = ContentValues().apply{

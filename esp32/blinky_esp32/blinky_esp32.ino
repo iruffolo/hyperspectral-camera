@@ -67,11 +67,8 @@ int curr_rs_seq = 0;
 int delay_debug_ms = 5000;
 int curr_light = 0;
 
-// Parameter for cutting sequence short 
-int rs_speed_us = 11;
-int num_pixels = 3000;
-int t_exposure_us = 50;
-int n_black_bands = 2;
+// Sequence length 
+int num_rows = 500;
 
 //!
 //! Setup function to initialize peripherals etc.
@@ -199,32 +196,10 @@ void cycle_led_sequence(int seq_num) {
     }
 }
 
-// Tac = (px - 1)*Trs + Te
-// num rows = n * Tac / (Ton + Toff) where n = number of black bands
-int calc_num_rows() 
-{
-    float t_acquisition = ((num_pixels - 1) * rs_speed_us) + t_exposure_us;
-
-    int num_rows = (t_acquisition) / 
-                   (n_black_bands *(delay_on_rs_us + delay_off_rs_us));
-
-    char debug_msg[1024];
-    sprintf(debug_msg, "Num rows: %d\n\r", num_rows);
-    Serial.write(debug_msg);
-
-    return num_rows;
-}
-
-
 template<typename T> 
 void toggle_leds(T seq, int seq_num)
 {
-    // Calculatee the number of rows, based on pattern size and thickness
-    float denom = (delay_on_rs_us + delay_off_rs_us)/1;
-    denom = denom > 1 ? denom : 1;
-    int num_rows = (int)(NUM_ROW[num_leds_mplx-1]/denom);
-
-    num_rows = calc_num_rows();
+    num_rows = num_rows > NUM_ROW[seq_num] ? NUM_ROW[seq_num] : num_rows;
 
     // Rotate through random LED sequence
     for (int i = 0; i < num_rows; i++) {
@@ -319,6 +294,9 @@ void read_bluetooth(void* pvParameters) {
                     }
                     else if (strcmp(mode, "LEDMPLX") == 0) {
                         num_leds_mplx = v < 10 ? v : 1;
+                    }
+                    else if (strcmp(mode, "NROWS") == 0) {
+                        num_rows = v;
                     }
                     else if (strcmp(mode, "RESET") == 0) {
                         curr_mode = Mode::RESET;
