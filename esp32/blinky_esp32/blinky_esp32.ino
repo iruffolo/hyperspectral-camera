@@ -68,8 +68,10 @@ int delay_debug_ms = 5000;
 int curr_light = 0;
 
 // Parameter for cutting sequence short 
-// Note 10+ = 5.0
-float two_trs = 1.0;
+int rs_speed_us = 11;
+int num_pixels = 3000;
+int t_exposure_us = 50;
+int n_black_bands = 2;
 
 //!
 //! Setup function to initialize peripherals etc.
@@ -173,7 +175,7 @@ void cycle_led_sequence(int seq_num) {
     switch (num_leds_mplx) {
         case 1: 
             toggle_leds(seq_0, seq_num);
-            // break;
+            break;
         case 2:
             // toggle_leds(seq_1, seq_num);
             // break;
@@ -191,19 +193,38 @@ void cycle_led_sequence(int seq_num) {
         // case 8:
         //     toggle_leds(seq_7, seq_num);
         // case 9:
-        //     toggle_leds(seq_8, seq_num);
+        //     toggle_leds(seq_9, seq_num);
         default:
             toggle_leds(seq_0, seq_num);
     }
 }
 
+// Tac = (px - 1)*Trs + Te
+// num rows = n * Tac / (Ton + Toff) where n = number of black bands
+int calc_num_rows() 
+{
+    float t_acquisition = ((num_pixels - 1) * rs_speed_us) + t_exposure_us;
+
+    int num_rows = (t_acquisition) / 
+                   (n_black_bands *(delay_on_rs_us + delay_off_rs_us));
+
+    char debug_msg[1024];
+    sprintf(debug_msg, "Num rows: %d\n\r", num_rows);
+    Serial.write(debug_msg);
+
+    return num_rows;
+}
+
+
 template<typename T> 
 void toggle_leds(T seq, int seq_num)
 {
     // Calculatee the number of rows, based on pattern size and thickness
-    float denom = (delay_on_rs_us + delay_off_rs_us)/two_trs;
+    float denom = (delay_on_rs_us + delay_off_rs_us)/1;
     denom = denom > 1 ? denom : 1;
     int num_rows = (int)(NUM_ROW[num_leds_mplx-1]/denom);
+
+    num_rows = calc_num_rows();
 
     // Rotate through random LED sequence
     for (int i = 0; i < num_rows; i++) {
