@@ -134,7 +134,7 @@ class CameraFragment : Fragment() {
 
     /** Camera Capture Parameters **/
 //    private var mSensorExposureTime : Long = 41280
-    private var mSensorExposureTime : Long = 50000
+    private var mSensorExposureTime : Long = 55000
     private var mSensitivity : Int = 2000
     // private var mShutterSpeed : Int = 0
     private var mControlMode : Int = CaptureRequest.CONTROL_MODE_AUTO
@@ -699,6 +699,8 @@ class CameraFragment : Fragment() {
                 super.onCaptureCompleted(session, request, result)
                 val resultTimestamp = result.get(CaptureResult.SENSOR_TIMESTAMP)
                 Log.d(TAG, "Capture result received: $resultTimestamp")
+
+                Log.d("EXPOSURE", "${result.get(CaptureResult.SENSOR_EXPOSURE_TIME)}");
 
                 // Set a timeout in case image captured is dropped from the pipeline
                 val exc = TimeoutException("Image dequeuing took too long")
