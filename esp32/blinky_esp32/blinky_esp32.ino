@@ -199,7 +199,7 @@ void cycle_led_sequence(int seq_num) {
 template<typename T> 
 void toggle_leds(T seq, int seq_num)
 {
-    num_rows = num_rows > NUM_ROW[seq_num] ? NUM_ROW[seq_num] : num_rows;
+    num_rows = num_rows > NUM_ROW[seq_num] - 1? NUM_ROW[seq_num] - 1 : num_rows;
 
     // Rotate through random LED sequence
     for (int i = 0; i < num_rows; i++) {
