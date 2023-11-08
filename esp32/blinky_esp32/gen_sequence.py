@@ -48,9 +48,9 @@ if __name__ == "__main__":
     print("Generating Sequence")
 
     numLeds = 11    # Total number of LEDs to cycle through
-    numRows = 5000   # Targer number of rows pattern should repeat for
+    numRows = 1400   # Targer number of rows pattern should repeat for
     numSeq = 1      # Number of unique shuffled patterns
-    numMplx = 1    # Max number of LEDs to be multiplexed
+    numMplx = 2    # Max number of LEDs to be multiplexed
 
     s = [createSeq(numLeds, x, numRows, numSeq) for x in range(1, numMplx + 1)]
 

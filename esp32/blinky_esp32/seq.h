@@ -4,8 +4,9 @@
 #define SEQ
 
 constexpr int NUM_SEQ = 1;
-constexpr int NUM_ROW[1] = {4994,};
+constexpr int NUM_ROW[2] = {1397,1375,};
 
-extern int seq_0[NUM_SEQ][4994][1];
+extern int seq_0[NUM_SEQ][1397][1];
+extern int seq_1[NUM_SEQ][1375][2];
 
 #endif

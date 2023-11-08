@@ -174,8 +174,8 @@ void cycle_led_sequence(int seq_num) {
             toggle_leds(seq_0, seq_num);
             break;
         case 2:
-            // toggle_leds(seq_1, seq_num);
-            // break;
+            toggle_leds(seq_1, seq_num);
+            break;
         case 3:
             // toggle_leds(seq_2, seq_num);
             // break;

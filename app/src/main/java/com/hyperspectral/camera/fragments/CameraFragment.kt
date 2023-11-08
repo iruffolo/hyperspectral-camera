@@ -135,7 +135,7 @@ class CameraFragment : Fragment() {
 
     /** Camera Capture Parameters **/
     private val mRollingShutterTime : Float = 10.7F
-    private var mSensorExposureTime : Long = 60000
+    private var mSensorExposureTime : Long = 100000
     private var mSensitivity : Int = 2000
     // private var mShutterSpeed : Int = 0
     private var mControlMode : Int = CaptureRequest.CONTROL_MODE_AUTO
@@ -271,7 +271,8 @@ class CameraFragment : Fragment() {
         /** Exposure time slider */
         val etRange: Range<Long> = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)!!
         Log.d("Ian", "exposure time low: " + etRange.lower + "\thigh: " + etRange.upper)
-        fragmentCameraBinding.exposureTime?.min = etRange.lower.toInt()
+        // fragmentCameraBinding.exposureTime?.min = etRange.lower.toInt()
+        fragmentCameraBinding.exposureTime?.min = 63577 // Magic number for OnePlus
         fragmentCameraBinding.exposureTime?.max = etRange.upper.toInt() / 10000
         fragmentCameraBinding.exposureTime?.progress = mSensorExposureTime.toInt()
         fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
@@ -801,6 +802,8 @@ class CameraFragment : Fragment() {
             // When the format is RAW we use the DngCreator utility library
             ImageFormat.RAW_SENSOR -> {
                 val dngCreator = DngCreator(characteristics, result.metadata)
+
+                Log.d("Exposure", result.metadata.get(CaptureResult.SENSOR_EXPOSURE_TIME).toString())
                 try {
                     val ts = Instant.now().epochSecond
                     var filename = "${mSceneName}_${ts}_${label}"
