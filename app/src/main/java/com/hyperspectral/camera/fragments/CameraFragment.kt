@@ -149,7 +149,7 @@ class CameraFragment : Fragment() {
     private var mLedOffTime : Int = 0
     private var mWhiteOnMultiple: Int = 1
     private var mNumLedMultiplex: Int = 1
-    private var mNumBlackBands: Int = 2
+    private var mNumBlackBands: Float = 2.5F
     private var mNumRows: Int = 500
 
     private lateinit var mAE : AutoExposure
@@ -272,7 +272,7 @@ class CameraFragment : Fragment() {
         val etRange: Range<Long> = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)!!
         Log.d("Ian", "exposure time low: " + etRange.lower + "\thigh: " + etRange.upper)
         fragmentCameraBinding.exposureTime?.min = etRange.lower.toInt()
-        fragmentCameraBinding.exposureTime?.max = etRange.upper.toInt() / 3000
+        fragmentCameraBinding.exposureTime?.max = etRange.upper.toInt() / 10000
         fragmentCameraBinding.exposureTime?.progress = mSensorExposureTime.toInt()
         fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
                                                                 mSensorExposureTime,
