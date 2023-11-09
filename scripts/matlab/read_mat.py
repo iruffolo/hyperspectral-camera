@@ -53,7 +53,7 @@ def save_leds():
     # LEDs
     leds = list()
 
-    for i in range(0, 12):
+    for i in range(0, 13):
 
         f = glob.glob(f"leds/led{i}_*_spectral.mat")[0]
         leds.append(load_mat(f)[1])
