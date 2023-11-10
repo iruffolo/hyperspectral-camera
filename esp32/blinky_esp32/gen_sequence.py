@@ -49,12 +49,12 @@ if __name__ == "__main__":
 
     numLeds = 11    # Total number of LEDs to cycle through
     numRows = 1400   # Targer number of rows pattern should repeat for
-    numSeq = 1      # Number of unique shuffled patterns
+    numSeq = 3      # Number of unique shuffled patterns
     numMplx = 2    # Max number of LEDs to be multiplexed
 
     s = [createSeq(numLeds, x, numRows, numSeq) for x in range(1, numMplx + 1)]
 
-    for seq in s: 
+    for seq in s:
         print(seq[1], seq[0])
         np.save(f"seq{seq[0].shape[2]}", seq[0])
 
