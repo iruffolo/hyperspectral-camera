@@ -4,6 +4,7 @@ import scipy.io
 import matplotlib.pyplot as plt
 import numpy as np
 import glob
+import os
 
 
 def plot_spectral(data, lmin=380, lmax=780, step=1):
@@ -30,6 +31,13 @@ def bin_spectral(data, lmin=380, lmax=780):
     binned_data = np.stack([bin_midpoints[1:-7], bin_sums[1:-7]], axis=0)
 
     return binned_data
+
+
+def load_mat(file):
+    mat = scipy.io.loadmat(file)
+    sd = mat["spectralData"][0]
+
+    return bin_spectral(sd)
 
 
 def save_color_checker():
@@ -76,11 +84,26 @@ def save_wc():
     np.save("wc", wc)
 
 
-def load_mat(file):
-    mat = scipy.io.loadmat(file)
-    sd = mat["spectralData"][0]
+def save_scenes():
+    scene_names = next(os.walk("scenes"))[1]
 
-    return bin_spectral(sd)
+    for s in scene_names:
+        print(s)
+        x = list()
+
+        files = glob.glob(f"scenes/{s}/*spectral.mat")
+        print(files)
+
+        for f in files:
+            print(f)
+            x.append(load_mat(f)[1])
+
+        x = np.array(x)
+
+        print(x)
+        print(f"Scene {s} size: {x.shape}")
+
+        np.save(f"{s}", x)
 
 
 if __name__ == "__main__":
@@ -88,5 +111,7 @@ if __name__ == "__main__":
     save_color_checker()
     save_leds()
     save_wc()
+
+    save_scenes()
 
     # plot_spectral(sd)
