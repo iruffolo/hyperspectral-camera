@@ -30,20 +30,20 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#A0D2D2">
+            android:layout_height="wrap_content"
+            android:background="#CCCCCC">
 
             <com.example.android.camera.utils.AutoFitSurfaceView
                 android:id="@+id/view_finder"
-                android:layout_width="720px"
-                android:layout_height="960px"
-                android:layout_marginTop="100dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_width="420dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintDimensionRatio="0.75" />
+                app:layout_constraintHeight_percent="0.75"/>
 
             <View
                 android:id="@+id/overlay"
@@ -52,39 +52,58 @@
                 android:foreground="@android:color/transparent"
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="48dp" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|bottom"
-            android:layout_marginBottom="300dp"
-            android:orientation="horizontal">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            <ImageButton
-                android:id="@+id/ae_refresh_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@android:drawable/ic_popup_sync" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHeight_percent="0.8"
+                android:layout_marginBottom="100dp"
+                android:gravity="bottom"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/ae_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_gravity="center"
-                android:text="@string/ae_text"
-                android:textSize="9pt"
-                android:textColor="#000000" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
+                    <ImageButton
+                        android:id="@+id/ae_refresh_button"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@android:drawable/ic_popup_sync"
+                        />
 
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/ae_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="@string/ae_text"
+                        android:textSize="8pt"
+                        android:layout_marginBottom="2dp"
+                        android:textColor="#FFFFFF" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageButton
             android:id="@+id/capture_button"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_marginBottom="60dp"
+            android:layout_marginBottom="48dp"
             android:layout_gravity="bottom|center"
             android:background="@drawable/ic_shutter"
             android:contentDescription="@string/capture"
@@ -95,8 +114,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="bottom|end"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="60dp"
+            android:layout_marginEnd="36dp"
+            android:layout_marginBottom="58dp"
             android:background="@drawable/gear_icon"
             android:backgroundTint="#646464"
             android:contentDescription="@string/configuration"
@@ -118,9 +137,13 @@
             android:foreground="@android:color/white"
             android:foregroundTint="#CCFFFFFF" />
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:orientation="vertical">
 
@@ -132,11 +155,17 @@
                 android:text="@string/iso_text"
                 android:textColor="#000000" />
 
-            <SeekBar
+            <com.google.android.material.slider.Slider
                 android:id="@+id/sensitivity_iso"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:min="100" />
+                android:stepSize="10.0"/>
+
+<!--            <SeekBar-->
+<!--                android:id="@+id/sensitivity_iso"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:min="100" />-->
 
             <TextView
                 android:id="@+id/exposure_time_text"
@@ -146,16 +175,22 @@
                 android:text="@string/exposure_text"
                 android:textColor="#000000" />
 
-            <SeekBar
+            <com.google.android.material.slider.Slider
                 android:id="@+id/exposure_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:min="100000" />
+                android:stepSize="20.0"/>
+
+<!--            <SeekBar-->
+<!--                android:id="@+id/exposure_time"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:min="100000" />-->
 
             <View
                 android:id="@+id/divider1"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="3dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="?android:attr/listDivider"
@@ -224,7 +259,7 @@
             <View
                 android:id="@+id/divider2"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="3dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="?android:attr/listDivider"
@@ -291,7 +326,7 @@
             <View
                 android:id="@+id/divider3"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="3dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="?android:attr/listDivider"
@@ -324,7 +359,22 @@
                     android:text="@string/ae_switch" />
             </LinearLayout>
 
+            <Button
+                android:id="@+id/exit_setting_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save Configuration">
+            </Button>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="240dp">
+
+            </View>
+
 
         </LinearLayout>
+
+        </ScrollView>
     </FrameLayout>
 </FrameLayout>

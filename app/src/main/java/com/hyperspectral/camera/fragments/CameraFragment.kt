@@ -58,7 +58,7 @@ import java.util.concurrent.TimeoutException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-
+import com.google.android.material.slider.Slider
 
 class CameraFragment : Fragment() {
 
@@ -241,63 +241,109 @@ class CameraFragment : Fragment() {
             mConfigMenu = !mConfigMenu
         }
 
+        fragmentCameraBinding.exitSettingButton?.setOnClickListener {
+            Log.d("Config", "Exiting config screen")
+            if (mConfigMenu) {
+                fragmentCameraBinding.SettingsLayout?.visibility = View.GONE
+                fragmentCameraBinding.captureButton.visibility = View.VISIBLE
+            } else {
+                fragmentCameraBinding.SettingsLayout?.visibility = View.VISIBLE
+                fragmentCameraBinding.captureButton.visibility = View.GONE
+            }
+            mConfigMenu = !mConfigMenu
+        }
+
         /** ISO/GAIN Slider */
         val gainRange: Range<Int> = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)!!
         Log.d("Ian", "ISO time low: " + gainRange.lower + "\thigh: " + gainRange.upper)
-        fragmentCameraBinding.sensitivityIso?.min = gainRange.lower
-        fragmentCameraBinding.sensitivityIso?.max = gainRange.upper
-        fragmentCameraBinding.sensitivityIso?.progress = mSensitivity
+        fragmentCameraBinding.sensitivityIso?.valueFrom = (gainRange.lower / 10 * 10).toFloat()
+        fragmentCameraBinding.sensitivityIso?.valueTo = (gainRange.upper / 10 * 10).toFloat()
+        fragmentCameraBinding.sensitivityIso?.value = mSensitivity.toFloat()
+        fragmentCameraBinding.sensitivityIso?.stepSize = (gainRange.lower / 10 * 10).toFloat()
         fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, mSensitivity)
-        fragmentCameraBinding.sensitivityIso?.setOnSeekBarChangeListener(
-            object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    mSensitivity = progress
+        fragmentCameraBinding.sensitivityIso?.addOnChangeListener { slider, value, fromUser ->
+            if (fromUser) {
+                mSensitivity = value.toInt()
 
-                    session.stopRepeating()
-                    setCaptureParams(mPreviewRequest) // Update capture params with sensitivity
-                    session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
+                session.stopRepeating()
+                setCaptureParams(mPreviewRequest) // Update capture params with sensitivity
+                session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
 
-                    // updated continuously as the user slides the thumb
-                    fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, progress)
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
+                // updated continuously as the user slides the thumb
+                fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, value.toInt())
+            }
+        }
+
+//        fragmentCameraBinding.sensitivityIso?.setOnSeekBarChangeListener(
+//            object : SeekBar.OnSeekBarChangeListener {
+//                override fun onProgressChanged(
+//                    seekBar: SeekBar?,
+//                    progress: Int,
+//                    fromUser: Boolean
+//                ) {
+//                    mSensitivity = progress
+//
+//                    session.stopRepeating()
+//                    setCaptureParams(mPreviewRequest) // Update capture params with sensitivity
+//                    session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
+//
+//                    // updated continuously as the user slides the thumb
+//                    fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, progress)
+//                }
+//                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+//                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+//            })
 
         /** Exposure time slider */
         val etRange: Range<Long> = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)!!
         Log.d("Ian", "exposure time low: " + etRange.lower + "\thigh: " + etRange.upper)
-        // fragmentCameraBinding.exposureTime?.min = etRange.lower.toInt()
-        fragmentCameraBinding.exposureTime?.min = 63577 // Magic number for OnePlus
-        fragmentCameraBinding.exposureTime?.max = etRange.upper.toInt() / 10000
-        fragmentCameraBinding.exposureTime?.progress = mSensorExposureTime.toInt()
-        fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
-                                                                mSensorExposureTime,
-                                                                1000000000/mSensorExposureTime)
-        fragmentCameraBinding.exposureTime?.setOnSeekBarChangeListener(
-            object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    mSensorExposureTime = progress.toLong()
-                    // updated continuously as the user slides the thumb
-                    fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
-                                                                            mSensorExposureTime,
-                                                                            1000000000/mSensorExposureTime)
 
-                    session.stopRepeating()
-                    setCaptureParams(mPreviewRequest) // Update capture params with exposure time
-                    session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
+
+        fragmentCameraBinding.exposureTime?.valueFrom = (etRange.lower.toInt() / 20000 * 20).toFloat() // Magic number for OnePlus
+        fragmentCameraBinding.exposureTime?.valueTo = (etRange.upper.toInt() / 20000 * 20).toFloat()
+        mSensorExposureTime = mSensorExposureTime / 20000 * 20
+        fragmentCameraBinding.exposureTime?.value = mSensorExposureTime.toFloat()
+        fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
+            mSensorExposureTime,
+            1000000000/mSensorExposureTime
+        )
+
+        fragmentCameraBinding.exposureTime?.addOnChangeListener { slider, value, fromUser ->
+            if (fromUser) {
+                mSensorExposureTime = value.toLong()
+
+                // Update the exposure time text
+                fragmentCameraBinding.exposureTimeText?.text = getString(
+                    R.string.exposure_text,
+                    mSensorExposureTime,
+                    1000000000 / mSensorExposureTime
+                )
+
+                // Update capture parameters with the new exposure time
+                session.stopRepeating()
+                setCaptureParams(mPreviewRequest)
+                session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
+            }
+        }
+//        object : SeekBar.OnSeekBarChangeListener {
+//            override fun onProgressChanged(
+//                seekBar: SeekBar?,
+//                progress: Int,
+//                fromUser: Boolean
+//            ) {
+//                mSensorExposureTime = progress.toLong()
+//                // updated continuously as the user slides the thumb
+//                fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
+//                    mSensorExposureTime,
+//                    1000000000/mSensorExposureTime)
+//
+//                session.stopRepeating()
+//                setCaptureParams(mPreviewRequest) // Update capture params with exposure time
+//                session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
+//            }
+//            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+//            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+//        }
 
         /** Listen to the image capture button */
         fragmentCameraBinding.captureButton.setOnClickListener {
@@ -682,6 +728,7 @@ class CameraFragment : Fragment() {
      * template. It performs synchronization between the [CaptureResult] and the [Image] resulting
      * from the single capture, and outputs a [CombinedCaptureResult] object.
      */
+    // TODO: add parameters that adjust exposure time based on LED
     private suspend fun takePhoto(mode: String):
             CombinedCaptureResult = suspendCoroutine { cont ->
 
