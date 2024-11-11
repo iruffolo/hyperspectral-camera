@@ -299,25 +299,30 @@ class CameraFragment : Fragment() {
         Log.d("Ian", "exposure time low: " + etRange.lower + "\thigh: " + etRange.upper)
 
 
-        fragmentCameraBinding.exposureTime?.valueFrom = (etRange.lower.toInt() / 20000 * 20).toFloat() // Magic number for OnePlus
-        fragmentCameraBinding.exposureTime?.valueTo = (etRange.upper.toInt() / 20000 * 20).toFloat()
-        mSensorExposureTime = mSensorExposureTime / 20000 * 20
-        fragmentCameraBinding.exposureTime?.value = mSensorExposureTime.toFloat()
+        var exposureTimeMS = mSensorExposureTime / 20000 * 20000
+        fragmentCameraBinding.exposureTime?.valueFrom = (etRange.lower.toInt() / 20000 * 20000).toFloat() // Magic number for OnePlus
+        fragmentCameraBinding.exposureTime?.valueTo = (etRange.upper.toInt() / 20000 * 20000).toFloat()
+        fragmentCameraBinding.exposureTime?.value = exposureTimeMS.toFloat()
         fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
-            mSensorExposureTime,
+            exposureTimeMS,
             1000000000/mSensorExposureTime
         )
 
         fragmentCameraBinding.exposureTime?.addOnChangeListener { slider, value, fromUser ->
             if (fromUser) {
-                mSensorExposureTime = value.toLong()
+                Log.d("Yilz", "exposure time: " + value.toLong() + "ms")
+                mSensorExposureTime = (value).toLong()
+                exposureTimeMS = value.toLong()
 
                 // Update the exposure time text
                 fragmentCameraBinding.exposureTimeText?.text = getString(
                     R.string.exposure_text,
-                    mSensorExposureTime,
+                    exposureTimeMS,
                     1000000000 / mSensorExposureTime
                 )
+
+                // update exposure text input
+                fragmentCameraBinding.exposureTextInput?.setText(mSensorExposureTime.toString())
 
                 // Update capture parameters with the new exposure time
                 session.stopRepeating()
@@ -344,6 +349,64 @@ class CameraFragment : Fragment() {
 //            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 //            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 //        }
+
+        fragmentCameraBinding.exposureTextInput?.setText(mSensorExposureTime.toString())
+        fragmentCameraBinding.exposureTextInput?.addTextChangedListener(
+            object: TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                    if (p0 == null || p0.toString() == "") {
+                        return
+                    }
+
+                    var currExposureTime = p0.toString().toLong()
+                    // wrap input time in range
+                    currExposureTime = fragmentCameraBinding.exposureTime?.valueFrom?.toLong()?.let {
+                        maxOf(
+                            it,
+                            currExposureTime
+                        )
+                    }!!
+                    currExposureTime = fragmentCameraBinding.exposureTime?.valueTo?.toLong()?.let {
+                        minOf(
+                            it,
+                            currExposureTime
+                        )
+                    }!!
+
+                    // round the input time down to a multiple of step size
+                    currExposureTime = currExposureTime / 20000 * 20000
+
+                    // set exposure text
+                    fragmentCameraBinding.exposureTimeText?.text = getString(
+                        R.string.exposure_text,
+                        currExposureTime,
+                        1000000000 / currExposureTime
+                    )
+                    // set exposure time slider
+                    fragmentCameraBinding.exposureTime?.value = currExposureTime.toFloat()
+                    // set exposure time text input
+//                    fragmentCameraBinding.exposureTextInput?.setText(currExposureTime.toString())
+//                    fragmentCameraBinding.exposureTextInput?.text?.length?.let {
+//                        fragmentCameraBinding.exposureTextInput?.setSelection(
+//                            it
+//                        )
+//                    }
+                    // set exposure time
+                    Log.d("Yilz", "Exposure Time: $currExposureTime")
+                    mSensorExposureTime = currExposureTime
+                    // Update capture parameters with the new exposure time
+                    session.stopRepeating()
+                    setCaptureParams(mPreviewRequest)
+                    session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
+                }
+            }
+        )
 
         /** Listen to the image capture button */
         fragmentCameraBinding.captureButton.setOnClickListener {

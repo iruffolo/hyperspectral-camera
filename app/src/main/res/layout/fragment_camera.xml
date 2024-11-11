@@ -31,11 +31,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#CCCCCC">
+            android:background="#111111">
 
-            <com.example.android.camera.utils.AutoFitSurfaceView
-                android:id="@+id/view_finder"
-                android:layout_width="420dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="0dp"
                 android:layout_marginLeft="0dp"
@@ -43,7 +42,23 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintHeight_percent="0.75"/>
+                app:layout_constraintHeight_percent="0.7"
+                >
+
+                <com.example.android.camera.utils.AutoFitSurfaceView
+                    android:id="@+id/view_finder"
+                    android:layout_width="420dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHeight_percent="0.85"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:id="@+id/overlay"
@@ -65,7 +80,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintHeight_percent="0.8"
+                app:layout_constraintHeight_percent="0.75"
                 android:layout_marginBottom="100dp"
                 android:gravity="bottom"
                 android:orientation="horizontal">
@@ -103,7 +118,7 @@
             android:id="@+id/capture_button"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="84dp"
             android:layout_gravity="bottom|center"
             android:background="@drawable/ic_shutter"
             android:contentDescription="@string/capture"
@@ -115,7 +130,7 @@
             android:layout_height="50dp"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="36dp"
-            android:layout_marginBottom="58dp"
+            android:layout_marginBottom="92dp"
             android:background="@drawable/gear_icon"
             android:backgroundTint="#646464"
             android:contentDescription="@string/configuration"
@@ -147,6 +162,23 @@
             android:layout_margin="20dp"
             android:orientation="vertical">
 
+            <Button
+                android:id="@+id/exit_setting_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save Configuration">
+            </Button>
+
+            <View
+                android:id="@+id/divider6"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="?android:attr/listDivider"
+                android:backgroundTint="#323232"
+                android:backgroundTintMode="add" />
+
             <TextView
                 android:id="@+id/sensitivity_ISO_text"
                 android:layout_width="wrap_content"
@@ -155,11 +187,38 @@
                 android:text="@string/iso_text"
                 android:textColor="#000000" />
 
-            <com.google.android.material.slider.Slider
-                android:id="@+id/sensitivity_iso"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:stepSize="10.0"/>
+                >
+
+                <EditText
+                    android:id="@+id/sensitivity_iso_text_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:autofillHints="1200"
+                    android:ems="10"
+                    android:hint="iso"
+                    android:inputType="number"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.2"
+                    />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/sensitivity_iso"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:stepSize="10.0"
+                    app:layout_constraintStart_toEndOf="@+id/sensitivity_iso_text_input"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.8"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 <!--            <SeekBar-->
 <!--                android:id="@+id/sensitivity_iso"-->
@@ -175,11 +234,37 @@
                 android:text="@string/exposure_text"
                 android:textColor="#000000" />
 
-            <com.google.android.material.slider.Slider
-                android:id="@+id/exposure_time"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:stepSize="20.0"/>
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/exposure_text_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:autofillHints="200000"
+                    android:ems="10"
+                    android:hint="exposure"
+                    android:inputType="number"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.3"
+                    />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/exposure_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:stepSize="20000.0"
+                    app:layout_constraintStart_toEndOf="@+id/exposure_text_input"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent="0.7"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 <!--            <SeekBar-->
 <!--                android:id="@+id/exposure_time"-->
@@ -358,13 +443,6 @@
                     android:gravity="center|start"
                     android:text="@string/ae_switch" />
             </LinearLayout>
-
-            <Button
-                android:id="@+id/exit_setting_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Save Configuration">
-            </Button>
 
             <View
                 android:layout_width="match_parent"
