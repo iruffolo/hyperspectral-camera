@@ -259,7 +259,6 @@ class CameraFragment : Fragment() {
         fragmentCameraBinding.sensitivityIso?.valueFrom = (gainRange.lower / 10 * 10).toFloat()
         fragmentCameraBinding.sensitivityIso?.valueTo = (gainRange.upper / 10 * 10).toFloat()
         fragmentCameraBinding.sensitivityIso?.value = mSensitivity.toFloat()
-        fragmentCameraBinding.sensitivityIso?.stepSize = (gainRange.lower / 10 * 10).toFloat()
         fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, mSensitivity)
         fragmentCameraBinding.sensitivityIso?.addOnChangeListener { slider, value, fromUser ->
             if (fromUser) {
@@ -271,28 +270,65 @@ class CameraFragment : Fragment() {
 
                 // updated continuously as the user slides the thumb
                 fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, value.toInt())
+                // also, update text input
+                fragmentCameraBinding.sensitivityIsoTextInput?.setText(mSensitivity.toString())
             }
         }
 
-//        fragmentCameraBinding.sensitivityIso?.setOnSeekBarChangeListener(
-//            object : SeekBar.OnSeekBarChangeListener {
-//                override fun onProgressChanged(
-//                    seekBar: SeekBar?,
-//                    progress: Int,
-//                    fromUser: Boolean
-//                ) {
-//                    mSensitivity = progress
-//
-//                    session.stopRepeating()
-//                    setCaptureParams(mPreviewRequest) // Update capture params with sensitivity
-//                    session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
-//
-//                    // updated continuously as the user slides the thumb
-//                    fragmentCameraBinding.sensitivityISOText?.text = getString(R.string.iso_text, progress)
-//                }
-//                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-//                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-//            })
+        fragmentCameraBinding.sensitivityIsoTextInput?.setText(mSensitivity.toString())
+        fragmentCameraBinding.sensitivityIsoTextInput?.addTextChangedListener(
+            object: TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                    if (p0 == null || p0.toString() == ""){
+                        return
+                    }
+
+                    // wrap iso value in range
+                    var currIso = p0.toString().toFloat()
+                    Log.d("Yilz", "Curr ISO: $currIso")
+
+                    currIso = fragmentCameraBinding.sensitivityIso?.valueFrom?.let {
+                        maxOf(
+                            it,
+                            currIso
+                        )
+                    }!!
+                    currIso = fragmentCameraBinding.sensitivityIso?.valueTo?.let {
+                        minOf(
+                            it,
+                            currIso
+                        )
+                    }!!
+
+                    // wrap iso to multiple of step size
+                    var temp = currIso.toInt()
+                    temp = temp / 10 * 10
+                    currIso = temp.toFloat()
+
+                    Log.d("Yilz", "Curr ISO: $currIso")
+
+                    // set slider display
+                    fragmentCameraBinding.sensitivityIso?.value = currIso
+                    // set text display
+                    fragmentCameraBinding.sensitivityISOText?.text = getString(
+                        R.string.iso_text, currIso.toInt()
+                    )
+                    // set iso value
+                    mSensitivity = currIso.toInt()
+
+                    session.stopRepeating()
+                    setCaptureParams(mPreviewRequest) // Update capture params with sensitivity
+                    session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
+                }
+
+            }
+        )
 
         /** Exposure time slider */
         val etRange: Range<Long> = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)!!
@@ -330,25 +366,6 @@ class CameraFragment : Fragment() {
                 session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
             }
         }
-//        object : SeekBar.OnSeekBarChangeListener {
-//            override fun onProgressChanged(
-//                seekBar: SeekBar?,
-//                progress: Int,
-//                fromUser: Boolean
-//            ) {
-//                mSensorExposureTime = progress.toLong()
-//                // updated continuously as the user slides the thumb
-//                fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
-//                    mSensorExposureTime,
-//                    1000000000/mSensorExposureTime)
-//
-//                session.stopRepeating()
-//                setCaptureParams(mPreviewRequest) // Update capture params with exposure time
-//                session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
-//            }
-//            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-//            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-//        }
 
         fragmentCameraBinding.exposureTextInput?.setText(mSensorExposureTime.toString())
         fragmentCameraBinding.exposureTextInput?.addTextChangedListener(
