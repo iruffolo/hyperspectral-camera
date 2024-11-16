@@ -335,11 +335,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:gravity="center|end"
-                        android:text="@string/random_mode" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
                         android:text="@string/sequential_mode" />
 
                 </LinearLayout>
