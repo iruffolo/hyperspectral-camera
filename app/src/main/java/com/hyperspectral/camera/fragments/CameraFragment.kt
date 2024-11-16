@@ -160,6 +160,8 @@ class CameraFragment : Fragment() {
 
     private lateinit var mSize : Size
 
+    private var isSequential: Boolean = false
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -335,9 +337,9 @@ class CameraFragment : Fragment() {
         Log.d("Ian", "exposure time low: " + etRange.lower + "\thigh: " + etRange.upper)
 
 
-        var exposureTimeMS = mSensorExposureTime / 20000 * 20000
-        fragmentCameraBinding.exposureTime?.valueFrom = (etRange.lower.toInt() / 20000 * 20000).toFloat() // Magic number for OnePlus
-        fragmentCameraBinding.exposureTime?.valueTo = (etRange.upper.toInt() / 20000 * 20000).toFloat()
+        var exposureTimeMS = mSensorExposureTime / 20000 * 20
+        fragmentCameraBinding.exposureTime?.valueFrom = (etRange.lower.toLong() / 20000 * 20).toFloat() // Magic number for OnePlus
+        fragmentCameraBinding.exposureTime?.valueTo = (etRange.upper.toLong() / 20000 * 20).toFloat()
         fragmentCameraBinding.exposureTime?.value = exposureTimeMS.toFloat()
         fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
             exposureTimeMS,
@@ -347,7 +349,7 @@ class CameraFragment : Fragment() {
         fragmentCameraBinding.exposureTime?.addOnChangeListener { slider, value, fromUser ->
             if (fromUser) {
                 Log.d("Yilz", "exposure time: " + value.toLong() + "ms")
-                mSensorExposureTime = (value).toLong()
+                mSensorExposureTime = value.toLong() * 1000
                 exposureTimeMS = value.toLong()
 
                 // Update the exposure time text
@@ -358,7 +360,7 @@ class CameraFragment : Fragment() {
                 )
 
                 // update exposure text input
-                fragmentCameraBinding.exposureTextInput?.setText(mSensorExposureTime.toString())
+                fragmentCameraBinding.exposureTextInput?.setText(exposureTimeMS.toString())
 
                 // Update capture parameters with the new exposure time
                 session.stopRepeating()
@@ -367,7 +369,7 @@ class CameraFragment : Fragment() {
             }
         }
 
-        fragmentCameraBinding.exposureTextInput?.setText(mSensorExposureTime.toString())
+        fragmentCameraBinding.exposureTextInput?.setText(exposureTimeMS.toString())
         fragmentCameraBinding.exposureTextInput?.addTextChangedListener(
             object: TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -397,7 +399,7 @@ class CameraFragment : Fragment() {
                     }!!
 
                     // round the input time down to a multiple of step size
-                    currExposureTime = currExposureTime / 20000 * 20000
+                    currExposureTime = currExposureTime / 20 * 20
 
                     // set exposure text
                     fragmentCameraBinding.exposureTimeText?.text = getString(
@@ -416,7 +418,7 @@ class CameraFragment : Fragment() {
 //                    }
                     // set exposure time
                     Log.d("Yilz", "Exposure Time: $currExposureTime")
-                    mSensorExposureTime = currExposureTime
+                    mSensorExposureTime = currExposureTime * 1000
                     // Update capture parameters with the new exposure time
                     session.stopRepeating()
                     setCaptureParams(mPreviewRequest)
@@ -532,6 +534,19 @@ class CameraFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
+
+        /** Sequential LED Mode */
+        fragmentCameraBinding.seqSwitch?.setOnCheckedChangeListener { compoundButton, isChecked ->
+            if (isChecked) {
+                // The toggle is enabled
+                isSequential = true
+                Log.d("Sequential Switch", "ON")
+            } else {
+                // The toggle is disabled
+                isSequential = false
+                Log.d("Sequential Switch", "OFF")
+            }
+        }
 
         /** RESET LEDs */
         fragmentCameraBinding.reset?.setOnClickListener {
@@ -784,7 +799,13 @@ class CameraFragment : Fragment() {
         // Perform I/O heavy operations in a different scope
         lifecycleScope.launch(Dispatchers.IO) {
             for (i in 0 until numPhotos) {
-                mBT?.write("${mode}:$i\n".toByteArray())
+                // handle sequential LED mode
+                if (isSequential){
+                    mBT?.write("${mode}:$i\n:S".toByteArray())
+                }
+                else {
+                    mBT?.write("${mode}:$i\n".toByteArray())
+                }
                 delay(mCommandDelay*20) // Delay to give time for LEDs to turn on
 
                 // Wait for auto focus to lock
@@ -795,7 +816,12 @@ class CameraFragment : Fragment() {
 
                 takePhoto(mode).use { result ->
                     // Save the result to disk
-                    saveResult(result, "${mode}_$i")
+                    if (isSequential) {
+                        saveResult(result, "${mode}_S_$i")
+                    }
+                    else {
+                        saveResult(result, "${mode}_$i")
+                    }
                 }
                 delay(mCommandDelay) // Delay to give time for LEDs to turn off
                 mBT?.write("RESET:0\n".toByteArray())

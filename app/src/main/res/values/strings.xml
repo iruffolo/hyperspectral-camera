@@ -33,4 +33,5 @@
     <string name="af_switch">Force Autofocus</string>
     <string name="ae_switch">Auto Exposure</string>
     <string name="ae_text">Image exposure: %1$s</string>
+    <string name="sequential_mode">Sequential Mode</string>
 </resources>

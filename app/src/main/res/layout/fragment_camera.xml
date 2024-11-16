@@ -257,7 +257,7 @@
                     android:id="@+id/exposure_time"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:stepSize="20000.0"
+                    android:stepSize="20.0"
                     app:layout_constraintStart_toEndOf="@+id/exposure_text_input"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -324,6 +324,20 @@
                     android:layout_height="40dp"
                     android:gravity="center|end"
                     android:text="@string/debug_mode" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <Switch
+                        android:id="@+id/seq_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:gravity="center|end"
+                        android:text="@string/sequential_mode" />
+
+                </LinearLayout>
 
                 <EditText
                     android:id="@+id/debugLedDelay"
