@@ -70,6 +70,8 @@ int curr_light = 0;
 // Sequence length 
 int num_rows = 500;
 
+bool isSequential = false;
+
 //!
 //! Setup function to initialize peripherals etc.
 //! 
@@ -169,6 +171,11 @@ void cycle_led_sequence(int seq_num) {
     digitalWrite(RED_LED, LOW);
     delayMicroseconds(delay_off_rs_us);
 
+    // if (isSequential) {
+    //   toggle_leds_seq();
+    //   return ;
+    // }
+
     switch (num_leds_mplx) {
         case 1: 
             toggle_leds(seq_0, seq_num);
@@ -222,6 +229,30 @@ void toggle_leds(T seq, int seq_num)
     }
 }
 
+void toggle_leds_seq() 
+{
+  for (int i = 0; i < num_rows; i ++) {
+
+    int iWrapped = i / 11;
+
+    // Turn all LEDs ON 
+    for (int j = 0; j < num_leds_mplx; j++) {
+        int led = leds[i + j];
+        digitalWrite(led, HIGH);
+    }
+
+    delayMicroseconds(delay_on_rs_us);
+
+    // Turn all LEDs OFF
+    for (int j = 0; j < num_leds_mplx; j++) {
+        int led = leds[i + j];
+        digitalWrite(led, LOW);
+    }
+
+    delayMicroseconds(delay_off_rs_us);
+  }
+}
+
 //!
 //! Seperate thread for reading messages from bluetooth 
 //!
@@ -265,6 +296,15 @@ void read_bluetooth(void* pvParameters) {
                 // Parse message on ':' delimiter
                 mode = strtok(bt_msg, ":");
                 value = strtok(NULL, ":");
+                // check if the message is in format MODE:VALUE:S
+                char *RorS = strtok(NULL, ":");
+                Serial.write(RorS);
+                Serial.write("\n\r");
+                isSequential = false;
+                if (RorS != NULL) {
+                  // if so, we are taking image using sequential LED mode
+                  isSequential = true;
+                }
 
                 if (value != NULL) {
                     int v = atoi(value);
