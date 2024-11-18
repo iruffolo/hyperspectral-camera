@@ -8,5 +8,6 @@ constexpr int NUM_ROW[2] = {1397,1375,};
 
 extern int seq_0[NUM_SEQ][1397][1];
 extern int seq_1[NUM_SEQ][1375][2];
+// extern int seq_fixed[1155];
 
 #endif

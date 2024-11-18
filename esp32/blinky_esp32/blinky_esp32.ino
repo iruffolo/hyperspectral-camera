@@ -232,11 +232,11 @@ void toggle_leds_seq()
 {
   for (int i = 0; i < num_rows; i ++) {
 
-    int iWrapped = i / 11;
+    int iWrapped = i % 11;
 
     // Turn all LEDs ON 
     for (int j = 0; j < num_leds_mplx; j++) {
-        int led = leds[i + j];
+        int led = leds[iWrapped + j];
         digitalWrite(led, HIGH);
     }
 
@@ -244,7 +244,7 @@ void toggle_leds_seq()
 
     // Turn all LEDs OFF
     for (int j = 0; j < num_leds_mplx; j++) {
-        int led = leds[i + j];
+        int led = leds[iWrapped + j];
         digitalWrite(led, LOW);
     }
 

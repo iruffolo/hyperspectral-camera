@@ -822,8 +822,8 @@ class CameraFragment : Fragment() {
                     fragmentCameraBinding.exposureTime?.value = mSensorExposureTime.toFloat() / 20000 * 20
                     fragmentCameraBinding.exposureTimeText?.text = getString(
                         R.string.exposure_text,
-                        mSensorExposureTime / 20000 * 20,
-                        1000000000 / mSensorExposureTime / 20000 * 20
+                        mSensorExposureTime / 1000,
+                        1000000000 / mSensorExposureTime / 1000
                     )
 
 
@@ -832,7 +832,12 @@ class CameraFragment : Fragment() {
                     session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
                 }
 
-                mBT?.write("${mode}:$i\n".toByteArray())
+                if (isSequential) {
+                    mBT?.write("${mode}:$i:S\n".toByteArray())
+                }
+                else {
+                    mBT?.write("${mode}:$i\n".toByteArray())
+                }
                 delay(mCommandDelay*20) // Delay to give time for LEDs to turn on
 
                 // Wait for auto focus to lock
@@ -843,7 +848,12 @@ class CameraFragment : Fragment() {
 
                 takePhoto(mode).use { result ->
                     // Save the result to disk
-                    saveResult(result, "${mode}_$i")
+                    if (isSequential) {
+                        saveResult(result, "${mode}_S_$i")
+                    }
+                    else {
+                        saveResult(result, "${mode}_$i")
+                    }
                 }
                 delay(mCommandDelay) // Delay to give time for LEDs to turn off
                 mBT?.write("RESET:0\n".toByteArray())
