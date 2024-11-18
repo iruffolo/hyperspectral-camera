@@ -162,6 +162,21 @@ class CameraFragment : Fragment() {
 
     private var isSequential: Boolean = false
 
+    private val exposureCalibrate = listOf(
+        1.0, // violet
+        1.06287785, // royal blue
+        1.30993595, // blue
+        1.67676647, // cyan
+        2.05288694, // green
+        1.57409975, // lime
+        2.95384468, // amber
+        2.18700296, // red orange
+        2.06195693, // red
+        1.90887232, // deep red
+        7.08911392, // far red
+        1.0 // white
+    )
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -475,8 +490,8 @@ class CameraFragment : Fragment() {
             if (isChecked) {
                 // First disable W mode if it is on
                 fragmentCameraBinding.wSwitch?.isChecked = false
-                // Turn on AE
-                mAEToggle = true
+                // Don't need AE
+//                mAEToggle = true
                 // The toggle is enabled
                 mMode = CameraMode.GT
                 Log.d("Mode Switch","Camera mode set to Ground Truth (GT)")
@@ -798,14 +813,26 @@ class CameraFragment : Fragment() {
     {
         // Perform I/O heavy operations in a different scope
         lifecycleScope.launch(Dispatchers.IO) {
+            val baseExposureTime = mSensorExposureTime
             for (i in 0 until numPhotos) {
-                // handle sequential LED mode
-                if (isSequential){
-                    mBT?.write("${mode}:$i\n:S".toByteArray())
+                // check for sequential (ground truth) mode
+                if (mode == "GT") {
+                    // temporarily calibrate exposure time
+                    mSensorExposureTime *= exposureCalibrate[i].toLong()
+                    fragmentCameraBinding.exposureTime?.value = mSensorExposureTime.toFloat() / 20000 * 20
+                    fragmentCameraBinding.exposureTimeText?.text = getString(
+                        R.string.exposure_text,
+                        mSensorExposureTime / 20000 * 20,
+                        1000000000 / mSensorExposureTime / 20000 * 20
+                    )
+
+
+                    session.stopRepeating()
+                    setCaptureParams(mPreviewRequest) // Update capture params with exposure time
+                    session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
                 }
-                else {
-                    mBT?.write("${mode}:$i\n".toByteArray())
-                }
+
+                mBT?.write("${mode}:$i\n".toByteArray())
                 delay(mCommandDelay*20) // Delay to give time for LEDs to turn on
 
                 // Wait for auto focus to lock
@@ -816,15 +843,20 @@ class CameraFragment : Fragment() {
 
                 takePhoto(mode).use { result ->
                     // Save the result to disk
-                    if (isSequential) {
-                        saveResult(result, "${mode}_S_$i")
-                    }
-                    else {
-                        saveResult(result, "${mode}_$i")
-                    }
+                    saveResult(result, "${mode}_$i")
                 }
                 delay(mCommandDelay) // Delay to give time for LEDs to turn off
                 mBT?.write("RESET:0\n".toByteArray())
+                // set exposure time back to base
+                if (mode == "GT") {
+                    mSensorExposureTime = baseExposureTime
+                    fragmentCameraBinding.exposureTime?.value = mSensorExposureTime.toFloat() / 20000 * 20
+                    fragmentCameraBinding.exposureTimeText?.text = getString(
+                        R.string.exposure_text,
+                        mSensorExposureTime / 20000 * 20,
+                        1000000000 / mSensorExposureTime / 20000 * 20
+                    )
+                }
             }
         }
     }
