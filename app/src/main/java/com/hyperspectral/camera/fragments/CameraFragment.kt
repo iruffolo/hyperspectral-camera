@@ -17,13 +17,16 @@
 package com.hyperspectral.camera.fragments
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
 import android.media.Image
 import android.media.ImageReader
+import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.text.Editable
@@ -59,6 +62,17 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import com.google.android.material.slider.Slider
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.Response
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.http.POST
+import retrofit2.http.Multipart
+import retrofit2.http.Part
+import retrofit2.converter.gson.GsonConverterFactory
 
 class CameraFragment : Fragment() {
 
@@ -177,6 +191,8 @@ class CameraFragment : Fragment() {
         1.0 // white
     )
 
+    private val IMAGE_PICK_REQUEST = 1
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -221,11 +237,92 @@ class CameraFragment : Fragment() {
         initializeButtons()
     }
 
+    // Helper function to get real path from URI
+    fun getRealPathFromURI(uri: Uri?): String? {
+        var path: String? = null
+        if (uri != null) {
+            val cursor = context?.contentResolver?.query(uri, null, null, null, null)
+            cursor?.let {
+                it.moveToFirst()
+                val index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+                path = cursor.getString(index)
+                cursor.close()
+            }
+        }
+        return path
+    }
+
     // Tac = (px - 1) * Trs + Te
     // Num rows = Tac / (N * (Ton + T off))
     private fun calcNumRows() {
         var tAcq = (mSize.height - 1) * mRollingShutterTime + (mSensorExposureTime/1000)
         mNumRows = (tAcq / (mNumBlackBands * (mLedOnTime + mLedOffTime))).toInt()
+    }
+
+    interface ApiService {
+
+        @Multipart
+        @POST("/upload/image")
+        fun uploadImage(
+            @Part file: MultipartBody.Part
+        ): Call<ResponseBody>
+    }
+
+    object RetrofitClient {
+        private const val BASE_URL = "https://chromaflash-backend.onrender.com"
+
+        val instance: ApiService by lazy {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+            retrofit.create(ApiService::class.java)
+        }
+    }
+
+
+    /** Logic for handling image pick request */
+    private fun uploadImageHandler(apiService: ApiService, imageFile: File) {
+        // create a request body
+        val requestFile = RequestBody.create("image/raw".toMediaTypeOrNull(), imageFile)
+        // Wrap it in a MultipartBody.Part
+        val multipartBody = MultipartBody.Part.createFormData("file", imageFile.name, requestFile)
+
+        val call = apiService.uploadImage(multipartBody)
+        call.enqueue(object : retrofit2.Callback<ResponseBody> {
+            override fun onResponse(p0: Call<ResponseBody>, p1: retrofit2.Response<ResponseBody>) {
+                if (p1.isSuccessful) {
+                    Log.d("Image", "Upload Succeed")
+                }
+                else {
+                    Log.d("Image error", "Upload return error: ${p1.errorBody().toString()}")
+                }
+            }
+
+            override fun onFailure(p0: Call<ResponseBody>, p1: Throwable) {
+                Log.d("Image error", "Image upload failed: ${p1.message}")
+            }
+        })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        Log.d("Image", "$requestCode, $resultCode")
+
+        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null){
+            val selectedImageUri: Uri? = data.data
+            if (selectedImageUri != null) {
+                Log.d("Image", selectedImageUri.toString())
+                val filePath = getRealPathFromURI(selectedImageUri)
+
+                if (filePath != null) {
+                    val imageFile = File(filePath)
+                    uploadImageHandler(RetrofitClient.instance, imageFile)
+                }
+            }
+        }
     }
 
     private fun initializeButtons() {
@@ -256,6 +353,14 @@ class CameraFragment : Fragment() {
                 fragmentCameraBinding.captureButton.visibility = View.GONE
             }
             mConfigMenu = !mConfigMenu
+        }
+
+        /** Button to open image upload menu */
+        fragmentCameraBinding.uploadButton?.setOnClickListener {
+            Log.d("Gallery", "Opening up image picker")
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
+            startActivityForResult(intent, IMAGE_PICK_REQUEST)
         }
 
         fragmentCameraBinding.exitSettingButton?.setOnClickListener {
