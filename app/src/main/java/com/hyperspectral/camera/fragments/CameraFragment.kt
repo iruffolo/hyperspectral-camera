@@ -17,13 +17,16 @@
 package com.hyperspectral.camera.fragments
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
 import android.media.Image
 import android.media.ImageReader
+import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.text.Editable
@@ -59,6 +62,21 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import com.google.android.material.slider.Slider
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import kotlin.math.max
+import kotlin.math.min
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.Response
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.http.POST
+import retrofit2.http.Multipart
+import retrofit2.http.Part
+import retrofit2.converter.gson.GsonConverterFactory
+
 
 class CameraFragment : Fragment() {
 
@@ -163,19 +181,21 @@ class CameraFragment : Fragment() {
     private var isSequential: Boolean = false
 
     private val exposureCalibrate = listOf(
-        1.0, // violet
-        1.06287785, // royal blue
-        1.30993595, // blue
-        1.67676647, // cyan
-        2.05288694, // green
-        1.57409975, // lime
-        2.95384468, // amber
-        2.18700296, // red orange
-        2.06195693, // red
-        1.90887232, // deep red
-        7.08911392, // far red
+        1.6243713180334602, // violet
+        1.0729720735594515, // royal blue
+        1.2316777634863307, // blue
+        1.0, // cyan
+        1.2853491428246315, // green
+        1.028269446603178, // lime
+        2.1266505491347476, // amber
+        2.2780781319823404, // red orange
+        2.390641687165154, // red
+        3.729858795437801, // deep red
+        150.09972562766288, // far red
         1.0 // white
     )
+
+    private val IMAGE_PICK_REQUEST: Int = 1
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -228,6 +248,87 @@ class CameraFragment : Fragment() {
         mNumRows = (tAcq / (mNumBlackBands * (mLedOnTime + mLedOffTime))).toInt()
     }
 
+    interface ApiService {
+
+        @Multipart
+        @POST("/upload/image")
+        fun uploadImage(
+            @Part image: MultipartBody.Part
+        ): Call<ResponseBody>
+    }
+
+    object RetrofitClient {
+        private const val BASE_URL = "https://chromaflash-backend.onrender.com"
+
+        val instance: ApiService by lazy {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+            retrofit.create(ApiService::class.java)
+        }
+    }
+
+
+    /** Logic for handling image pick request */
+    private fun uploadImageHandler(apiService: ApiService, imageFile: File) {
+        // create a request body
+        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), imageFile)
+        // Wrap it in a MultipartBody.Part
+        val multipartBody = MultipartBody.Part.createFormData("image", imageFile.name, requestFile)
+
+        val call = apiService.uploadImage(multipartBody)
+        call.enqueue(object : retrofit2.Callback<ResponseBody> {
+            override fun onResponse(p0: Call<ResponseBody>, p1: retrofit2.Response<ResponseBody>) {
+                if (p1.isSuccessful) {
+                    Log.d("Image", "Upload Succeed")
+                }
+                else {
+                    Log.d("Image error", "Upload return error: ${p1.errorBody().toString()}")
+                }
+            }
+
+            override fun onFailure(p0: Call<ResponseBody>, p1: Throwable) {
+                Log.d("Image error", "Image upload failed: ${p1.message}")
+            }
+        })
+    }
+
+    // Helper function to get real path from URI
+    fun getRealPathFromURI(uri: Uri?): String? {
+        var path: String? = null
+        if (uri != null) {
+            val cursor = context?.contentResolver?.query(uri, null, null, null, null)
+            cursor?.let {
+                it.moveToFirst()
+                val index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+                path = cursor.getString(index)
+                cursor.close()
+            }
+        }
+        return path
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        Log.d("Image", "$requestCode, $resultCode")
+
+        if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null){
+            val selectedImageUri: Uri? = data.data
+            if (selectedImageUri != null) {
+                Log.d("Image", selectedImageUri.toString())
+                val filePath = getRealPathFromURI(selectedImageUri)
+
+                if (filePath != null) {
+                    val imageFile = File(filePath)
+                    uploadImageHandler(RetrofitClient.instance, imageFile)
+                }
+            }
+        }
+    }
+
     private fun initializeButtons() {
 
         fragmentCameraBinding.aeText?.text = getString(R.string.ae_text, "0")
@@ -256,6 +357,14 @@ class CameraFragment : Fragment() {
                 fragmentCameraBinding.captureButton.visibility = View.GONE
             }
             mConfigMenu = !mConfigMenu
+        }
+
+        /** Button to open image upload menu */
+        fragmentCameraBinding.uploadButton?.setOnClickListener {
+            Log.d("Gallery", "Opening up image picker")
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
+            startActivityForResult(intent, IMAGE_PICK_REQUEST)
         }
 
         fragmentCameraBinding.exitSettingButton?.setOnClickListener {
@@ -353,8 +462,8 @@ class CameraFragment : Fragment() {
 
 
         var exposureTimeMS = mSensorExposureTime / 20000 * 20
-        fragmentCameraBinding.exposureTime?.valueFrom = (etRange.lower.toLong() / 20000 * 20).toFloat() // Magic number for OnePlus
-        fragmentCameraBinding.exposureTime?.valueTo = (etRange.upper.toLong() / 20000 * 20).toFloat()
+        fragmentCameraBinding.exposureTime?.valueFrom = max((etRange.lower.toLong() / 20000 * 20).toFloat(), 20.toFloat()) // Magic number for OnePlus
+        fragmentCameraBinding.exposureTime?.valueTo = min((etRange.upper.toLong() / 20000 * 20).toFloat(), 150000.toFloat())
         fragmentCameraBinding.exposureTime?.value = exposureTimeMS.toFloat()
         fragmentCameraBinding.exposureTimeText?.text = getString(R.string.exposure_text,
             exposureTimeMS,
@@ -413,6 +522,10 @@ class CameraFragment : Fragment() {
                         )
                     }!!
 
+                    fragmentCameraBinding.exposureTime?.valueFrom?.toLong()?.let {
+                        Log.d("Yilz", "Exposure Lower: $it")
+                    }
+
                     // round the input time down to a multiple of step size
                     currExposureTime = currExposureTime / 20 * 20
 
@@ -432,8 +545,9 @@ class CameraFragment : Fragment() {
 //                        )
 //                    }
                     // set exposure time
-                    Log.d("Yilz", "Exposure Time: $currExposureTime")
+                    Log.d("Yilz", "Display exposure Time: $currExposureTime")
                     mSensorExposureTime = currExposureTime * 1000
+                    Log.d("Yilz", "Actual exposure Time: $mSensorExposureTime")
                     // Update capture parameters with the new exposure time
                     session.stopRepeating()
                     setCaptureParams(mPreviewRequest)
@@ -818,7 +932,14 @@ class CameraFragment : Fragment() {
                 // check for sequential (ground truth) mode
                 if (mode == "GT") {
                     // temporarily calibrate exposure time
-                    mSensorExposureTime *= exposureCalibrate[i].toLong()
+                    Log.d("Yilz", "Calibrated exposure Time: $mSensorExposureTime")
+                    Log.d("Yilz", "Calibrated exposure Time: " + exposureCalibrate[i])
+
+                    var tempExposureTime = mSensorExposureTime.toDouble()
+                    tempExposureTime *= exposureCalibrate[i]
+                    mSensorExposureTime = tempExposureTime.toLong()
+
+                    Log.d("Yilz", "Calibrated exposure Time: $mSensorExposureTime")
                     fragmentCameraBinding.exposureTime?.value = mSensorExposureTime.toFloat() / 20000 * 20
                     fragmentCameraBinding.exposureTimeText?.text = getString(
                         R.string.exposure_text,
@@ -876,7 +997,6 @@ class CameraFragment : Fragment() {
      * template. It performs synchronization between the [CaptureResult] and the [Image] resulting
      * from the single capture, and outputs a [CombinedCaptureResult] object.
      */
-    // TODO: add parameters that adjust exposure time based on LED
     private suspend fun takePhoto(mode: String):
             CombinedCaptureResult = suspendCoroutine { cont ->
 
