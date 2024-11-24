@@ -35,4 +35,6 @@
     <string name="ae_text">Image exposure: %1$s</string>
     <string name="sequential_mode">Sequential Mode</string>
     <string name="upload_image">Upload Image</string>
+    <string name="endpoint_base_url">Endpoint Base Url</string>
+    <string name="update_base_url">Update Base Url</string>
 </resources>

@@ -470,6 +470,19 @@
                     android:text="@string/ae_switch" />
             </LinearLayout>
 
+
+            <EditText
+                android:id="@+id/base_url"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="@string/endpoint_base_url" />
+
+            <Button
+                android:id="@+id/update_base_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/update_base_url" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="240dp">

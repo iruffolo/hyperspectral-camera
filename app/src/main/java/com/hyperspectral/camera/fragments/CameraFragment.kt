@@ -36,6 +36,7 @@ import android.util.Range
 import android.util.Size
 import android.view.*
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
@@ -192,6 +193,7 @@ class CameraFragment : Fragment() {
     )
 
     private val IMAGE_PICK_REQUEST = 1
+    private var mBaseURL = "https://c659-142-126-236-209.ngrok-free.app"
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -269,18 +271,20 @@ class CameraFragment : Fragment() {
     }
 
     object RetrofitClient {
-        private const val BASE_URL = "https://chromaflash-backend.onrender.com"
+        private lateinit var retrofit: Retrofit
 
-        val instance: ApiService by lazy {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
+        fun initialize(baseUrl: String) {
+            retrofit = Retrofit.Builder()
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-
-            retrofit.create(ApiService::class.java)
         }
-    }
 
+        val instance: ApiService
+            get() {
+                return retrofit.create(ApiService::class.java)
+            }
+    }
 
     /** Logic for handling image pick request */
     private fun uploadImageHandler(apiService: ApiService, imageFile: File) {
@@ -294,19 +298,27 @@ class CameraFragment : Fragment() {
             override fun onResponse(p0: Call<ResponseBody>, p1: retrofit2.Response<ResponseBody>) {
                 if (p1.isSuccessful) {
                     Log.d("Image", "Upload Succeed")
+                    Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_LONG).show()
                 }
                 else {
                     Log.d("Image error", "Upload return error: ${p1.errorBody().toString()}")
+                    Toast.makeText(context,
+                        "Upload return error: ${p1.errorBody().toString()}",
+                        Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onFailure(p0: Call<ResponseBody>, p1: Throwable) {
                 Log.d("Image error", "Image upload failed: ${p1.message}")
+                Toast.makeText(context,
+                    "Image upload failed: ${p1.message}",
+                    Toast.LENGTH_LONG).show()
             }
         })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
         super.onActivityResult(requestCode, resultCode, data)
 
         Log.d("Image", "$requestCode, $resultCode")
@@ -319,7 +331,11 @@ class CameraFragment : Fragment() {
 
                 if (filePath != null) {
                     val imageFile = File(filePath)
-                    uploadImageHandler(RetrofitClient.instance, imageFile)
+                    if (mBaseURL.isNotBlank() && mBaseURL.startsWith("http")) {
+                        // initialize a retrofit client
+                        RetrofitClient.initialize(mBaseURL)
+                        uploadImageHandler(RetrofitClient.instance, imageFile)
+                    }
                 }
             }
         }
@@ -806,6 +822,13 @@ class CameraFragment : Fragment() {
             session.stopRepeating()
             setCaptureParams(mPreviewRequest)
             session.setRepeatingRequest(mPreviewRequest.build(), captureCallback, cameraHandler)
+        }
+
+        fragmentCameraBinding.updateBaseUrl?.setOnClickListener {
+            // get new base url
+            mBaseURL = fragmentCameraBinding.baseUrl?.text.toString()
+
+            Toast.makeText(context, "Base Url changed: ${mBaseURL}", Toast.LENGTH_LONG).show()
         }
     }
 
